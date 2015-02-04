@@ -4,7 +4,7 @@
 define(function (require) {
   'use strict';
   var d3 = require('d3');
-  var $ = require('jQuery');
+  var $ = require('jquery');
   var data = require('../caleydo/data');
   var vis = require('../caleydo/vis');
   var ranges = require('../caleydo/range');
@@ -50,13 +50,22 @@ define(function (require) {
     });
     return datalist;
   }
-  data.listAsTable(true).then(listenToData).then(createLineUp);
+  function filterTypes(arr) {
+    return arr.filter(function(d) {
+      var desc = d.desc;
+      if (desc.type === 'matrix' || desc.type === 'vector') {
+        return desc.value.type.match('(int|real|categorical)');
+      }
+      return false;
+    });
+  }
+  data.list().then(data.convertTableToVectors).then(filterTypes).then(data.convertToTable).then(listenToData).then(createLineUp);
 
   columns.manager.on('dirty', function() {
     //update the layout
     var w = $(stratomex).width();
     var h = $(stratomex).height();
-    layout(columns.manager.entries().map(function(c) { return c.layout; }), w, h);
+    layout(columns.manager.entries.map(function(c) { return c.layout; }), w, h);
     columns.manager.forEach(function(c) {c.layouted();});
   });
 });
