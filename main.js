@@ -27,9 +27,6 @@ define(function (require) {
           }
         }
       });
-      lineup.on('hover', function (event, id) {
-        console.log('hovered', id);
-      });
       return lineup;
     });
   });
