@@ -1,9 +1,10 @@
 /**
  * Created by sam on 30.01.2015.
  */
-define(['require', 'exports', 'd3', '../caleydo/vis', '../caleydo/multiform', '../caleydo/idtype', '../caleydo/behavior','font-awesome'], function (require, exports) {
+define(['require', 'exports', 'd3', '../caleydo/main', '../caleydo/vis', '../caleydo/multiform', '../caleydo/idtype', '../caleydo/behavior','font-awesome'], function (require, exports) {
   var d3 = require('d3');
   var vis = require('../caleydo/vis');
+  var C = require('../caleydo/main');
   var multiform = require('../caleydo/multiform');
   var idtypes = require('../caleydo/idtype');
   var behaviors = require('../caleydo/behavior');
@@ -25,10 +26,11 @@ define(['require', 'exports', 'd3', '../caleydo/vis', '../caleydo/multiform', '.
   var manager = exports.manager = new idtypes.ObjectManager('_column', 'Column');
 
   function Column(parent, data, partitioning) {
+    events.EventHandler.call(this);
     this.data = data;
     this.$parent = d3.select(parent).append('div').attr('class', 'column');
     this.$toolbar = this.$parent.append('div').attr('class','toolbar');
-    this.partitioning = partitioning;
+    this.range = partitioning;
     var initialVis = guessInitial(data.desc);
     //create the vis
     this.grid = multiform.createGrid(data, partitioning, this.$parent.node(), function (data, range) {
@@ -36,7 +38,6 @@ define(['require', 'exports', 'd3', '../caleydo/vis', '../caleydo/multiform', '.
     }, {
       initialVis: initialVis
     });
-    this.id = manager.nextId(this);
 
     //zooming
     var z = this.zoom = new behaviors.ZoomLogic(this.grid, this.grid.asMetaData);
@@ -51,8 +52,54 @@ define(['require', 'exports', 'd3', '../caleydo/vis', '../caleydo/multiform', '.
 
     this.createToolBar();
 
+    this.id = manager.nextId(this);
     manager.fire('dirty'); //fire relayout
   }
+
+  C.extendClass(Column, events.EventHandler);
+
+  Column.prototype.ids = function() {
+    return this.data.ids(this.range);
+  };
+  Object.defineProperty(Column.prototype, 'location', {
+    get : function() {
+      return this.layout.getBounds();
+    },
+    enumerable: true
+  });
+  Column.prototype.visPos = function() {
+    var xy = this.location.xy;
+    var $grid = this.$parent.select('div.multiformgrid');
+    function fromPx(v) {
+      return parseFloat(v.substring(0, v.length-2));
+    }
+    var sx = fromPx($grid.style('left') || '0px');
+    var sy = fromPx($grid.style('top') || '0px');
+    return xy.addEquals(geom.vec(sx, sy));
+  }
+
+  function shiftBy(r, shift) {
+    if (C.isArray(r)) {
+      return r.map(function (loc) {
+        return loc ? geom.wrap(loc).shift(shift) : loc;
+      });
+    }
+    return r ? geom.wrap(r).shift(shift) : r;
+  }
+
+  Column.prototype.locate = function () {
+    var vis = this.grid, that = this;
+    return this.grid.locate.apply(vis, C.argList(arguments)).then(function (r) {
+      return shiftBy(r, that.visPos());
+    });
+  };
+
+  Column.prototype.locateById = function () {
+    var vis = this.vis, that = this;
+    return this.grid.locateById.apply(this.grid, C.argList(arguments)).then(function (r) {
+      return shiftBy(r, that.visPos());
+    });
+  };
   Column.prototype.layouted = function() {
     //sync the scaling
     var size = this.layout.getSize();
@@ -72,6 +119,8 @@ define(['require', 'exports', 'd3', '../caleydo/vis', '../caleydo/multiform', '.
     //center the toolbar
     var w = (18*(1+this.grid.visses.length));
     this.$toolbar.style('left',((size.x-w)/2)+'px');
+
+    this.fire('dirty');
   };
   Column.prototype.createToolBar = function() {
     var $t = this.$toolbar,
@@ -87,6 +136,25 @@ define(['require', 'exports', 'd3', '../caleydo/vis', '../caleydo/multiform', '.
     manager.remove(this);
     this.$parent.remove();
     manager.fire('dirty');
+  };
+
+  exports.areNeighborColumns = function (ca, cb) {
+    var loca = ca.location,
+      locb = cb.location,
+      t = null;
+    if (loca.x > locb.x) { //swap order
+      t = locb;
+      locb = loca;
+      loca = t;
+    }
+    //none in between
+    return !exports.manager.entries.some(function(c) {
+      if (c === ca || c === cb) {
+        return false;
+      }
+      var l = c.location;
+      return loca.x <= l.x && l.x <= locb.x;
+    });
   };
 
   exports.create = function(parent, data, partitioning) {

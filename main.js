@@ -8,6 +8,8 @@ define(function (require) {
   var data = require('../caleydo/data');
   var vis = require('../caleydo/vis');
   var ranges = require('../caleydo/range');
+  var idtypes = require('../caleydo/idtype');
+  var link_m = require('../caleydo-links/link');
 
   var layout = require('../caleydo-layout/main').distributeLayout(true, 100, { top : 30, left: 30, right: 30, bottom: 10});
   var info = require('../caleydo-selectioninfo/main').create(document.getElementById('selectioninfo'));
@@ -16,6 +18,25 @@ define(function (require) {
 
   var stratomex = document.getElementById('stratomex');
   var lineup;
+
+
+  var links = new link_m.LinkContainer(stratomex, ['dirty'], {
+    interactive: false,
+    filter: columns.areNeighborColumns
+  });
+
+  columns.manager.on('add', function (event, id, column) {
+    links.push(column);
+  });
+  columns.manager.on('remove', function (event, id, column) {
+    links.remove(column);
+  });
+
+  //clear on click on background
+  d3.select(links.node).classed('selection-clearer', true).on('click', function () {
+    columns.manager.clear();
+    idtypes.clearSelection();
+  });
 
   function createLineUp(datalist) {
     var v = vis.list(datalist);
