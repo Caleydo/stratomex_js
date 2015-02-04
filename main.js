@@ -89,4 +89,7 @@ define(function (require) {
     layout(columns.manager.entries.map(function(c) { return c.layout; }), w, h);
     columns.manager.forEach(function(c) {c.layouted();});
   });
+  $(window).on('resize', function() {
+    columns.manager.fire('dirty');
+  });
 });
