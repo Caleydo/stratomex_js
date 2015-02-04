@@ -76,6 +76,28 @@ main {
     &.ui-state-disabled {
       opacity: 1;
     }
+
+    div.toolbar {
+      position: absolute;
+      height: 16px;
+      top: -16px;
+      i {
+        background-size: 100%;
+        margin: 0 1px;
+      }
+      i:hover {
+        font-weight: bold;
+        cursor: pointer;
+      }
+      i.fa-close {
+        color: red;
+      }
+
+      div {
+        display: inline-block;
+        margin: 0 1px;
+      }
+    }
   }
 
   .selection-clearer {
