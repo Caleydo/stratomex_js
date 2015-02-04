@@ -14,7 +14,19 @@ define(function (require) {
     var v = vis.list(datalist);
     v = v.filter(function (v) { return v.id === 'caleydo-vis-lineup';})[0];
     return v.load().then(function (plugin) {
-      lineup = plugin.factory(datalist, document.getElementById('lineup'));
+      lineup = plugin.factory(datalist, document.getElementById('lineup'), {
+        lineup: {
+          svgLayout: {
+            rowActions: [
+
+            ]
+          },
+          manipulative: true,
+          interaction: {
+            tooltips: false
+          }
+        }
+      });
       lineup.on('hover', function (event, id) {
         console.log('hovered', id);
       });
