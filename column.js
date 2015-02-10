@@ -1,11 +1,12 @@
 /**
  * Created by sam on 30.01.2015.
  */
-define(['require', 'exports', 'd3', '../caleydo/main', '../caleydo/vis', '../caleydo/multiform', '../caleydo/idtype', '../caleydo/behavior','font-awesome'], function (require, exports) {
+define(['require', 'exports', 'd3', '../caleydo/main', '../caleydo/vis', '../caleydo/multiform', '../caleydo/idtype', '../caleydo/behavior', '../caleydo/geom', 'font-awesome'], function (require, exports) {
   var d3 = require('d3');
   var vis = require('../caleydo/vis');
   var C = require('../caleydo/main');
-  var multiform = require('../caleydo/multiform');
+  var multiform = require('../caleydo/multiform')
+  var geom = require('../caleydo/geom');
   var idtypes = require('../caleydo/idtype');
   var behaviors = require('../caleydo/behavior');
   var events = require('../caleydo/event');

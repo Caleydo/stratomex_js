@@ -8,8 +8,22 @@ define(function (require) {
   var data = require('../caleydo/data');
   var vis = require('../caleydo/vis');
   var ranges = require('../caleydo/range');
+  var datatypes = require('../caleydo/datatype');
   var idtypes = require('../caleydo/idtype');
   var link_m = require('../caleydo-links/link');
+  var prov_sel = require('../caleydo-provenance/selection');
+  var graph, graphvis;
+  data.create({
+    type: 'provenance_graph',
+    name: 'StratomeX',
+    id: 'stratomex'
+  }).then(function (graph_) {
+    graph = graph_;
+    var s = prov_sel.create(graph_, 'selected');
+    vis.list(graph)[0].load().then(function (plugin) {
+      graphvis = plugin.factory(graph_, document.getElementById('provenancegraph'));
+    })
+  });
 
   var layout = require('../caleydo-layout/main').distributeLayout(true, 100, { top : 30, left: 30, right: 30, bottom: 10});
   var info = require('../caleydo-selectioninfo/main').create(document.getElementById('selectioninfo'));
@@ -22,7 +36,8 @@ define(function (require) {
 
   var links = new link_m.LinkContainer(stratomex, ['dirty'], {
     interactive: false,
-    filter: columns.areNeighborColumns
+    filter: columns.areNeighborColumns,
+    mode: 'group'
   });
 
   columns.manager.on('add', function (event, id, column) {
@@ -66,7 +81,14 @@ define(function (require) {
       }
       datalist.objects(range).then(function(toAdd) {
         var m = toAdd[0]._;
-        columns.create(stratomex, m, ranges.range(0));
+
+        if (m.desc.type === 'vector' && m.desc.value.type === 'categorical') {
+          m.groups().then(function(parition) {
+            columns.create(stratomex, m, ranges.list(parition));
+          });
+        } else {
+          columns.create(stratomex, m, ranges.range(0));
+        }
       });
     });
     return datalist;
