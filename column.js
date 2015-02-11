@@ -5,12 +5,14 @@ define(['require', 'exports', 'd3', '../caleydo/main', '../caleydo/vis', '../cal
   var d3 = require('d3');
   var vis = require('../caleydo/vis');
   var C = require('../caleydo/main');
-  var multiform = require('../caleydo/multiform')
+  var multiform = require('../caleydo/multiform');
   var geom = require('../caleydo/geom');
   var idtypes = require('../caleydo/idtype');
   var behaviors = require('../caleydo/behavior');
   var events = require('../caleydo/event');
   var layouts = require('../caleydo-layout/main');
+  var prov = require('../caleydo-provenance/main');
+  var session = require('../caleydo/session');
 
   //guess initial vis method
   function guessInitial(desc) {
@@ -25,6 +27,35 @@ define(['require', 'exports', 'd3', '../caleydo/main', '../caleydo/vis', '../cal
 
   //create a manager for all columns
   var manager = exports.manager = new idtypes.ObjectManager('_column', 'Column');
+
+  function createColumn(inputs, parameter) {
+    var parent = inputs[0].v,
+      data = inputs[1].v,
+      partitioning = ranges.parse(parameter.partitioning);
+    var c = new Column(parent, data, partitioning);
+    var r = prov.createRef(c, 'Column of '+data.desc.name, prov.CmdCategory.vis);
+    return {
+      created: [r],
+      inverse: removeColumnCmd(r)
+    }
+  }
+  function removeColumn(inputs, parameter, graph) {
+    var column = inputs[0].v,
+      data = graph.findObject(column.data),
+      partitioning = column.range,
+      parent = graph.findObject(column.$parent.node().parentElement);
+    column.destroy();
+    return {
+      removed: [inputs[0]],
+      inverse: createColumnCmd(parent, data, partitioning)
+    };
+  }
+  function createColumnCmd(parent, data, partitioning) {
+    return prov.cmd(prov.meta('Create Column for '+data.desc.name, prov.CmdCategory.create), 'createColumn', createColumn, [parent, data], { partitioning: partitioning })
+  }
+  function createRemoveCmd(column) {
+    return prov.cmd(prov.meta('Remove Column', prov.CmdCategory.remove), 'removeColumn', removeColumn, [column]);
+  }
 
   function Column(parent, data, partitioning) {
     events.EventHandler.call(this);
@@ -43,7 +74,8 @@ define(['require', 'exports', 'd3', '../caleydo/main', '../caleydo/vis', '../cal
     //zooming
     var z = this.zoom = new behaviors.ZoomLogic(this.grid, this.grid.asMetaData);
     var layoutOptions = {};
-    var g = this.grid.on('changed', function() {
+    var g = this.grid.on('changed', function(event, to, from) {
+      this.fire('changed', to, from);
       layoutOptions['prefWidth'] = z.isWidthFixed ? g.size[0] : Number.NaN;
       layoutOptions['prefHeight'] = z.isHeightFixed ? g.size[1] : Number.NaN;
       manager.fire('dirty'); //fire relayout
@@ -77,7 +109,7 @@ define(['require', 'exports', 'd3', '../caleydo/main', '../caleydo/vis', '../cal
     var sx = fromPx($grid.style('left') || '0px');
     var sy = fromPx($grid.style('top') || '0px');
     return xy.addEquals(geom.vec(sx, sy));
-  }
+  };
 
   function shiftBy(r, shift) {
     if (C.isArray(r)) {
@@ -128,7 +160,8 @@ define(['require', 'exports', 'd3', '../caleydo/main', '../caleydo/vis', '../cal
       that = this;
     multiform.addIconVisChooser($t.node(), this.grid);
     $t.append('i').attr('class','fa fa-close').on('click', function() {
-      that.destroy();
+      var g = session.retrieve('provenancegraph');
+      g.push(createRemoveCmd(g.findObject(that)));
     });
     var w = (18*(1+this.grid.visses.length));
     $t.style('min-width',w+'px');
@@ -159,6 +192,6 @@ define(['require', 'exports', 'd3', '../caleydo/main', '../caleydo/vis', '../cal
   };
 
   exports.create = function(parent, data, partitioning) {
-    return new Column(parent, data, partitioning);
+    session.retrieve('provenancegraph').push(createColumnCmd(parent, data, partitioning));
   }
 });
