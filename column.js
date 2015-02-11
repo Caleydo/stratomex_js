@@ -29,12 +29,18 @@ define(function (require, exports) {
   //create a manager for all columns
   var manager = exports.manager = new idtypes.ObjectManager('_column', 'Column');
 
-  function createColumn(inputs, parameter) {
+  function createColumn(inputs, parameter, graph) {
     var parent = inputs[0].v,
       data = inputs[1].v,
       partitioning = ranges.parse(parameter.partitioning);
     var c = new Column(parent, data, partitioning);
     var r = prov.createRef(c, 'Column of '+data.desc.name, prov.cat.vis);
+    c.grid.on('changed', function(event, to, from) {
+      graph.push(createChangeVis(r, to.id, from ? from.id : null));
+    });
+    c.grid.on('option', function (event, name, value, bak) {
+      graph.push(createSetOption(r, name,  value, bak));
+    })
     return {
       created: [r],
       inverse: createRemoveCmd(r)
@@ -50,6 +56,46 @@ define(function (require, exports) {
       removed: [inputs[0]],
       inverse: createColumnCmd(parent, data, partitioning)
     };
+  }
+
+  function changeVis(inputs, parameter) {
+    var column = inputs[0].v,
+      to = parameter.to,
+      from = parameter.from || column.grid.act.id;
+    column.grid.switchTo(to);
+    return {
+      created: [],
+      removed: [],
+      inverse: createChangeVis(inputs[0], from, to)
+    };
+  }
+
+  function createChangeVis(column, to, from) {
+    return prov.cmd(prov.meta('change vis ' + column.toString() + ' to ' + to, prov.cat.visual), 'changeVis', changeVis, [column], {
+      to: to,
+      from: from
+    });
+  }
+
+  function setOption(inputs, parameter) {
+    var column = inputs[0].v,
+      name = parameter.name,
+      value = parameter.value,
+      bak = parameter.old || column.grid.option(name);
+    column.grid.option(name, value);
+    return {
+      created: [],
+      removed: [],
+      inverse: createSetOption(inputs[0], name, bak, value)
+    };
+  }
+
+  function createSetOption(column, name, value, old) {
+    return new prov.cmd(prov.meta('set option "' + name + +'" of "' + column.toString() + ' to "' + value + '"', prov.cat.visual), 'setOption', setOption, [column], {
+      name: name,
+      value: value,
+      old: old
+    });
   }
   function createColumnCmd(parent, data, partitioning) {
     return prov.cmd(prov.meta('Create Column for '+data.v.desc.name, prov.CmdOperation.create), 'createColumn', createColumn, [parent, data], { partitioning: partitioning })
