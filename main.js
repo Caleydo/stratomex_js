@@ -25,10 +25,10 @@ define(function (require) {
     id: 'stratomex'
   });
   //set shared variable
-  session.put('provenancegraph', graph);
+  session.store('provenancegraph', graph);
 
-  var stratomex = graph.addObject(document.getElementById('stratomex'), 'StratomeX DOM', prov.CmdCategory.visual);
-  var manager = graph.add(columns.manager, 'Column Manager', prov.CmdCategory.logic);
+  var stratomex = graph.addObject(document.getElementById('stratomex'), 'StratomeX DOM', prov.cat.visual);
+  var manager = graph.addObject(columns.manager, 'Column Manager', prov.cat.logic);
   require('../caleydo-provenance/selection').create(graph, 'selected');
   var graphvis;
   vis.list(graph)[0].load().then(function (plugin) {
@@ -84,14 +84,14 @@ define(function (require) {
       }
       datalist.objects(range).then(function(toAdd) {
         var m = toAdd[0]._;
-        var mref = graph.addObject(m, m.desc.name, prov.CmdCategory.data);
+        var mref = graph.addObject(m, m.desc.name, prov.cat.data);
 
         if (m.desc.type === 'vector' && m.desc.value.type === 'categorical') {
           m.groups().then(function(parition) {
             columns.create(stratomex, mref, ranges.list(parition));
           });
         } else {
-          columns.create(stratomex, mref, ranges.all());
+          columns.create(stratomex, mref, ranges.range(0));
         }
       });
     });

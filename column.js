@@ -1,7 +1,7 @@
 /**
  * Created by sam on 30.01.2015.
  */
-define(['require', 'exports', 'd3', '../caleydo/main', '../caleydo/vis', '../caleydo/multiform', '../caleydo/idtype', '../caleydo/behavior', '../caleydo/geom', 'font-awesome'], function (require, exports) {
+define(function (require, exports) {
   var d3 = require('d3');
   var vis = require('../caleydo/vis');
   var C = require('../caleydo/main');
@@ -13,6 +13,7 @@ define(['require', 'exports', 'd3', '../caleydo/main', '../caleydo/vis', '../cal
   var layouts = require('../caleydo-layout/main');
   var prov = require('../caleydo-provenance/main');
   var session = require('../caleydo/session');
+  var ranges = require('../caleydo/range');
 
   //guess initial vis method
   function guessInitial(desc) {
@@ -33,10 +34,10 @@ define(['require', 'exports', 'd3', '../caleydo/main', '../caleydo/vis', '../cal
       data = inputs[1].v,
       partitioning = ranges.parse(parameter.partitioning);
     var c = new Column(parent, data, partitioning);
-    var r = prov.createRef(c, 'Column of '+data.desc.name, prov.CmdCategory.vis);
+    var r = prov.createRef(c, 'Column of '+data.desc.name, prov.cat.vis);
     return {
       created: [r],
-      inverse: removeColumnCmd(r)
+      inverse: createRemoveCmd(r)
     }
   }
   function removeColumn(inputs, parameter, graph) {
@@ -51,14 +52,15 @@ define(['require', 'exports', 'd3', '../caleydo/main', '../caleydo/vis', '../cal
     };
   }
   function createColumnCmd(parent, data, partitioning) {
-    return prov.cmd(prov.meta('Create Column for '+data.desc.name, prov.CmdCategory.create), 'createColumn', createColumn, [parent, data], { partitioning: partitioning })
+    return prov.cmd(prov.meta('Create Column for '+data.v.desc.name, prov.CmdOperation.create), 'createColumn', createColumn, [parent, data], { partitioning: partitioning })
   }
   function createRemoveCmd(column) {
-    return prov.cmd(prov.meta('Remove Column', prov.CmdCategory.remove), 'removeColumn', removeColumn, [column]);
+    return prov.cmd(prov.meta('Remove Column', prov.CmdOperation.remove), 'removeColumn', removeColumn, [column]);
   }
 
   function Column(parent, data, partitioning) {
     events.EventHandler.call(this);
+    var that = this;
     this.data = data;
     this.$parent = d3.select(parent).append('div').attr('class', 'column');
     this.$toolbar = this.$parent.append('div').attr('class','toolbar');
@@ -75,7 +77,7 @@ define(['require', 'exports', 'd3', '../caleydo/main', '../caleydo/vis', '../cal
     var z = this.zoom = new behaviors.ZoomLogic(this.grid, this.grid.asMetaData);
     var layoutOptions = {};
     var g = this.grid.on('changed', function(event, to, from) {
-      this.fire('changed', to, from);
+      that.fire('changed', to, from);
       layoutOptions['prefWidth'] = z.isWidthFixed ? g.size[0] : Number.NaN;
       layoutOptions['prefHeight'] = z.isHeightFixed ? g.size[1] : Number.NaN;
       manager.fire('dirty'); //fire relayout
