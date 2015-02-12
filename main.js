@@ -30,6 +30,8 @@ define(function (require) {
   var stratomex = graph.addObject(document.getElementById('stratomex'), 'StratomeX DOM', prov.cat.visual);
   var manager = graph.addObject(columns.manager, 'Column Manager', prov.cat.logic);
   require('../caleydo-provenance/selection').create(graph, 'selected');
+  require('./notes').create(document.getElementById('notes'), graph);
+
   var graphvis;
   vis.list(graph)[0].load().then(function (plugin) {
     graphvis = plugin.factory(graph, document.getElementById('provenancegraph'));
