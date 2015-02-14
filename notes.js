@@ -8,14 +8,14 @@ define(function (require, exports) {
   var d3 = require('d3');
 
   function addNote(inputs, parameter) {
-    var r = prov.createRef(parameter.text, 'Note', prov.cat.annotation);
+    var r = prov.addObject(parameter.text, 'Note', prov.cat.annotation);
     return {
       created: [r],
       inverse: removeNoteCmd(r)
     };
   }
   function addNoteCmd(text) {
-    return prov.cmd(prov.meta('Add Note', prov.cat.annotation, prov.CmdOperation.create), 'addNote', addNote, [], {
+    return prov.action(prov.meta('Add Note', prov.cat.annotation, prov.op.create), 'addNote', addNote, [], {
       text : text
     });
   }
@@ -29,7 +29,7 @@ define(function (require, exports) {
     };
   }
   function removeNoteCmd(note) {
-    return prov.cmd(prov.meta('Remove Note', prov.cat.annotation, prov.CmdOperation.remove), 'removeNote', removeNote, [note]);
+    return prov.action(prov.meta('Remove Note', prov.cat.annotation, prov.op.remove), 'removeNote', removeNote, [note]);
   }
 
   function changeNote(inputs, parameter) {
@@ -42,7 +42,7 @@ define(function (require, exports) {
     };
   }
   function changeNoteCmd(note, text) {
-    return prov.cmd(prov.meta('Change Note', prov.cat.annotation, prov.CmdOperation.update), 'changeNote', changeNote, [note], { text : text} );
+    return prov.action(prov.meta('Change Note', prov.cat.annotation, prov.op.update), 'changeNote', changeNote, [note], { text : text} );
   }
 
   exports.create = function (parent, graph) {
@@ -59,7 +59,7 @@ define(function (require, exports) {
         return elem.category === prov.cat.annotation;
       });
       $text.property('value', lastAnnot ? lastAnnot.ref.v : '');
-
+      $text.datum(lastAnnot);
       //enable buttons
       $r.selectAll('button + button').attr('disabled',lastAnnot ? null : 'disabled');
     });

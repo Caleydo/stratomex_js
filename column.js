@@ -34,27 +34,24 @@ define(function (require, exports) {
       data = inputs[1].v,
       partitioning = ranges.parse(parameter.partitioning);
     var c = new Column(parent, data, partitioning);
-    var r = prov.createRef(c, 'Column of '+data.desc.name, prov.cat.vis);
+    var r = graph.addObject(c, 'Column of '+data.desc.name, prov.cat.vis);
     c.grid.on('changed', function(event, to, from) {
       graph.push(createChangeVis(r, to.id, from ? from.id : null));
     });
     c.grid.on('option', function (event, name, value, bak) {
       graph.push(createSetOption(r, name,  value, bak));
-    })
+    });
     return {
       created: [r],
       inverse: createRemoveCmd(r)
     }
   }
   function removeColumn(inputs, parameter, graph) {
-    var column = inputs[0].v,
-      data = graph.findObject(column.data),
-      partitioning = column.range,
-      parent = graph.findObject(column.$parent.node().parentElement);
+    var column = inputs[0].v;
     column.destroy();
     return {
       removed: [inputs[0]],
-      inverse: createColumnCmd(parent, data, partitioning)
+      inverse: createColumnCmd(column.$parent.node().parentElement, column.data, column.range)
     };
   }
 
@@ -64,14 +61,12 @@ define(function (require, exports) {
       from = parameter.from || column.grid.act.id;
     column.grid.switchTo(to);
     return {
-      created: [],
-      removed: [],
       inverse: createChangeVis(inputs[0], from, to)
     };
   }
 
   function createChangeVis(column, to, from) {
-    return prov.cmd(prov.meta('change vis ' + column.toString() + ' to ' + to, prov.cat.visual), 'changeVis', changeVis, [column], {
+    return prov.action(prov.meta('change vis ' + column.toString() + ' to ' + to, prov.cat.visual), 'changeVis', changeVis, [column], {
       to: to,
       from: from
     });
@@ -84,24 +79,22 @@ define(function (require, exports) {
       bak = parameter.old || column.grid.option(name);
     column.grid.option(name, value);
     return {
-      created: [],
-      removed: [],
       inverse: createSetOption(inputs[0], name, bak, value)
     };
   }
 
   function createSetOption(column, name, value, old) {
-    return new prov.cmd(prov.meta('set option "' + name + +'" of "' + column.toString() + ' to "' + value + '"', prov.cat.visual), 'setOption', setOption, [column], {
+    return prov.action(prov.meta('set option "' + name + +'" of "' + column.toString() + ' to "' + value + '"', prov.cat.visual), 'setOption', setOption, [column], {
       name: name,
       value: value,
       old: old
     });
   }
   function createColumnCmd(parent, data, partitioning) {
-    return prov.cmd(prov.meta('Create Column for '+data.v.desc.name, prov.CmdOperation.create), 'createColumn', createColumn, [parent, data], { partitioning: partitioning })
+    return prov.action(prov.meta('Create Column for '+data.v.desc.name, prov.op.create), 'createColumn', createColumn, [parent, data], { partitioning: partitioning })
   }
   function createRemoveCmd(column) {
-    return prov.cmd(prov.meta('Remove Column', prov.CmdOperation.remove), 'removeColumn', removeColumn, [column]);
+    return prov.action(prov.meta('Remove Column', prov.op.remove), 'removeColumn', removeColumn, [column]);
   }
 
   function Column(parent, data, partitioning) {
