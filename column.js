@@ -34,7 +34,7 @@ define(function (require, exports) {
       data = inputs[1].v,
       partitioning = ranges.parse(parameter.partitioning);
     var c = new Column(parent, data, partitioning);
-    var r = graph.addObject(c, 'Column of '+data.desc.name, prov.cat.vis);
+    var r = prov.ref(c, 'Column of '+data.desc.name, prov.cat.vis);
     c.grid.on('changed', function(event, to, from) {
       graph.push(createChangeVis(r, to.id, from ? from.id : null));
     });

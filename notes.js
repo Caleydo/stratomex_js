@@ -8,7 +8,7 @@ define(function (require, exports) {
   var d3 = require('d3');
 
   function addNote(inputs, parameter) {
-    var r = prov.addObject(parameter.text, 'Note', prov.cat.annotation);
+    var r = prov.ref(parameter.text, 'Note', prov.cat.annotation);
     return {
       created: [r],
       inverse: removeNoteCmd(r)
@@ -53,12 +53,12 @@ define(function (require, exports) {
       width: '100%'
     });
 
-    graph.on('switch', function() {
-      var l = graph.activeObjects.slice().reverse();
+    graph.on('switch_state', function() {
+      var l = graph.act.consistsOf.slice().reverse();
       var lastAnnot = C.search(l, function(elem) {
         return elem.category === prov.cat.annotation;
       });
-      $text.property('value', lastAnnot ? lastAnnot.ref.v : '');
+      $text.property('value', lastAnnot ? lastAnnot.v : '');
       $text.datum(lastAnnot);
       //enable buttons
       $r.selectAll('button + button').attr('disabled',lastAnnot ? null : 'disabled');
