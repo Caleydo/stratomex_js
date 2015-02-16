@@ -3,6 +3,7 @@
  */
 define(function (require, exports) {
   var d3 = require('d3');
+  var $ = require('jquery');
   var vis = require('../caleydo/vis');
   var C = require('../caleydo/main');
   var multiform = require('../caleydo/multiform');
@@ -115,7 +116,7 @@ define(function (require, exports) {
       case 'changeColumnVis': return changeVis;
     }
     return null;
-  }
+  };
 
   function Column(parent, data, partitioning) {
     events.EventHandler.call(this);
@@ -162,14 +163,12 @@ define(function (require, exports) {
     enumerable: true
   });
   Column.prototype.visPos = function() {
-    var xy = this.location.xy;
-    var $grid = this.$parent.select('div.multiformgrid');
-    function fromPx(v) {
-      return parseFloat(v.substring(0, v.length-2));
-    }
-    var sx = fromPx($grid.style('left') || '0px');
-    var sy = fromPx($grid.style('top') || '0px');
-    return xy.addEquals(geom.vec(sx, sy));
+    var l = this.location;
+    var offset = $(this.$parent.node()).find('div.multiformgrid').position();
+    return {
+      x : l.x + offset.left,
+      y : l.y + offset.top
+    };
   };
 
   function shiftBy(r, shift) {
