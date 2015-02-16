@@ -35,23 +35,28 @@ define(function (require, exports) {
       partitioning = ranges.parse(parameter.partitioning);
     var c = new Column(parent, data, partitioning);
     var r = prov.ref(c, 'Column of '+data.desc.name, prov.cat.vis);
-    c.grid.on('changed', function(event, to, from) {
-      graph.push(createChangeVis(r, to.id, from ? from.id : null));
-    });
-    c.grid.on('option', function (event, name, value, bak) {
-      graph.push(createSetOption(r, name,  value, bak));
-    });
+    c.changeHandler = function(event, to, from) {
+      if (from) { //have a previous one so not the default
+        graph.push(createChangeVis(r, to.id, from ? from.id : null));
+      }
+    };
+    c.optionHandler = function (event, name, value, bak) {
+      graph.push(createSetOption(r, name, value, bak));
+    };
+    c.on('changed', c.changeHandler);
+    c.on('option', c.optionHandler);
     return {
       created: [r],
       inverse: createRemoveCmd(r)
     }
   }
   function removeColumn(inputs, parameter, graph) {
-    var column = inputs[0].v;
+    var column = inputs[0].v,
+      inv = createColumnCmd(graph.findObject(column.$parent.node().parentElement), graph.findObject(column.data), column.range);
     column.destroy();
     return {
       removed: [inputs[0]],
-      inverse: createColumnCmd(column.$parent.node().parentElement, column.data, column.range)
+      inverse: inv
     };
   }
 
@@ -59,7 +64,10 @@ define(function (require, exports) {
     var column = inputs[0].v,
       to = parameter.to,
       from = parameter.from || column.grid.act.id;
-    column.grid.switchTo(to);
+    column.off('changed', column.changeHandler);
+    column.grid.switchTo(to).then(function() {
+      column.on('changed', column.changeHandler);
+    });
     return {
       inverse: createChangeVis(inputs[0], from, to)
     };
@@ -77,7 +85,9 @@ define(function (require, exports) {
       name = parameter.name,
       value = parameter.value,
       bak = parameter.old || column.grid.option(name);
+    column.grid.off('option', column.optionHandler);
     column.grid.option(name, value);
+    column.grid.on('option', column.optionHandler);
     return {
       inverse: createSetOption(inputs[0], name, bak, value)
     };

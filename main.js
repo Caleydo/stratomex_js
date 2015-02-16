@@ -58,6 +58,19 @@ define(function (require) {
     idtypes.clearSelection();
   });
 
+  function addData(lineup_row) {
+    var m = lineup_row._;
+    var mref = graph.addObject(m, m.desc.name, prov.cat.data);
+
+    if (m.desc.type === 'vector' && m.desc.value.type === 'categorical') {
+      m.groups().then(function(parition) {
+        columns.create(stratomex, mref, ranges.list(parition));
+      });
+    } else {
+      columns.create(stratomex, mref, ranges.range(0));
+    }
+  }
+
   function createLineUp(datalist) {
     var v = vis.list(datalist);
     v = v.filter(function (v) { return v.id === 'caleydo-vis-lineup';})[0];
@@ -66,7 +79,11 @@ define(function (require) {
         lineup: {
           svgLayout: {
             rowActions: [
-
+              {
+                name: 'add',
+                icon: '\uf067',
+                action: addData
+              }
             ]
           },
           manipulative: true,
@@ -79,26 +96,6 @@ define(function (require) {
     });
   }
 
-  function listenToData(datalist) {
-    datalist.on('select-selected', function(event, range) {
-      if (range.isNone) {
-        return;
-      }
-      datalist.objects(range).then(function(toAdd) {
-        var m = toAdd[0]._;
-        var mref = graph.addObject(m, m.desc.name, prov.cat.data);
-
-        if (m.desc.type === 'vector' && m.desc.value.type === 'categorical') {
-          m.groups().then(function(parition) {
-            columns.create(stratomex, mref, ranges.list(parition));
-          });
-        } else {
-          columns.create(stratomex, mref, ranges.range(0));
-        }
-      });
-    });
-    return datalist;
-  }
   function filterTypes(arr) {
     return arr.filter(function(d) {
       var desc = d.desc;
@@ -108,7 +105,7 @@ define(function (require) {
       return false;
     });
   }
-  data.list().then(data.convertTableToVectors).then(filterTypes).then(data.convertToTable).then(listenToData).then(createLineUp);
+  data.list().then(data.convertTableToVectors).then(filterTypes).then(data.convertToTable).then(createLineUp);
 
   columns.manager.on('dirty', function() {
     //update the layout
