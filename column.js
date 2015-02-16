@@ -66,7 +66,7 @@ define(function (require, exports) {
   }
 
   function createChangeVis(column, to, from) {
-    return prov.action(prov.meta('change vis ' + column.toString() + ' to ' + to, prov.cat.visual), 'changeVis', changeVis, [column], {
+    return prov.action(prov.meta('change vis ' + column.toString() + ' to ' + to, prov.cat.visual), 'changeColumnVis', changeVis, [column], {
       to: to,
       from: from
     });
@@ -84,7 +84,7 @@ define(function (require, exports) {
   }
 
   function createSetOption(column, name, value, old) {
-    return prov.action(prov.meta('set option "' + name + +'" of "' + column.toString() + ' to "' + value + '"', prov.cat.visual), 'setOption', setOption, [column], {
+    return prov.action(prov.meta('set option "' + name + +'" of "' + column.toString() + ' to "' + value + '"', prov.cat.visual), 'setColumnOption', setOption, [column], {
       name: name,
       value: value,
       old: old
@@ -95,6 +95,16 @@ define(function (require, exports) {
   }
   function createRemoveCmd(column) {
     return prov.action(prov.meta('Remove Column', prov.op.remove), 'removeColumn', removeColumn, [column]);
+  }
+
+  exports.createCmd = function(id) {
+    switch(id) {
+      case 'setColumnOption' : return setOption;
+      case 'createColumn': return createColumn;
+      case 'removeColumn' : return removeColumn;
+      case 'changeColumnVis': return changeVis;
+    }
+    return null;
   }
 
   function Column(parent, data, partitioning) {

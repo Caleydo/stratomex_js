@@ -45,6 +45,15 @@ define(function (require, exports) {
     return prov.action(prov.meta('Change Note', prov.cat.annotation, prov.op.update), 'changeNote', changeNote, [note], { text : text} );
   }
 
+  exports.createCmd = function(id) {
+    switch(id) {
+      case 'changeNote' : return changeNote;
+      case 'removeNote' : return removeNote;
+      case 'addNote': return addNode;
+    }
+    return null;
+  };
+
   exports.create = function (parent, graph) {
     var $r = d3.select(parent).append('div').attr('class','notes');
     var $text = $r.append('textarea').attr({

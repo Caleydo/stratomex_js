@@ -1,5 +1,5 @@
 {
-  "name" : "caleydo-vis-genome",
+  "name" : "stratomex.js",
   "version": "0.0.1",
   "dependencies": {
     "d3": "~3.5.2",
@@ -8,16 +8,20 @@
   "caleydo" : {
     "plugins": [
       {
-        "type": "vis",
-        "id": "caleydo-vis-genome",
-        "name": "Genome",
-        "filter": "genomeDataLink"
+        "type" : "actionFactory",
+        "id" : "stratomex-note",
+        "folder" : "stratomex.js",
+        "module" : "stratomex.js/notes",
+        "factory" : "createCmd",
+        "creates" : "(addNote|changeNote|removeNote)"
       },
       {
-        "type": "datatype",
-        "id": "genomeDataLink",
-        "folder" : "caleydo-vis-genome",
-        "module": "caleydo-vis-genome/genomeDataLink"
+        "type" : "actionFactory",
+        "id" : "stratomex-column",
+        "folder" : "stratomex.js",
+        "module" : "stratomex.js/column",
+        "factory" : "createCmd",
+        "creates" : "(createColumn|removeColumn|setColumnOption|changeColumnVis)"
       }
     ],
     "requirejs-config": {
