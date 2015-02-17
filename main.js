@@ -42,7 +42,7 @@ define(function (require) {
   var links = new link_m.LinkContainer(stratomex.v, ['dirty'], {
     interactive: false,
     filter: columns.areNeighborColumns,
-    mode: 'group'
+    mode: 'link-group'
   });
 
   manager.v.on('add', function (event, id, column) {
@@ -53,10 +53,10 @@ define(function (require) {
   });
 
   //clear on click on background
-  d3.select(links.node).classed('selection-clearer', true).on('click', function () {
+  /*d3.select(links.node).classed('selection-clearer', true).on('click', function () {
     columns.manager.clear();
     idtypes.clearSelection();
-  });
+  });*/
 
   function addData(lineup_row) {
     var m = lineup_row._;

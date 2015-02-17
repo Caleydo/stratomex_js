@@ -123,13 +123,14 @@ main {
 
         &.select-selected {
           stroke: $select-color;
+          pointer-events: none;
         }
         &.select-hovered {
           stroke: $hover-color;
+          pointer-events: none;
         }
       }
       path.rel-group, path.rel-block {
-        pointer-events: none;
         stroke: black;
         stroke-width: 1;
         stroke-opacity: 0.9;
@@ -138,9 +139,11 @@ main {
 
         &.select-selected {
           fill: $select-color;
+          pointer-events: none;
         }
         &.select-hovered {
           fill: $hover-color;
+          pointer-events: none;
         }
       }
     }
