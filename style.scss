@@ -158,6 +158,7 @@ footer {
 
   > div.lineup {
     height: 100%;
+    max-width: none;
 
     .row.selected rect.filler {
       stroke: $select-color;

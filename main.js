@@ -78,6 +78,7 @@ define(function (require) {
       lineup = plugin.factory(datalist, document.getElementById('lineup'), {
         lineup: {
           svgLayout: {
+            mode: 'separate',
             rowActions: [
               {
                 name: 'add',
@@ -90,6 +91,34 @@ define(function (require) {
           interaction: {
             tooltips: false
           }
+        },
+        layout: {
+          primary: [
+            {
+              type: 'actions',
+              width: 30
+            },
+            {
+              type: 'rank',
+              width: 50
+            },
+            {
+              column: 'Name',
+              width: 250
+            },
+            {
+              column: 'Type',
+              width: 100
+            },
+            {
+              column: 'Dimensions',
+              width: 100
+            },
+            {
+              column: 'ID Types',
+              width: 200
+            }
+          ]
         }
       });
       return lineup;
