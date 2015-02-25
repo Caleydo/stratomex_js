@@ -11,7 +11,7 @@ define(function (require, exports) {
   var idtypes = require('../caleydo/idtype');
   var behaviors = require('../caleydo/behavior');
   var events = require('../caleydo/event');
-  var layouts = require('../caleydo-layout/main');
+  var layouts = require('../caleydo-layout/d3util');
   var prov = require('../caleydo-provenance/main');
   var session = require('../caleydo/session');
   var ranges = require('../caleydo/range');
@@ -122,7 +122,7 @@ define(function (require, exports) {
     events.EventHandler.call(this);
     var that = this;
     this.data = data;
-    this.$parent = d3.select(parent).append('div').attr('class', 'column');
+    this.$parent = d3.select(parent).append('div').attr('class', 'column').style('opacity',0.1);
     this.$toolbar = this.$parent.append('div').attr('class','toolbar');
     this.range = partitioning;
     var initialVis = guessInitial(data.desc);
@@ -132,10 +132,15 @@ define(function (require, exports) {
     }, {
       initialVis: initialVis
     });
-
     //zooming
     var z = this.zoom = new behaviors.ZoomLogic(this.grid, this.grid.asMetaData);
-    var layoutOptions = {};
+    var layoutOptions = {
+      animate: true,
+      'set-call' : function(s) {
+        s.style('opacity',1);
+      },
+      onSetBounds : function() { that.layouted()}
+    };
     var g = this.grid.on('changed', function(event, to, from) {
       that.fire('changed', to, from);
       layoutOptions['prefWidth'] = z.isWidthFixed ? g.size[0] : Number.NaN;
@@ -143,7 +148,7 @@ define(function (require, exports) {
       manager.fire('dirty'); //fire relayout
     });
     //create layout version
-    this.layout = layouts.wrapDOM(this.$parent.node(), layoutOptions);
+    this.layout = layouts.wrapDom(this.$parent.node(), layoutOptions);
 
     this.createToolBar();
 

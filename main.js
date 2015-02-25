@@ -3,21 +3,12 @@
  */
 define(function (require) {
   'use strict';
-  var d3 = require('d3');
   var $ = require('jquery');
   var data = require('../caleydo/data');
   var vis = require('../caleydo/vis');
-  var ranges = require('../caleydo/range');
-  var datatypes = require('../caleydo/datatype');
-  var idtypes = require('../caleydo/idtype');
-  var link_m = require('../caleydo-links/link');
   var prov = require('../caleydo-provenance/main');
   var session = require('../caleydo/session');
 
-  var layout = require('../caleydo-layout/main').distributeLayout(true, 100, { top : 30, left: 30, right: 30, bottom: 10});
-  var info = require('../caleydo-selectioninfo/main').create(document.getElementById('selectioninfo'));
-
-  var columns = require('./column.js');
 
   var graph = prov.create({
     type: 'provenance_graph',
@@ -27,102 +18,21 @@ define(function (require) {
   //set shared variable
   session.store('provenancegraph', graph);
 
-  var stratomex = graph.addObject(document.getElementById('stratomex'), 'StratomeX DOM', prov.cat.visual);
-  var manager = graph.addObject(columns.manager, 'Column Manager', prov.cat.logic);
+  var info = require('../caleydo-selectioninfo/main').create(document.getElementById('selectioninfo'));
+  var stratomex = require('./stratomex').create(document.getElementById('stratomex'), graph);
+  var lineup =  require('./lineup').create(document.getElementById('lineup'),function (data) {
+    stratomex.addData(data);
+  });
   require('../caleydo-provenance/selection').create(graph, 'selected');
-  require('./notes').create(document.getElementById('notes'), graph);
+  var notes = require('./notes').create(document.getElementById('notes'), graph);
 
   var graphvis;
   vis.list(graph)[0].load().then(function (plugin) {
     graphvis = plugin.factory(graph, document.getElementById('provenancegraph'));
   });
 
-  var lineup;
-
-  var links = new link_m.LinkContainer(stratomex.v, ['dirty'], {
-    interactive: false,
-    filter: columns.areNeighborColumns,
-    mode: 'link-group'
-  });
-
-  manager.v.on('add', function (event, id, column) {
-    links.push(column);
-  });
-  manager.v.on('remove', function (event, id, column) {
-    links.remove(column);
-  });
-
-  //clear on click on background
-  /*d3.select(links.node).classed('selection-clearer', true).on('click', function () {
-    columns.manager.clear();
-    idtypes.clearSelection();
-  });*/
-
-  function addData(lineup_row) {
-    var m = lineup_row._;
-    var mref = graph.addObject(m, m.desc.name, prov.cat.data);
-
-    if (m.desc.type === 'vector' && m.desc.value.type === 'categorical') {
-      m.groups().then(function(parition) {
-        columns.create(stratomex, mref, ranges.list(parition));
-      });
-    } else {
-      columns.create(stratomex, mref, ranges.range(0));
-    }
-  }
-
   function createLineUp(datalist) {
-    var v = vis.list(datalist);
-    v = v.filter(function (v) { return v.id === 'caleydo-vis-lineup';})[0];
-    return v.load().then(function (plugin) {
-      lineup = plugin.factory(datalist, document.getElementById('lineup'), {
-        lineup: {
-          svgLayout: {
-            mode: 'separate',
-            rowActions: [
-              {
-                name: 'add',
-                icon: '\uf067',
-                action: addData
-              }
-            ]
-          },
-          manipulative: true,
-          interaction: {
-            tooltips: false
-          }
-        },
-        layout: {
-          primary: [
-            {
-              type: 'actions',
-              width: 30
-            },
-            {
-              type: 'rank',
-              width: 50
-            },
-            {
-              column: 'Name',
-              width: 250
-            },
-            {
-              column: 'Type',
-              width: 100
-            },
-            {
-              column: 'Dimensions',
-              width: 100
-            },
-            {
-              column: 'ID Types',
-              width: 200
-            }
-          ]
-        }
-      });
-      return lineup;
-    });
+    lineup.setData(datalist);
   }
 
   function filterTypes(arr) {
@@ -136,14 +46,19 @@ define(function (require) {
   }
   data.list().then(data.convertTableToVectors).then(filterTypes).then(data.convertToTable).then(createLineUp);
 
-  columns.manager.on('dirty', function() {
-    //update the layout
-    var w = $(stratomex.v).width();
-    var h = $(stratomex.v).height();
-    layout(columns.manager.entries.map(function(c) { return c.layout; }), w, h);
-    columns.manager.forEach(function(c) {c.layouted();});
-  });
-  $(window).on('resize', function() {
-    columns.manager.fire('dirty');
+
+  //layout things using a border layout
+  function relayout() {
+    var $stratomex = $('#stratomex');
+    stratomex.setBounds(0, 0, $stratomex.width(), $stratomex.height());
+
+    var $lineup = $('#lineup');
+    lineup.setBounds(0, 0, $lineup.width(), $lineup.height());
+  }
+  $(function() {
+    relayout();
+    $(window).on('resize', function() {
+      relayout();
+    })
   });
 });

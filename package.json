@@ -8,6 +8,22 @@
   "caleydo" : {
     "plugins": [
       {
+        "type" : "view",
+        "id" : "stratomex",
+        "folder" : "stratomex.js",
+        "module" : "stratomex.js/stratomex",
+        "type" : "main",
+        "location" : "center"
+      },
+      {
+        "type" : "view",
+        "id" : "stratomex-lineup",
+        "folder" : "stratomex.js",
+        "module" : "stratomex.js/lineup",
+        "type" : "support",
+        "location" : "bottom"
+      },
+      {
         "type" : "actionFactory",
         "id" : "stratomex-note",
         "folder" : "stratomex.js",

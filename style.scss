@@ -63,6 +63,7 @@ main {
     position: absolute;
     width: auto;
     height: auto;
+    background-color: #d3d3d3;
 
     &.select-selected {
       border: 1px solid $select-color;
