@@ -20,7 +20,10 @@ define(function (require, exports) {
     var links = new link_m.LinkContainer(parent, ['dirty'], {
       interactive: false,
       filter: columns.areNeighborColumns,
-      mode: 'link-group'
+      mode: 'link-group',
+      idTypeFilter : function(idtype, i) {
+        return i == 0; //just the row i.e. first one
+      }
     });
 
     this.manager.v.on('add', function (event, id, column) {
