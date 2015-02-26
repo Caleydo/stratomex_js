@@ -157,9 +157,12 @@ footer {
   height: 30%;
   padding: 0;
 
-  > div.lineup {
+  > div {
     height: 100%;
     max-width: none;
+    display: inline-block;
+    position: relative;
+
 
     .row.selected rect.filler {
       stroke: $select-color;
@@ -169,6 +172,14 @@ footer {
       stroke: $hover-color;
       stroke-width: 1;
     }
+  }
+  > div.lineup:nth-child(even) {
+    margin: 0 10px 0 10px;
+  }
+
+  > div > button {
+    position: absolute;
+    top: 45%;
   }
 }
 

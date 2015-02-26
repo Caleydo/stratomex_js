@@ -44,15 +44,17 @@ define(function (require, exports) {
   StratomeX.prototype.relayout = function() {
     layout(columns.manager.entries.map(function(c) { return c.layout; }), this.dim[0], this.dim[1]);
   };
-  StratomeX.prototype.addData = function(m) {
+  StratomeX.prototype.addData = function(rowStrat, m, colStrat) {
     var that = this;
     var mref = this.provGraph.addObject(m, m.desc.name, 'data');
-    if (m.desc.type === 'vector' && m.desc.value.type === 'categorical') {
-      m.groups().then(function(parition) {
-        columns.create(that.parentRef, mref, ranges.list(parition));
-      });
+    if (m.desc.type === 'matrix') {
+      C.all([rowStrat.range(), colStrat.range()]).then(function(rr) {
+        columns.create(that.parentRef, mref, ranges.list(rr[0],rr[1]));
+      })
     } else {
-      columns.create(that.parentRef, mref, ranges.range(0));
+      rowStrat.range().then(function(r) {
+        columns.create(that.parentRef, mref, ranges.list(r));
+      })
     }
   };
 
