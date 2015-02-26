@@ -124,27 +124,35 @@ define(function (require, exports) {
     this.data = data;
     this.$parent = d3.select(parent).append('div').attr('class', 'column').style('opacity',0.1);
     this.$toolbar = this.$parent.append('div').attr('class','toolbar');
+    this.$summary = this.$parent.append('div').attr('class', 'summary');
+    this.$clusters = this.$parent.append('div').attr('class', 'clusters');
     this.range = partitioning;
-    var initialVis = guessInitial(data.desc);
     //create the vis
-    this.grid = multiform.createGrid(data, partitioning, this.$parent.node(), function (data, range) {
+    this.summary = multiform.create(data, this.$summary.node() ,{
+      initialVis : 'caleydo-vis-histogram',
+      'caleydo-vis-histogram' : {
+        totalHeight : false,
+        nbins : Math.sqrt(data.dim[0])
+      }
+    });
+    this.grid = multiform.createGrid(data, partitioning, this.$clusters.node(), function (data, range) {
       return data.view(range)
     }, {
-      initialVis: initialVis
+      initialVis: guessInitial(data.desc)
     });
     //zooming
-    var z = this.zoom = new behaviors.ZoomLogic(this.grid, this.grid.asMetaData);
+    var grid_z = this.grid_zoom = new behaviors.ZoomLogic(this.grid, this.grid.asMetaData);
+    var summary_z = this.summary_zoom = new behaviors.ZoomLogic(this.summary, this.summary.asMetaData);
     var layoutOptions = {
       animate: true,
       'set-call' : function(s) {
         s.style('opacity',1);
       },
-      onSetBounds : function() { that.layouted()}
+      onSetBounds : function() { that.layouted()},
+      prefWidth : 180
     };
     var g = this.grid.on('changed', function(event, to, from) {
       that.fire('changed', to, from);
-      layoutOptions['prefWidth'] = z.isWidthFixed ? g.size[0] : Number.NaN;
-      layoutOptions['prefHeight'] = z.isHeightFixed ? g.size[1] : Number.NaN;
       manager.fire('dirty'); //fire relayout
     });
     //create layout version
@@ -201,11 +209,13 @@ define(function (require, exports) {
   Column.prototype.layouted = function() {
     //sync the scaling
     var size = this.layout.getSize();
-    this.zoom.zoomTo(size.x, size.y);
+    this.summary_zoom.zoomTo(size.x, 100);
+    size.y -= 100;
+    this.grid_zoom.zoomTo(size.x, size.y);
 
     //shift the content for the aspect ratio
     var shift = [null, null];
-    if (this.zoom.isFixedAspectRatio) {
+    if (this.grid_zoom.isFixedAspectRatio) {
       var act = this.grid.size;
       shift[0] = ((size[0]-act[0])/2) + 'px';
       shift[1] = ((size[1]-act[1])/2) + 'px';
