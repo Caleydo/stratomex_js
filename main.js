@@ -18,14 +18,17 @@ define(function (require) {
   //set shared variable
   session.store('provenancegraph', graph);
 
+  var datavalues;
   var info = require('../caleydo-selectioninfo/main').create(document.getElementById('selectioninfo'));
   var stratomex = require('./stratomex').create(document.getElementById('stratomex'), graph);
-  var lineup =  require('./lineup').create(document.getElementById('lineup'),function (rowStrat, data, colStrat) {
-    stratomex.addData(rowStrat, data, colStrat);
+
+  var lineup =  require('./lineup').create(document.getElementById('lineup'),function (rowStrat) {
+    var d = datavalues.filter(function(di) { return di.desc.name === rowStrat.desc.origin;})[0];
+    stratomex.addData(rowStrat, d);
   });
+
   require('../caleydo-provenance/selection').create(graph, 'selected');
   var notes = require('./notes').create(document.getElementById('notes'), graph);
-
   var graphvis;
   vis.list(graph)[0].load().then(function (plugin) {
     graphvis = plugin.factory(graph, document.getElementById('provenancegraph'));
@@ -33,16 +36,13 @@ define(function (require) {
 
   function splitAndConvert(arr) {
     var strat = arr.filter(function(d) { return d.desc.type === 'stratification'});
-    var rest = arr.filter(function(d) { return d.desc.type !== 'stratification'});
+    datavalues = arr.filter(function(d) { return d.desc.type !== 'stratification'});
 
-    return {
-      stratifications: data.convertToTable(strat),
-      data : data.convertToTable(rest)
-    };
+    return strat;
   }
 
   function createLineUp(r) {
-    lineup.setData(r.stratifications, r.data);
+    lineup.setData(r);
   }
 
   function filterTypes(arr) {

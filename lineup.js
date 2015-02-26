@@ -7,6 +7,7 @@ define(function (require, exports) {
   var events = require('../caleydo/event');
   var layouts = require('../caleydo-layout/main');
   var vis = require('../caleydo/vis');
+  var tables = require('../caleydo/table');
   var d3 = require('d3');
 
   function StratomeXLineUp(parent, onAdd) {
@@ -25,73 +26,53 @@ define(function (require, exports) {
   function col(name, width) {
     return { column: name,  width: width };
   }
-  StratomeXLineUp.prototype.createInteraction = function() {
-    var activeRow = null, activeData = null, activeCol = null, that = this;
-
-    var $button = d3.select(this.parent).append('div').append('button')
-      .attr('disabled','disabled').attr('class','fa fa-plus').on('click', function() {
-        that.onAdd(activeRow, activeData, activeCol);
-    });
-    function updateFilter() {
-      if (activeRow && activeData && (activeCol || activeData.desc.type === 'vector')) {
-        $button.attr('disabled',null);
-      } else {
-        $button.attr('disabled','disabled');
-      }
-      //filter according to selected data
-      if (activeData) {
-        if (activeData.desc.type === 'vector') {
-          that.colLineup.lineup.changeFilter('ID Types', '_none');
-        } else {
-          that.colLineup.lineup.changeFilter('ID Types', activeData.idtypes[1].name);
-        }
-        that.rowLineup.lineup.changeFilter('ID Types', activeData.idtypes[0].name);
-      } else {
-        that.colLineup.lineup.changeFilter('ID Types', '');
-        that.rowLineup.lineup.changeFilter('ID Types', '');
-      }
-      if (activeRow) {
-        that.dataLineup.lineup.changeFilter('ID Types', new RegExp('^('+activeRow.idtypes.map(String).join('|')+').*'));
-      } else {
-        that.dataLineup.lineup.changeFilter('ID Types', '');
-      }
-    }
-    this.rowLineup.lineup.on('selected', function(row) {
-      if (row) {
-        activeRow = row._;
-      } else {
-        activeRow = null;
-      }
-      updateFilter();
-    });
-    this.dataLineup.lineup.on('selected', function(row) {
-      if (row) {
-        activeData = row._;
-      } else {
-        activeData = null;
-      }
-      updateFilter();
-    });
-    this.colLineup.lineup.on('selected', function(row) {
-      if (row) {
-        activeCol = row._;
-      } else {
-        activeCol = null;
-      }
-      updateFilter();
-    });
-  };
-  StratomeXLineUp.prototype.setData = function(stratifications, data) {
+  function convertToTable(list) {
+      return tables.wrapObjects({
+          id : '_stratification',
+          name: 'stratifications',
+          type: 'table',
+          rowtype: '_stratification',
+          size: [list.length, 4],
+          columns: [
+            {
+              name: 'Name',
+              value: { type: 'string' },
+              getter: function(d) { return d.desc.name; }
+            }, {
+              name: 'Dimensions',
+              value: { type: 'string' },
+              getter: function(d) { return d.desc.size[0]; }
+            }, {
+              name: 'ID Type',
+              value: { type: 'string' },
+              getter: function(d) { return d.idtypes[0].name; }
+            }, {
+              name: '# Groups',
+              value: { type: 'string' },
+              getter: function(d) { return d.desc.ngroups; }
+            }
+          ]
+    }, list, function(d) { return d.desc.name });
+  }
+  StratomeXLineUp.prototype.setData = function(stratifications) {
     var that = this;
-    this._data = [stratifications, data];
+    var data = convertToTable(stratifications);
+    this._data = [data];
     this.parent.__data__  = data;
     var v = vis.list(data);
     v = v.filter(function (v) { return v.id === 'caleydo-vis-lineup';})[0];
     v.load().then(function (plugin) {
-      that.rowLineup = plugin.factory(stratifications, that.parent, {
+      that.lineup = plugin.factory(data, that.parent, {
         lineup: {
           svgLayout: {
-            mode: 'separate'
+            mode: 'separate',
+            rowActions: [
+              {
+                name: 'add',
+                icon: '\uf067',
+                action: function(row) { that.onAdd(row._); }
+              }
+            ]
           },
           manipulative: true,
           interaction: {
@@ -99,39 +80,9 @@ define(function (require, exports) {
           }
         },
         layout: {
-          primary: [ col('Name', 220), col('ID Types', 80)]
+          primary: [ { type: 'actions', width: 40 }, { type: 'rank', width: 40 }, col('Name', 220), col('Dimensions', 90), col('ID Type', 80), col('# Groups', 80)]
         }
       });
-      that.dataLineup = plugin.factory(data, that.parent, {
-        lineup: {
-          svgLayout: {
-            mode: 'separate'
-          },
-          manipulative: true,
-          interaction: {
-            tooltips: false
-          }
-        },
-        layout: {
-          primary: [ col('Name', 220),
-            col('Type',80), col('Dimensions', 90), col('ID Types', 150)]
-        }
-      });
-      that.colLineup = plugin.factory(stratifications, that.parent, {
-        lineup: {
-          svgLayout: {
-            mode: 'separate'
-          },
-          manipulative: true,
-          interaction: {
-            tooltips: false
-          }
-        },
-        layout: {
-          primary: [ col('Name', 220), col('ID Types', 80)]
-        }
-      });
-      that.createInteraction();
     });
   };
 
