@@ -30,6 +30,12 @@ define(function (require, exports) {
   //create a manager for all columns
   var manager = exports.manager = new idtypes.ObjectManager('_column', 'Column');
 
+  function createWrapper($elem, data, range) {
+    $elem.classed('group', true);
+    $elem.append('div').attr('class','title').text(range.dim(0).name);
+    return $elem.append('div').attr('class', 'body');
+  }
+
   function createColumn(inputs, parameter, graph) {
     var parent = inputs[0].v,
       data = inputs[1].v,
@@ -118,13 +124,23 @@ define(function (require, exports) {
     return null;
   };
 
-  function Column(parent, data, partitioning) {
+  function Column(parent, data, partitioning, options) {
     events.EventHandler.call(this);
     var that = this;
     this.data = data;
+    this.options = C.mixin({
+      summaryHeight: 100,
+      width: 180,
+      padding: 3
+    }, options || {});
     this.$parent = d3.select(parent).append('div').attr('class', 'column').style('opacity',0.1);
     this.$toolbar = this.$parent.append('div').attr('class','toolbar');
-    this.$summary = this.$parent.append('div').attr('class', 'summary');
+    this.$summary = this.$parent.append('div').attr('class', 'summary').style({
+      padding: this.options.padding + 'px',
+      'border-color': data.desc.color || 'gray',
+      'background-color' : data.desc.bgColor || 'lightgray'
+    });
+    this.$summary.append('div').attr('class','title').text(data.desc.name).style('background-color',data.desc.bgColor || 'lightgray');
     this.$clusters = this.$parent.append('div').attr('class', 'clusters');
     this.range = partitioning;
     //create the vis
@@ -138,7 +154,8 @@ define(function (require, exports) {
     this.grid = multiform.createGrid(data, partitioning, this.$clusters.node(), function (data, range) {
       return data.view(range)
     }, {
-      initialVis: guessInitial(data.desc)
+      initialVis: guessInitial(data.desc),
+      wrap : createWrapper
     });
     //zooming
     var grid_z = this.grid_zoom = new behaviors.ZoomLogic(this.grid, this.grid.asMetaData);
@@ -149,7 +166,7 @@ define(function (require, exports) {
         s.style('opacity',1);
       },
       onSetBounds : function() { that.layouted()},
-      prefWidth : 180
+      prefWidth : this.options.width
     };
     var g = this.grid.on('changed', function(event, to, from) {
       that.fire('changed', to, from);
@@ -209,8 +226,9 @@ define(function (require, exports) {
   Column.prototype.layouted = function() {
     //sync the scaling
     var size = this.layout.getSize();
-    this.summary_zoom.zoomTo(size.x, 100);
-    size.y -= 100;
+    this.summary_zoom.zoomTo(size.x - this.options.padding*2, this.options.summaryHeight - this.options.padding*2 - 30);
+    size.y -=  this.options.summaryHeight;
+    size.y -= this.range.dim(0).groups.length * 35; //FIXME hack
     this.grid_zoom.zoomTo(size.x, size.y);
 
     //shift the content for the aspect ratio

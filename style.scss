@@ -63,7 +63,7 @@ main {
     position: absolute;
     width: auto;
     height: auto;
-    background-color: #d3d3d3;
+    background-color: #fafafa;
 
     &.select-selected {
       border: 1px solid $select-color;
@@ -97,6 +97,29 @@ main {
       div {
         display: inline-block;
         margin: 0 1px;
+      }
+    }
+
+    div.summary {
+      border: 2px solid gray;
+      border-radius: 5px 5px 2px 2px;
+
+      div.title {
+        padding: 0 1em;
+      }
+
+      > .multiform {
+        background-color: white;
+      }
+    }
+    div.group {
+      margin: 5px 0 5px 0;
+      border-radius: 5px 5px ;
+      border: 2px solid gray;
+
+      div.title {
+        background-color: #d1d1d1;
+        padding: 0 1em;
       }
     }
   }
