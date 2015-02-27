@@ -37,10 +37,10 @@ define(function (require, exports) {
   }
 
   function createColumn(inputs, parameter, graph) {
-    var parent = inputs[0].v,
+    var stratomex = inputs[0].v,
       data = inputs[1].v,
       partitioning = ranges.parse(parameter.partitioning);
-    var c = new Column(parent, data, partitioning);
+    var c = new Column(stratomex, data, partitioning);
     var r = prov.ref(c, 'Column of '+data.desc.name, prov.cat.vis);
     c.changeHandler = function(event, to, from) {
       if (from) { //have a previous one so not the default
@@ -52,6 +52,8 @@ define(function (require, exports) {
     };
     c.on('changed', c.changeHandler);
     c.on('option', c.optionHandler);
+
+    stratomex.addColumn(r);
     return {
       created: [r],
       inverse: createRemoveCmd(r)
@@ -59,8 +61,9 @@ define(function (require, exports) {
   }
   function removeColumn(inputs, parameter, graph) {
     var column = inputs[0].v,
-      inv = createColumnCmd(graph.findObject(column.$parent.node().parentElement), graph.findObject(column.data), column.range);
+      inv = createColumnCmd(graph.findObject(column.stratomex), graph.findObject(column.data), column.range);
     column.destroy();
+    column.stratomex.removeColumn(inputs[0]);
     return {
       removed: [inputs[0]],
       inverse: inv
@@ -107,8 +110,8 @@ define(function (require, exports) {
       old: old
     });
   }
-  function createColumnCmd(parent, data, partitioning) {
-    return prov.action(prov.meta('Create Column for '+data.v.desc.name, prov.op.create), 'createColumn', createColumn, [parent, data], { partitioning: partitioning })
+  function createColumnCmd(stratomex, data, partitioning) {
+    return prov.action(prov.meta('Create Column for '+data.v.desc.name, prov.op.create), 'createColumn', createColumn, [stratomex, data], { partitioning: partitioning })
   }
   function createRemoveCmd(column) {
     return prov.action(prov.meta('Remove Column', prov.op.remove), 'removeColumn', removeColumn, [column]);
@@ -124,7 +127,7 @@ define(function (require, exports) {
     return null;
   };
 
-  function Column(parent, data, partitioning, options) {
+  function Column(stratomex, data, partitioning, options) {
     events.EventHandler.call(this);
     var that = this;
     this.data = data;
@@ -133,7 +136,8 @@ define(function (require, exports) {
       width: 180,
       padding: 3
     }, options || {});
-    this.$parent = d3.select(parent).append('div').attr('class', 'column').style('opacity',0.1);
+    this.stratomex = stratomex;
+    this.$parent = d3.select(stratomex.parent).append('div').attr('class', 'column').style('opacity',0.1);
     this.$toolbar = this.$parent.append('div').attr('class','toolbar');
     this.$summary = this.$parent.append('div').attr('class', 'summary').style({
       padding: this.options.padding + 'px',
@@ -170,7 +174,6 @@ define(function (require, exports) {
     };
     var g = this.grid.on('changed', function(event, to, from) {
       that.fire('changed', to, from);
-      manager.fire('dirty'); //fire relayout
     });
     //create layout version
     this.layout = layouts.wrapDom(this.$parent.node(), layoutOptions);
@@ -178,7 +181,6 @@ define(function (require, exports) {
     this.createToolBar();
 
     this.id = manager.nextId(this);
-    manager.fire('dirty'); //fire relayout
   }
 
   C.extendClass(Column, events.EventHandler);
@@ -245,8 +247,6 @@ define(function (require, exports) {
     //center the toolbar
     var w = (18*(1+this.grid.visses.length));
     this.$toolbar.style('left',((size.x-w)/2)+'px');
-
-    this.fire('dirty');
   };
   Column.prototype.createToolBar = function() {
     var $t = this.$toolbar,
@@ -261,28 +261,10 @@ define(function (require, exports) {
   };
   Column.prototype.destroy = function() {
     manager.remove(this);
-    this.$parent.remove();
-    manager.fire('dirty');
+    this.$parent.style('opacity',1).transition().style('opacity',0).remove();
   };
 
-  exports.areNeighborColumns = function (ca, cb) {
-    var loca = ca.location,
-      locb = cb.location,
-      t = null;
-    if (loca.x > locb.x) { //swap order
-      t = locb;
-      locb = loca;
-      loca = t;
-    }
-    //none in between
-    return !exports.manager.entries.some(function(c) {
-      if (c === ca || c === cb) {
-        return false;
-      }
-      var l = c.location;
-      return loca.x <= l.x && l.x <= locb.x;
-    });
-  };
+
 
   exports.create = function(parent, data, partitioning) {
     session.retrieve('provenancegraph').push(createColumnCmd(parent, data, partitioning));

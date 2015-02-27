@@ -10,33 +10,22 @@ define(function (require, exports) {
   var layout = require('../caleydo-layout/main').distributeLayout(true, 100, { top : 30, left: 30, right: 30, bottom: 10});
   var columns = require('./column.js');
 
-
   function StratomeX(parent, provGraph) {
     views.AView.call(this);
-    this.parentRef =  provGraph.addObject(parent, 'StratomeX DOM', 'visual');
+    var that = this;
+    this.parent = parent;
+    this._thisRef =  provGraph.addObject(this, 'StratomeX', 'visual');
     this.provGraph = provGraph;
-
-    this.manager = provGraph.addObject(columns.manager, 'Column Manager', 'logic');
-    var links = new link_m.LinkContainer(parent, ['dirty'], {
+    this._columns = [];
+    this._links = new link_m.LinkContainer(parent, ['changed'], {
       interactive: false,
-      filter: columns.areNeighborColumns,
+      filter: C.bind(that.areNeighborColumns, this),
       mode: 'link-group',
       idTypeFilter : function(idtype, i) {
         return i == 0; //just the row i.e. first one
       }
     });
 
-    this.manager.v.on('add', function (event, id, column) {
-      links.push(column);
-    });
-    this.manager.v.on('remove', function (event, id, column) {
-      links.remove(column);
-    });
-
-    var that = this;
-    columns.manager.on('dirty', function() {
-      that.relayout();
-    });
   }
   C.extendClass(StratomeX, views.AView);
   StratomeX.prototype.setBounds = function(x,y,w,h) {
@@ -45,14 +34,50 @@ define(function (require, exports) {
     this.relayout();
   };
   StratomeX.prototype.relayout = function() {
-    layout(columns.manager.entries.map(function(c) { return c.layout; }), this.dim[0], this.dim[1]);
+    var that = this;
+    that._links.hide();
+    layout(this._columns.map(function(c) { return c.v.layout; }), this.dim[0], this.dim[1]).then(function() {
+      that._links.update();
+    });
   };
   StratomeX.prototype.addData = function(rowStrat, m) {
     var that = this;
     var mref = this.provGraph.addObject(m, m.desc.name, 'data');
     rowStrat.range().then(function(r) {
-      columns.create(that.parentRef, mref, ranges.list(r, ranges.Range1D.all()));
+      columns.create(that._thisRef, mref, ranges.list(r, ranges.Range1D.all()));
     });
+  };
+  StratomeX.prototype.areNeighborColumns = function (ca, cb) {
+    var loca = ca.location,
+      locb = cb.location,
+      t = null;
+    if (loca.x > locb.x) { //swap order
+      t = locb;
+      locb = loca;
+      loca = t;
+    }
+    //none in between
+    return !this._columns.some(function(c) {
+      if (c.v === ca || c.v === cb) {
+        return false;
+      }
+      var l = c.v.location;
+      return loca.x <= l.x && l.x <= locb.x;
+    });
+  };
+  StratomeX.prototype.addColumn = function(columnRef) {
+    this._columns.push(columnRef);
+    columnRef.v.on('changed', C.bind(this.relayout, this));
+    this._links.push(false, columnRef.v);
+    this.relayout();
+  };
+  StratomeX.prototype.removeColumn = function(columnRef) {
+    var i = C.indexOf(this._columns,function(elem) { return elem.v === columnRef.v; });
+    if (i >= 0) {
+      this._columns.splice(i, 1);
+      this._links.remove(false, columnRef.v);
+      this.relayout();
+    }
   };
 
   exports.StratomeX = StratomeX;
