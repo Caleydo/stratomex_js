@@ -13,7 +13,6 @@ define(function (require, exports) {
   var events = require('../caleydo/event');
   var layouts = require('../caleydo-layout/d3util');
   var prov = require('../caleydo-provenance/main');
-  var session = require('../caleydo/session');
   var ranges = require('../caleydo/range');
 
   //guess initial vis method
@@ -69,6 +68,15 @@ define(function (require, exports) {
       inverse: inv
     };
   }
+  function moveColumn(inputs, parameter, graph) {
+    var column = inputs[0].v,
+      shift = parameter.shift,
+      inv = createMoveColumnCmd(inputs[0], -shift);
+    column.stratomex.moveColumn(inputs[0], shift);
+    return {
+      inverse: inv
+    };
+  }
 
   function changeVis(inputs, parameter) {
     var column = inputs[0].v,
@@ -111,11 +119,17 @@ define(function (require, exports) {
     });
   }
   function createColumnCmd(stratomex, data, partitioning) {
-    return prov.action(prov.meta('Create Column for '+data.v.desc.name, prov.op.create), 'createColumn', createColumn, [stratomex, data], { partitioning: partitioning })
+    return prov.action(prov.meta('Create Column for '+data.v.desc.name, prov.cat.visual, prov.op.create), 'createColumn', createColumn, [stratomex, data], { partitioning: partitioning })
   }
   function createRemoveCmd(column) {
-    return prov.action(prov.meta('Remove Column', prov.op.remove), 'removeColumn', removeColumn, [column]);
+    return prov.action(prov.meta('Remove Column', prov.cat.visual, prov.op.remove), 'removeColumn', removeColumn, [column]);
   }
+  function createMoveColumnCmd(column, shift) {
+    return prov.action(prov.meta('Change Column', prov.cat.layout, prov.op.move), 'moveColumn', moveColumn, [column], { shift: shift });
+  }
+  exports.createColumnCmd = createColumnCmd;
+  exports.createRemoveCmd = createRemoveCmd;
+  exports.createMoveColumnCmd = createMoveColumnCmd;
 
   exports.createCmd = function(id) {
     switch(id) {
@@ -252,8 +266,22 @@ define(function (require, exports) {
     var $t = this.$toolbar,
       that = this;
     multiform.addIconVisChooser($t.node(), this.grid);
+    $t.append('i').attr('class','fa fa-chevron-left').on('click', function() {
+      var g = that.stratomex.provGraph;
+      var s = g.findObject(that);
+      if (that.stratomex.canShift(s).left > 0) {
+        g.push(createMoveColumnCmd(s), -1);
+      }
+    });
+    $t.append('i').attr('class','fa fa-chevron-right').on('click', function() {
+      var g = that.stratomex.provGraph;
+      var s = g.findObject(that);
+      if (that.stratomex.canShift(s).right < 0) {
+        g.push(createMoveColumnCmd(s), +1);
+      }
+    });
     $t.append('i').attr('class','fa fa-close').on('click', function() {
-      var g = session.retrieve('provenancegraph');
+      var g = that.stratomex.provGraph;
       g.push(createRemoveCmd(g.findObject(that)));
     });
     var w = (18*(1+this.grid.visses.length));
@@ -263,10 +291,4 @@ define(function (require, exports) {
     manager.remove(this);
     this.$parent.style('opacity',1).transition().style('opacity',0).remove();
   };
-
-
-
-  exports.create = function(parent, data, partitioning) {
-    session.retrieve('provenancegraph').push(createColumnCmd(parent, data, partitioning));
-  }
 });

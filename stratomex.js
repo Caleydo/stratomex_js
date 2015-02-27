@@ -44,7 +44,7 @@ define(function (require, exports) {
     var that = this;
     var mref = this.provGraph.addObject(m, m.desc.name, 'data');
     rowStrat.range().then(function(r) {
-      columns.create(that._thisRef, mref, ranges.list(r, ranges.Range1D.all()));
+      that.provGraph.push(columns.createColumnCmd(that._thisRef, mref, ranges.list(r, ranges.Range1D.all())));
     });
   };
   StratomeX.prototype.areNeighborColumns = function (ca, cb) {
@@ -78,6 +78,21 @@ define(function (require, exports) {
       this._links.remove(false, columnRef.v);
       this.relayout();
     }
+  };
+  StratomeX.prototype.moveColumn = function(columnRef, shift) {
+    var i = C.indexOf(this._columns,function(elem) { return elem.v === columnRef.v; });
+    if (i >= 0) {
+      this._columns.splice(i, 1);
+      this._columns.splice(i+shift, 0, columnRef);
+      this.relayout();
+    }
+  };
+  StratomeX.prototype.canShift = function(columnRef) {
+    var i = C.indexOf(this._columns,function(elem) { return elem.v === columnRef.v; });
+    return {
+      left: i,
+      right : i - this._columns.length + 1
+    };
   };
 
   exports.StratomeX = StratomeX;
