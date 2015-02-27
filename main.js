@@ -24,6 +24,9 @@ define(function (require) {
 
   var lineup =  require('./lineup').create(document.getElementById('lineup'),function (rowStrat) {
     var d = datavalues.filter(function(di) { return di.desc.name === rowStrat.desc.origin;})[0];
+    if (d.desc.type === 'matrix' && rowStrat.idtypes[0] !== d.idtypes[0]) {
+      d = d.t; //tranpose
+    }
     stratomex.addData(rowStrat, d);
   });
 

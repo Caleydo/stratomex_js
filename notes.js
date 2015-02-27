@@ -49,7 +49,7 @@ define(function (require, exports) {
     switch(id) {
       case 'changeNote' : return changeNote;
       case 'removeNote' : return removeNote;
-      case 'addNote': return addNode;
+      case 'addNote': return addNote;
     }
     return null;
   };
@@ -72,13 +72,15 @@ define(function (require, exports) {
       //enable buttons
       $r.selectAll('button + button').attr('disabled',lastAnnot ? null : 'disabled');
     });
-    $r.append('button').text('New Note').on('click', function() {
-      graph.push(addNoteCmd($text.property('value')));
+    $r.append('button').attr('class', 'fa fa-plus').on('click', function() {
+      var d = $text.datum();
+      if (d) {
+        graph.push(changeNoteCmd(d, $text.property('value')));
+      } else {
+        graph.push(addNoteCmd($text.property('value')));
+      }
     });
-    $r.append('button').text('Change').attr('disabled','disabled').on('click', function() {
-      graph.push(changeNoteCmd($text.datum(), $text.property('value')));
-    });
-    $r.append('button').text('Remove').attr('disabled','disabled').on('click', function() {
+    $r.append('button').attr('class', 'fa fa-remove').attr('disabled','disabled').on('click', function() {
       graph.push(removeNoteCmd($text.datum()));
     });
   }
