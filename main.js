@@ -7,16 +7,12 @@ define(function (require) {
   var data = require('../caleydo/data');
   var vis = require('../caleydo/vis');
   var prov = require('../caleydo-provenance/main');
-  var session = require('../caleydo/session');
-
-
+  
   var graph = prov.create({
     type: 'provenance_graph',
     name: 'StratomeX',
     id: 'stratomex'
   });
-  //set shared variable
-  session.store('provenancegraph', graph);
 
   var datavalues;
   var info = require('../caleydo-selectioninfo/main').create(document.getElementById('selectioninfo'));

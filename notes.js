@@ -4,7 +4,6 @@
 define(function (require, exports) {
   var C = require('../caleydo/main');
   var prov = require('../caleydo-provenance/main');
-  var session = require('../caleydo/session');
   var d3 = require('d3');
 
   function addNote(inputs, parameter) {
