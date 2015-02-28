@@ -42,7 +42,7 @@ define(function (require, exports) {
   };
   StratomeX.prototype.addData = function(rowStrat, m) {
     var that = this;
-    var mref = this.provGraph.addObject(m, m.desc.name, 'data');
+    var mref = this.provGraph.findOrAddObject(m, m.desc.name, 'data');
     rowStrat.range().then(function(r) {
       that.provGraph.push(columns.createColumnCmd(that._thisRef, mref, ranges.list(r, ranges.Range1D.all())));
     });

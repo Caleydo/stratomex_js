@@ -40,7 +40,7 @@ define(function (require, exports) {
       data = inputs[1].v,
       partitioning = ranges.parse(parameter.partitioning);
     var c = new Column(stratomex, data, partitioning);
-    var r = prov.ref(c, 'Column of '+data.desc.name, prov.cat.vis);
+    var r = prov.ref(c, 'Column of '+data.desc.name, prov.cat.visual);
     c.changeHandler = function(event, to, from) {
       if (from) { //have a previous one so not the default
         graph.push(createChangeVis(r, to.id, from ? from.id : null));

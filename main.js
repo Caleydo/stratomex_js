@@ -7,7 +7,7 @@ define(function (require) {
   var data = require('../caleydo/data');
   var vis = require('../caleydo/vis');
   var prov = require('../caleydo-provenance/main');
-  
+
   var graph = prov.create({
     type: 'provenance_graph',
     name: 'StratomeX',
@@ -26,10 +26,12 @@ define(function (require) {
     stratomex.addData(rowStrat, d);
   });
 
-  require('../caleydo-provenance/selection').create(graph, 'selected');
+  require('../caleydo-provenance/selection').create(graph, 'selected', {
+    filter: function(idtype) { return idtype.name[0] !== '_' }
+  });
   var notes = require('./notes').create(document.getElementById('notes'), graph);
   var graphvis;
-  vis.list(graph)[0].load().then(function (plugin) {
+  vis.list(graph)[1].load().then(function (plugin) {
     graphvis = plugin.factory(graph, document.getElementById('provenancegraph'));
   });
 
