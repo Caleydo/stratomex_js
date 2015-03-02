@@ -226,19 +226,33 @@ define(function (require, exports) {
     return r ? geom.wrap(r).shift(shift) : r;
   }
 
+  Column.prototype.locateImpl = function(range) {
+    var cluster = range.dim(0), i = 0, r;
+    cluster = cluster.toSet();
+    for(i = this.grid.dimSizes[0] -1; i >= 0; --i) {
+      var r = this.grid.getRange(i).dim(0).toSet();
+      if (r.eq(cluster)) {
+        return shiftBy(this.grid.getBounds(i), this.visPos());
+      }
+    }
+    return null; //not a cluster
+  };
+
   Column.prototype.locate = function () {
-    var vis = this.grid, that = this;
-    return this.grid.locate.apply(vis, C.argList(arguments)).then(function (r) {
-      return shiftBy(r, that.visPos());
-    });
+    var vis = this.grid, that = this, args = C.argList(arguments);
+    if (args.length === 1) {
+      return that.locateImpl(args[0]);
+    }
+    return args.map(function(arg) { return that.locateImpl(arg)});
   };
 
   Column.prototype.locateById = function () {
-    var vis = this.vis, that = this;
-    return this.grid.locateById.apply(this.grid, C.argList(arguments)).then(function (r) {
-      return shiftBy(r, that.visPos());
+    var args = C.argList(arguments), that = this;
+    return this.data.ids().then(function(ids) {
+        return that.locate.apply(that, args.map(function(r) { return ids.indexOf(r)}));
     });
   };
+
   Column.prototype.layouted = function() {
     //sync the scaling
     var size = this.layout.getSize();
