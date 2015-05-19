@@ -91,6 +91,28 @@ define(function (require, exports) {
     };
   }
 
+  function showInDetail(inputs, parameter) {
+    var column = inputs[0].v,
+      cluster = parameter.cluster,
+      show = parameter.action === 'show';
+    if (show) {
+      column.showInDetail(cluster);
+    } else {
+      column.hideDetail(cluster);
+    }
+    return {
+      inverse: createToggleDetailCmd(inputs[0], cluster, !show)
+    };
+  }
+
+  function createToggleDetailCmd(column, cluster, show) {
+    var act = show ? 'show' : 'hide';
+    return prov.action(prov.meta(act + ' detail of cluster ' + cluster + ' of ' + column.toString(), prov.cat.layout), 'showInDetail', showInDetail, [column], {
+      cluster: cluster,
+      action: show ? 'show' : 'hide'
+    });
+  }
+
   function createChangeVis(column, to, from) {
     return prov.action(prov.meta('change vis ' + column.toString() + ' to ' + to, prov.cat.visual), 'changeColumnVis', changeVis, [column], {
       to: to,
@@ -130,6 +152,7 @@ define(function (require, exports) {
   exports.createColumnCmd = createColumnCmd;
   exports.createRemoveCmd = createRemoveCmd;
   exports.createMoveColumnCmd = createMoveColumnCmd;
+  exports.createToggleDetailCmd = createToggleDetailCmd;
 
   exports.createCmd = function(id) {
     switch(id) {
@@ -137,6 +160,7 @@ define(function (require, exports) {
       case 'createColumn': return createColumn;
       case 'removeColumn' : return removeColumn;
       case 'changeColumnVis': return changeVis;
+      case 'showInDetail' : return showInDetail;
     }
     return null;
   };
@@ -251,6 +275,13 @@ define(function (require, exports) {
     return this.data.ids().then(function(ids) {
         return that.locate.apply(that, args.map(function(r) { return ids.indexOf(r)}));
     });
+  };
+
+  Column.prototype.showInDetail = function(cluster) {
+    this.stratomex.v.showDetail(this, this.grid.getData(cluster));
+  };
+  Column.prototype.hideDetail = function(cluster) {
+    this.stratomex.v.hideDetail();
   };
 
   Column.prototype.layouted = function() {

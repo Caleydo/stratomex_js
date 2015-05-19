@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "dependencies": {
     "d3": "~3.5.2",
-    "bootstrap" : "~3.3.1",
+    "bootstrap" : "~3.3.4",
     "marked" : "~0.3.3"
   },
   "caleydo" : {
@@ -38,7 +38,7 @@
         "folder" : "stratomex.js",
         "module" : "stratomex.js/column",
         "factory" : "createCmd",
-        "creates" : "(createColumn|removeColumn|setColumnOption|changeColumnVis)"
+        "creates" : "(createColumn|removeColumn|setColumnOption|changeColumnVis|showInDetail)"
       }
     ],
     "requirejs-config": {
@@ -46,7 +46,11 @@
         "bootstrap": "${baseUrl}/bootstrap/dist/js/bootstrap"
       },
       "shim": {
-        "bootstrap": ["css!${baseUrl}/bootstrap/dist/css/bootstrap"]
+        "bootstrap": ["css!${baseUrl}/bootstrap/dist/css/bootstrap"],
+        "webcola": {
+          "deps": ["d3"],
+          "exports": "cola"
+        }
       }
     }
   }
