@@ -1,54 +1,68 @@
 {
-  "name" : "stratomex.js",
+  "name": "stratomex.js",
   "version": "0.0.1",
-  "dependencies": {
-    "d3": "~3.5.2",
-    "bootstrap" : "~3.3.4",
-    "marked" : "~0.3.3"
+  "peerDependencies": {
+    "caleydo_web": "*",
+    "caleydo_selectioninfo": "*",
+    "caleydo_links": "*",
+    "caleydo_provenance": "*"
   },
-  "caleydo" : {
-    "plugins": [
-      {
-        "type" : "view",
-        "id" : "stratomex",
-        "folder" : "stratomex.js",
-        "module" : "stratomex.js/stratomex",
-        "type" : "main",
-        "location" : "center"
-      },
-      {
-        "type" : "view",
-        "id" : "stratomex-lineup",
-        "folder" : "stratomex.js",
-        "module" : "stratomex.js/lineup",
-        "type" : "support",
-        "location" : "bottom"
-      },
-      {
-        "type" : "actionFactory",
-        "id" : "stratomex-note",
-        "folder" : "stratomex.js",
-        "module" : "stratomex.js/notes",
-        "factory" : "createCmd",
-        "creates" : "(addNote|changeNote|removeNote)"
-      },
-      {
-        "type" : "actionFactory",
-        "id" : "stratomex-column",
-        "folder" : "stratomex.js",
-        "module" : "stratomex.js/column",
-        "factory" : "createCmd",
-        "creates" : "(createColumn|removeColumn|setColumnOption|changeColumnVis|showInDetail)"
+  "caleydo": {
+    "plugins": {
+      "web": [
+        {
+          "type": "view",
+          "id": "stratomex",
+          "file": "stratomex",
+          "type": "main",
+          "location": "center"
+        },
+        {
+          "type": "view",
+          "id": "stratomex-lineup",
+          "file": "lineup",
+          "type": "support",
+          "location": "bottom"
+        },
+        {
+          "type": "actionFactory",
+          "id": "stratomex-note",
+          "file": "notes",
+          "factory": "createCmd",
+          "creates": "(addNote|changeNote|removeNote)"
+        },
+        {
+          "type": "actionFactory",
+          "id": "stratomex-column",
+          "file": "column",
+          "factory": "createCmd",
+          "creates": "(createColumn|removeColumn|setColumnOption|changeColumnVis|showInDetail)"
+        },
+        {
+          "type": "app",
+          "name": "Stratomex.js"
+        }
+      ]
+    },
+    "dependencies": {
+      "web": {
+        "d3": "~3.5.2",
+        "bootstrap": "~3.3.4",
+        "marked": "~0.3.3"
       }
-    ],
+    },
     "requirejs-config": {
       "paths": {
         "bootstrap": "${baseUrl}/bootstrap/dist/js/bootstrap"
       },
       "shim": {
-        "bootstrap": ["css!${baseUrl}/bootstrap/dist/css/bootstrap"],
+        "bootstrap": [
+          "css!${baseUrl}/bootstrap/dist/css/bootstrap"
+        ],
         "webcola": {
-          "deps": ["d3"],
+          "deps": [
+            "d3"
+          ],
           "exports": "cola"
         }
       }

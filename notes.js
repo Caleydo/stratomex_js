@@ -2,8 +2,8 @@
  * Created by sam on 11.02.2015.
  */
 define(function (require, exports) {
-  var C = require('../caleydo/main');
-  var prov = require('../caleydo-provenance/main');
+  var C = require('../caleydo_web/main');
+  var prov = require('../caleydo_provenance/main');
   var d3 = require('d3');
 
   function addNote(inputs, parameter) {

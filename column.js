@@ -4,16 +4,16 @@
 define(function (require, exports) {
   var d3 = require('d3');
   var $ = require('jquery');
-  var vis = require('../caleydo/vis');
-  var C = require('../caleydo/main');
-  var multiform = require('../caleydo/multiform');
-  var geom = require('../caleydo/geom');
-  var idtypes = require('../caleydo/idtype');
-  var behaviors = require('../caleydo/behavior');
-  var events = require('../caleydo/event');
-  var layouts = require('../caleydo-layout/d3util');
-  var prov = require('../caleydo-provenance/main');
-  var ranges = require('../caleydo/range');
+  var vis = require('../caleydo_web/vis');
+  var C = require('../caleydo_web/main');
+  var multiform = require('../caleydo_web/multiform');
+  var geom = require('../caleydo_web/geom');
+  var idtypes = require('../caleydo_web/idtype');
+  var behaviors = require('../caleydo_web/behavior');
+  var events = require('../caleydo_web/event');
+  var layouts = require('../caleydo_layout/d3util');
+  var prov = require('../caleydo_provenance/main');
+  var ranges = require('../caleydo_web/range');
 
   //guess initial vis method
   function guessInitial(desc) {

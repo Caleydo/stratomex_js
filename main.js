@@ -4,9 +4,9 @@
 define(function (require) {
   'use strict';
   var $ = require('jquery');
-  var data = require('../caleydo/data');
-  var vis = require('../caleydo/vis');
-  var prov = require('../caleydo-provenance/main');
+  var data = require('../caleydo_web/data');
+  var vis = require('../caleydo_web/vis');
+  var prov = require('../caleydo_provenance/main');
 
   var graph = prov.create({
     type: 'provenance_graph',
@@ -15,7 +15,7 @@ define(function (require) {
   });
 
   var datavalues;
-  var info = require('../caleydo-selectioninfo/main').create(document.getElementById('selectioninfo'));
+  var info = require('../caleydo_selectioninfo/main').create(document.getElementById('selectioninfo'));
   var stratomex = require('./stratomex').create(document.getElementById('stratomex'), graph);
 
   var lineup =  require('./lineup').create(document.getElementById('lineup'),function (rowStrat) {
@@ -26,7 +26,7 @@ define(function (require) {
     stratomex.addData(rowStrat, d);
   });
 
-  require('../caleydo-provenance/selection').create(graph, 'selected', {
+  require('../caleydo_provenance/selection').create(graph, 'selected', {
     filter: function(idtype) { return idtype.name[0] !== '_' }
   });
   var notes = require('./notes').create(document.getElementById('notes'), graph);

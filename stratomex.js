@@ -2,12 +2,12 @@
  * Created by sam on 24.02.2015.
  */
 define(function (require, exports) {
-  var views = require('../caleydo-layout/view');
-  var C = require('../caleydo/main');
-  var link_m = require('../caleydo-links/link');
-  var ranges = require('../caleydo/range');
+  var views = require('../caleydo_layout/view');
+  var C = require('../caleydo_web/main');
+  var link_m = require('../caleydo_links/link');
+  var ranges = require('../caleydo_web/range');
 
-  var layout = require('../caleydo-layout/main').distributeLayout(true, 100, { top : 30, left: 30, right: 30, bottom: 10});
+  var layout = require('../caleydo_layout/main').distributeLayout(true, 100, { top : 30, left: 30, right: 30, bottom: 10});
   var columns = require('./column.js');
 
   function StratomeX(parent, provGraph) {
