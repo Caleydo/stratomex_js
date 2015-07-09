@@ -11,7 +11,7 @@ define(function (require, exports) {
   var idtypes = require('../caleydo_web/idtype');
   var behaviors = require('../caleydo_web/behavior');
   var events = require('../caleydo_web/event');
-  var layouts = require('../caleydo_layout/d3util');
+  var layouts = require('../caleydo_web/layout_d3util');
   var prov = require('../caleydo_provenance/main');
   var ranges = require('../caleydo_web/range');
 
