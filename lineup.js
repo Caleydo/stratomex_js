@@ -2,7 +2,7 @@
  * Created by sam on 24.02.2015.
  */
 define(function (require, exports) {
-  var views = require('../caleydo__web/layout_view');
+  var views = require('../caleydo_web/layout_view');
   var C = require('../caleydo_web/main');
   var events = require('../caleydo_web/event');
   var layouts = require('../caleydo_web/layout');
