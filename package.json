@@ -1,6 +1,13 @@
 {
   "name": "stratomex.js",
   "version": "0.0.1",
+  "dependencies": {
+    "caleydo_web": "*",
+    "caleydo_selectioninfo": "*",
+    "caleydo_links": "*",
+    "caleydo_provenance": "*",
+    "caleydo_vis": "*"
+  },
   "peerDependencies": {
     "caleydo_web": "*",
     "caleydo_selectioninfo": "*",
