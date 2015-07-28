@@ -27,7 +27,9 @@ define(function (require) {
   });
 
   require('../caleydo_provenance/selection').create(graph, 'selected', {
-    filter: function(idtype) { return idtype.name[0] !== '_' }
+    filter: function(idtype) {
+      return idtype && idtype.name[0] !== '_';
+    }
   });
   var notes = require('./notes').create(document.getElementById('notes'), graph);
   var graphvis;

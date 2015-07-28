@@ -7,7 +7,7 @@ define(function (require, exports) {
   var events = require('../caleydo_web/event');
   var layouts = require('../caleydo_web/layout');
   var vis = require('../caleydo_web/vis');
-  var tables = require('../caleydo_web/table');
+  var tables = require('../caleydo_web/table_impl');
   var d3 = require('d3');
 
   function StratomeXLineUp(parent, onAdd) {
