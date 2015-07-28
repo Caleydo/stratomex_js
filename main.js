@@ -15,7 +15,7 @@ define(function (require) {
   });
 
   var datavalues;
-  var info = require('../caleydo_web/selectioninfo/main').create(document.getElementById('selectioninfo'));
+  var info = require('../caleydo_web/selectioninfo').create(document.getElementById('selectioninfo'));
   var stratomex = require('./stratomex').create(document.getElementById('stratomex'), graph);
 
   var lineup =  require('./lineup').create(document.getElementById('lineup'),function (rowStrat) {
