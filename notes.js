@@ -2,7 +2,7 @@
  * Created by sam on 11.02.2015.
  */
 define(function (require, exports) {
-  var C = require('../caleydo_web/main');
+  var C = require('../caleydo_core/main');
   var prov = require('../caleydo_provenance/main');
   var d3 = require('d3');
 

@@ -4,8 +4,8 @@
 define(function (require) {
   'use strict';
   var $ = require('jquery');
-  var data = require('../caleydo_web/data');
-  var vis = require('../caleydo_web/vis');
+  var data = require('../caleydo_core/data');
+  var vis = require('../caleydo_core/vis');
   var prov = require('../caleydo_provenance/main');
 
   var graph = prov.create({
@@ -15,7 +15,7 @@ define(function (require) {
   });
 
   var datavalues;
-  var info = require('../caleydo_web/selectioninfo').create(document.getElementById('selectioninfo'));
+  var info = require('../caleydo_core/selectioninfo').create(document.getElementById('selectioninfo'));
   var stratomex = require('./stratomex').create(document.getElementById('stratomex'), graph);
 
   var lineup =  require('./lineup').create(document.getElementById('lineup'),function (rowStrat) {

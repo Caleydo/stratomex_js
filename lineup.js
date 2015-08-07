@@ -2,12 +2,12 @@
  * Created by sam on 24.02.2015.
  */
 define(function (require, exports) {
-  var views = require('../caleydo_web/layout_view');
-  var C = require('../caleydo_web/main');
-  var events = require('../caleydo_web/event');
-  var layouts = require('../caleydo_web/layout');
-  var vis = require('../caleydo_web/vis');
-  var tables = require('../caleydo_web/table_impl');
+  var views = require('../caleydo_core/layout_view');
+  var C = require('../caleydo_core/main');
+  var events = require('../caleydo_core/event');
+  var layouts = require('../caleydo_core/layout');
+  var vis = require('../caleydo_core/vis');
+  var tables = require('../caleydo_core/table_impl');
   var d3 = require('d3');
 
   function StratomeXLineUp(parent, onAdd) {
