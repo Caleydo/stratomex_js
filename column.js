@@ -242,7 +242,7 @@ define(function (require, exports) {
   };
 
   function shiftBy(r, shift) {
-    if (C.isArray(r)) {
+    if (Array.isArray(r)) {
       return r.map(function (loc) {
         return loc ? geom.wrap(loc).shift(shift) : loc;
       });
