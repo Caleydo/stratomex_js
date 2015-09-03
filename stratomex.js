@@ -36,7 +36,7 @@ define(function (require, exports) {
   StratomeX.prototype.relayout = function() {
     var that = this;
     that._links.hide();
-    layout(this._columns.map(function(c) { return c.v.layout; }), this.dim[0], this.dim[1]).then(function() {
+    layout(this._columns.map(function(c) { return c.value.layout; }), this.dim[0], this.dim[1]).then(function() {
       that._links.update();
     });
   };
@@ -58,29 +58,29 @@ define(function (require, exports) {
     }
     //none in between
     return !this._columns.some(function(c) {
-      if (c.v === ca || c.v === cb) {
+      if (c.value === ca || c.value === cb) {
         return false;
       }
-      var l = c.v.location;
+      var l = c.value.location;
       return loca.x <= l.x && l.x <= locb.x;
     });
   };
   StratomeX.prototype.addColumn = function(columnRef) {
     this._columns.push(columnRef);
-    columnRef.v.on('changed', C.bind(this.relayout, this));
-    this._links.push(false, columnRef.v);
+    columnRef.value.on('changed', C.bind(this.relayout, this));
+    this._links.push(false, columnRef.value);
     this.relayout();
   };
   StratomeX.prototype.removeColumn = function(columnRef) {
-    var i = C.indexOf(this._columns,function(elem) { return elem.v === columnRef.v; });
+    var i = C.indexOf(this._columns,function(elem) { return elem.value === columnRef.value; });
     if (i >= 0) {
       this._columns.splice(i, 1);
-      this._links.remove(false, columnRef.v);
+      this._links.remove(false, columnRef.value);
       this.relayout();
     }
   };
   StratomeX.prototype.moveColumn = function(columnRef, shift) {
-    var i = C.indexOf(this._columns,function(elem) { return elem.v === columnRef.v; });
+    var i = C.indexOf(this._columns,function(elem) { return elem.value === columnRef.value; });
     if (i >= 0) {
       this._columns.splice(i, 1);
       this._columns.splice(i+shift, 0, columnRef);
@@ -88,7 +88,7 @@ define(function (require, exports) {
     }
   };
   StratomeX.prototype.canShift = function(columnRef) {
-    var i = C.indexOf(this._columns,function(elem) { return elem.v === columnRef.v; });
+    var i = C.indexOf(this._columns,function(elem) { return elem.value === columnRef.value; });
     return {
       left: i,
       right : i - this._columns.length + 1

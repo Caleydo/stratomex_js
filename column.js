@@ -142,7 +142,7 @@ define(function (require, exports) {
     });
   }
   function createColumnCmd(stratomex, data, partitioning) {
-    return prov.action(prov.meta('Create Column for '+data.v.desc.name, prov.cat.visual, prov.op.create), 'createColumn', createColumn, [stratomex, data], { partitioning: partitioning })
+    return prov.action(prov.meta('Create Column for '+data.value.desc.name, prov.cat.visual, prov.op.create), 'createColumn', createColumn, [stratomex, data], { partitioning: partitioning })
   }
   function createRemoveCmd(column) {
     return prov.action(prov.meta('Remove Column', prov.cat.visual, prov.op.remove), 'removeColumn', removeColumn, [column]);
@@ -279,10 +279,10 @@ define(function (require, exports) {
   };
 
   Column.prototype.showInDetail = function(cluster) {
-    this.stratomex.v.showDetail(this, this.grid.getData(cluster));
+    this.stratomex.value.showDetail(this, this.grid.getData(cluster));
   };
   Column.prototype.hideDetail = function(cluster) {
-    this.stratomex.v.hideDetail();
+    this.stratomex.value.hideDetail();
   };
 
   Column.prototype.layouted = function() {
