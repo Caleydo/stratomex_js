@@ -18,14 +18,12 @@
           "type": "view",
           "id": "stratomex",
           "file": "stratomex",
-          "type": "main",
           "location": "center"
         },
         {
           "type": "view",
           "id": "stratomex-lineup",
           "file": "lineup",
-          "type": "support",
           "location": "bottom"
         },
         {

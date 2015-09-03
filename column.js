@@ -36,30 +36,31 @@ define(function (require, exports) {
   }
 
   function createColumn(inputs, parameter, graph) {
-    var stratomex = inputs[0].v,
-      data = inputs[1].v,
+    var stratomex = inputs[0].value,
       partitioning = ranges.parse(parameter.partitioning);
-    var c = new Column(stratomex, data, partitioning);
-    var r = prov.ref(c, 'Column of '+data.desc.name, prov.cat.visual);
-    c.changeHandler = function(event, to, from) {
-      if (from) { //have a previous one so not the default
-        graph.push(createChangeVis(r, to.id, from ? from.id : null));
-      }
-    };
-    c.optionHandler = function (event, name, value, bak) {
-      graph.push(createSetOption(r, name, value, bak));
-    };
-    c.on('changed', c.changeHandler);
-    c.on('option', c.optionHandler);
+    return inputs[1].v.then(function(data) {
+      var c = new Column(stratomex, data, partitioning);
+      var r = prov.ref(c, 'Column of '+data.desc.name, prov.cat.visual);
+      c.changeHandler = function(event, to, from) {
+        if (from) { //have a previous one so not the default
+          graph.push(createChangeVis(r, to.id, from ? from.id : null));
+        }
+      };
+      c.optionHandler = function (event, name, value, bak) {
+        graph.push(createSetOption(r, name, value, bak));
+      };
+      c.on('changed', c.changeHandler);
+      c.on('option', c.optionHandler);
 
-    stratomex.addColumn(r);
-    return {
-      created: [r],
-      inverse: createRemoveCmd(r)
-    }
+      stratomex.addColumn(r);
+      return {
+        created: [r],
+        inverse: createRemoveCmd(r)
+      }
+    });
   }
   function removeColumn(inputs, parameter, graph) {
-    var column = inputs[0].v,
+    var column = inputs[0].value,
       inv = createColumnCmd(graph.findObject(column.stratomex), graph.findObject(column.data), column.range);
     column.destroy();
     column.stratomex.removeColumn(inputs[0]);
@@ -69,7 +70,7 @@ define(function (require, exports) {
     };
   }
   function moveColumn(inputs, parameter, graph) {
-    var column = inputs[0].v,
+    var column = inputs[0].value,
       shift = parameter.shift,
       inv = createMoveColumnCmd(inputs[0], -shift);
     column.stratomex.moveColumn(inputs[0], shift);
@@ -79,7 +80,7 @@ define(function (require, exports) {
   }
 
   function changeVis(inputs, parameter) {
-    var column = inputs[0].v,
+    var column = inputs[0].value,
       to = parameter.to,
       from = parameter.from || column.grid.act.id;
     column.off('changed', column.changeHandler);
@@ -92,7 +93,7 @@ define(function (require, exports) {
   }
 
   function showInDetail(inputs, parameter) {
-    var column = inputs[0].v,
+    var column = inputs[0].value,
       cluster = parameter.cluster,
       show = parameter.action === 'show';
     if (show) {
@@ -121,7 +122,7 @@ define(function (require, exports) {
   }
 
   function setOption(inputs, parameter) {
-    var column = inputs[0].v,
+    var column = inputs[0].value,
       name = parameter.name,
       value = parameter.value,
       bak = parameter.old || column.grid.option(name);

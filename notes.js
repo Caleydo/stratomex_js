@@ -21,7 +21,7 @@ define(function (require, exports) {
 
   function removeNote(inputs) {
     var note = inputs[0];
-    var text = note.v;
+    var text = note.value;
     return {
       removed: [note],
       inverse: addNoteCmd(text)
@@ -34,8 +34,8 @@ define(function (require, exports) {
   function changeNote(inputs, parameter) {
     var note = inputs[0];
     var text = parameter.text,
-      old = note.v;
-    note.v = text;
+      old = note.value;
+    note.value = text;
     return {
       inverse: changeNoteCmd(note, old)
     };
