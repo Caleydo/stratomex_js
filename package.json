@@ -9,7 +9,8 @@
     "caleydo_core": "*",
     "caleydo_links": "*",
     "caleydo_provenance": "*",
-    "caleydo_vis": "*"
+    "caleydo_vis": "*",
+    "wrapper_boostrap_fontawesome": "*"
   },
   "caleydo": {
     "plugins": {
@@ -49,18 +50,11 @@
     "dependencies": {
       "web": {
         "d3": "~3.5.5",
-        "bootstrap": "~3.3.4",
         "marked": "~0.3.3"
       }
     },
     "requirejs-config": {
-      "paths": {
-        "bootstrap": "${baseUrl}/bootstrap/dist/js/bootstrap"
-      },
       "shim": {
-        "bootstrap": [
-          "css!${baseUrl}/bootstrap/dist/css/bootstrap"
-        ],
         "webcola": {
           "deps": [
             "d3"

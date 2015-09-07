@@ -14,7 +14,7 @@ define(function (require, exports) {
     views.AView.call(this);
     var that = this;
     this.parent = parent;
-    this._thisRef =  provGraph.addObject(this, 'StratomeX', 'visual');
+    this._thisRef =  provGraph.findOrAddObject(this, 'StratomeX', 'visual');
     this.provGraph = provGraph;
     this._columns = [];
     this._links = new link_m.LinkContainer(parent, ['changed'], {

@@ -6,19 +6,21 @@ define(function (require) {
   var $ = require('jquery');
   var data = require('../caleydo_core/data');
   var vis = require('../caleydo_core/vis');
-  var prov = require('../caleydo_provenance/main');
+  var C = require('../caleydo_core/main');
+  var template = require('../clue_demo/template');
+  var cmode = require('../caleydo_provenance/mode');
 
-  var graph = prov.create({
-    type: 'provenance_graph',
-    name: 'StratomeX',
-    id: 'stratomex'
+  var elems = template.create(document.body, {
+    app: 'StratomeX.js'
   });
+  var graph = elems.graph;
+  elems.$main.append('div').attr('id', 'stratomex');
+  elems.$main.append('div').attr('id', 'databrowser');
 
   var datavalues;
-  var info = require('../caleydo_core/selectioninfo').create(document.getElementById('selectioninfo'));
   var stratomex = require('./stratomex').create(document.getElementById('stratomex'), graph);
 
-  var lineup =  require('./lineup').create(document.getElementById('lineup'),function (rowStrat) {
+  var lineup =  require('./lineup').create(document.getElementById('databrowser'),function (rowStrat) {
     var d = datavalues.filter(function(di) { return di.desc.name === rowStrat.desc.origin;})[0];
     if (d.desc.type === 'matrix' && rowStrat.idtypes[0] !== d.idtypes[0]) {
       d = d.t; //transpose
@@ -26,16 +28,28 @@ define(function (require) {
     stratomex.addData(rowStrat, d);
   });
 
-  require('../caleydo_provenance/selection').create(graph, 'selected', {
-    filter: function(idtype) {
-      return idtype && idtype.name[0] !== '_';
+  var $left_data = $('#databrowser');
+  if (cmode.getMode() > cmode.ECLUEMode.Exploration) {
+    $left_data.hide();
+  } else {
+    $left_data.show();
+  }
+  function updateBounds() {
+    var bounds = C.bounds(stratomex.parent);
+    stratomex.setBounds(bounds.x, bounds.y, bounds.w, bounds.h);
+  }
+  elems.on('modeDChanged', function(event, new_) {
+    if (new_ > cmode.ECLUEMode.Exploration) {
+      $left_data.animate({height: 'hide'});
+    } else {
+      $left_data.animate({height: 'show'});
     }
+
+    updateBounds();
   });
-  var notes = require('./notes').create(document.getElementById('notes'), graph);
-  var graphvis;
-  vis.list(graph)[1].load().then(function (plugin) {
-    graphvis = plugin.factory(graph, document.getElementById('provenancegraph'));
-  });
+  $(window).on('resize', updateBounds);
+  updateBounds();
+  //var notes = require('./notes').create(document.getElementById('notes'), graph);
 
   function splitAndConvert(arr) {
     var strat = arr.filter(function(d) { return d.desc.type === 'stratification'});
@@ -59,19 +73,5 @@ define(function (require) {
   }
   data.list().then(data.convertTableToVectors).then(filterTypes).then(splitAndConvert).then(createLineUp);
 
-
-  //layout things using a border layout
-  function relayout() {
-    var $stratomex = $('#stratomex');
-    stratomex.setBounds(0, 0, $stratomex.width(), $stratomex.height());
-
-    var $lineup = $('#lineup');
-    lineup.setBounds(0, 0, $lineup.width(), $lineup.height());
-  }
-  $(function() {
-    relayout();
-    $(window).on('resize', function() {
-      relayout();
-    })
-  });
+  elems.jumpToStored();
 });
