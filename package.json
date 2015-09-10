@@ -33,14 +33,14 @@
           "id": "stratomex-note",
           "file": "notes",
           "factory": "createCmd",
-          "creates": "(addNote|changeNote|removeNote)"
+          "creates": "(addStratomeXNote|changeStratomeXNote|removeStratomeXNote)"
         },
         {
           "type": "actionFactory",
           "id": "stratomex-column",
           "file": "column",
           "factory": "createCmd",
-          "creates": "(createColumn|removeColumn|setColumnOption|changeColumnVis|showInDetail)"
+          "creates": "(createStratomeXColumn|removeStratomeXColumn|moveStratomeXColumn|setStratomeXColumnOption|changeStratomeXColumnVis|showStratomeXInDetail)"
         },
         {
           "type": "app",

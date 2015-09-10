@@ -62,7 +62,7 @@ define(function (require, exports) {
   }
   function removeColumn(inputs, parameter, graph) {
     var column = inputs[0].value,
-      inv = createColumnCmd(graph.findObject(column.stratomex), graph.findObject(column.data), column.range);
+      inv = createColumnCmd(graph.findObject(column.stratomex), graph.findObject(column.data), column.range.toString());
     column.destroy();
     column.stratomex.removeColumn(inputs[0]);
     return {
@@ -109,14 +109,14 @@ define(function (require, exports) {
 
   function createToggleDetailCmd(column, cluster, show) {
     var act = show ? 'show' : 'hide';
-    return prov.action(prov.meta(act + ' detail of cluster ' + cluster + ' of ' + column.toString(), prov.cat.layout), 'showInDetail', showInDetail, [column], {
+    return prov.action(prov.meta(act + ' detail of cluster ' + cluster + ' of ' + column.toString(), prov.cat.layout), 'showStratomeXInDetail', showInDetail, [column], {
       cluster: cluster,
       action: show ? 'show' : 'hide'
     });
   }
 
   function createChangeVis(column, to, from) {
-    return prov.action(prov.meta('change vis ' + column.toString() + ' to ' + to, prov.cat.visual), 'changeColumnVis', changeVis, [column], {
+    return prov.action(prov.meta('change vis ' + column.toString() + ' to ' + to, prov.cat.visual), 'changeStratomeXColumnVis', changeVis, [column], {
       to: to,
       from: from
     });
@@ -136,20 +136,20 @@ define(function (require, exports) {
   }
 
   function createSetOption(column, name, value, old) {
-    return prov.action(prov.meta('set option "' + name + +'" of "' + column.toString() + ' to "' + value + '"', prov.cat.visual), 'setColumnOption', setOption, [column], {
+    return prov.action(prov.meta('set option "' + name + +'" of "' + column.toString() + ' to "' + value + '"', prov.cat.visual), 'setStratomeXColumnOption', setOption, [column], {
       name: name,
       value: value,
       old: old
     });
   }
   function createColumnCmd(stratomex, data, partitioning) {
-    return prov.action(prov.meta('Create Column for '+data.value.desc.name, prov.cat.visual, prov.op.create), 'createColumn', createColumn, [stratomex, data], { partitioning: partitioning })
+    return prov.action(prov.meta('Create Column for '+data.value.desc.name, prov.cat.visual, prov.op.create), 'createStratomeXColumn', createColumn, [stratomex, data], { partitioning: partitioning.toString() })
   }
   function createRemoveCmd(column) {
-    return prov.action(prov.meta('Remove Column', prov.cat.visual, prov.op.remove), 'removeColumn', removeColumn, [column]);
+    return prov.action(prov.meta('Remove Column', prov.cat.visual, prov.op.remove), 'removeStratomeXColumn', removeColumn, [column]);
   }
   function createMoveColumnCmd(column, shift) {
-    return prov.action(prov.meta('Change Column', prov.cat.layout, prov.op.move), 'moveColumn', moveColumn, [column], { shift: shift });
+    return prov.action(prov.meta('Change Column', prov.cat.layout, prov.op.move), 'moveStratomeXColumn', moveColumn, [column], { shift: shift });
   }
   exports.createColumnCmd = createColumnCmd;
   exports.createRemoveCmd = createRemoveCmd;
@@ -158,11 +158,12 @@ define(function (require, exports) {
 
   exports.createCmd = function(id) {
     switch(id) {
-      case 'setColumnOption' : return setOption;
-      case 'createColumn': return createColumn;
-      case 'removeColumn' : return removeColumn;
-      case 'changeColumnVis': return changeVis;
-      case 'showInDetail' : return showInDetail;
+      case 'setStratomeXColumnOption' : return setOption;
+      case 'createStratomeXColumn': return createColumn;
+      case 'moveStratomeXColumn': return moveColumn;
+      case 'removeStratomeXColumn' : return removeColumn;
+      case 'changeStratomeXColumnVis': return changeVis;
+      case 'showStratomeXInDetail' : return showInDetail;
     }
     return null;
   };

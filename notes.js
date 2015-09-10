@@ -14,7 +14,7 @@ define(function (require, exports) {
     };
   }
   function addNoteCmd(text) {
-    return prov.action(prov.meta('Add Note', prov.cat.annotation, prov.op.create), 'addNote', addNote, [], {
+    return prov.action(prov.meta('Add Note', prov.cat.annotation, prov.op.create), 'addStratomeXNote', addNote, [], {
       text : text
     });
   }
@@ -28,7 +28,7 @@ define(function (require, exports) {
     };
   }
   function removeNoteCmd(note) {
-    return prov.action(prov.meta('Remove Note', prov.cat.annotation, prov.op.remove), 'removeNote', removeNote, [note]);
+    return prov.action(prov.meta('Remove Note', prov.cat.annotation, prov.op.remove), 'removeStratomeXNote', removeNote, [note]);
   }
 
   function changeNote(inputs, parameter) {
@@ -41,14 +41,14 @@ define(function (require, exports) {
     };
   }
   function changeNoteCmd(note, text) {
-    return prov.action(prov.meta('Change Note', prov.cat.annotation, prov.op.update), 'changeNote', changeNote, [note], { text : text} );
+    return prov.action(prov.meta('Change Note', prov.cat.annotation, prov.op.update), 'changeStratomeXNote', changeNote, [note], { text : text} );
   }
 
   exports.createCmd = function(id) {
     switch(id) {
-      case 'changeNote' : return changeNote;
-      case 'removeNote' : return removeNote;
-      case 'addNote': return addNote;
+      case 'changeStratomeXNote' : return changeNote;
+      case 'removeStratomeXNote' : return removeNote;
+      case 'addStratomeXNote': return addNote;
     }
     return null;
   };
