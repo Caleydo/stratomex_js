@@ -79,8 +79,13 @@ define(function (require, exports) {
             tooltips: false
           }
         },
-        layout: {
-          primary: [ { type: 'actions', width: 40 }, { type: 'rank', width: 40 }, col('Name', 220), col('Dimensions', 90), col('ID Type', 80), col('# Groups', 80)]
+        dump: {
+          layout: {
+            primary: [{type: 'actions', width: 40}, {
+              type: 'rank',
+              width: 40
+            }, col('Name', 220), col('Dimensions', 90), col('ID Type', 80), col('# Groups', 80)]
+          }
         }
       });
     });

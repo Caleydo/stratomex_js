@@ -38,7 +38,7 @@ define(function (require) {
     var bounds = C.bounds(stratomex.parent);
     stratomex.setBounds(bounds.x, bounds.y, bounds.w, bounds.h);
   }
-  elems.on('modeDChanged', function(event, new_) {
+  elems.on('modeChanged', function(event, new_) {
     if (new_ > cmode.ECLUEMode.Exploration) {
       $left_data.animate({height: 'hide'});
     } else {
@@ -68,7 +68,7 @@ define(function (require) {
       if (desc.type === 'matrix' || desc.type === 'vector') {
         return desc.value.type.match('(int|real|categorical)');
       }
-      return desc.type === 'stratification';
+      return desc.type === 'stratification' && desc.origin != null;
     });
   }
   data.list().then(data.convertTableToVectors).then(filterTypes).then(splitAndConvert).then(createLineUp);

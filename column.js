@@ -29,10 +29,11 @@ define(function (require, exports) {
   //create a manager for all columns
   var manager = exports.manager = new idtypes.ObjectManager('_column', 'Column');
 
-  function createWrapper($elem, data, range) {
+  function createWrapper(elem, data, range) {
+    var $elem = d3.select(elem);
     $elem.classed('group', true);
     $elem.append('div').attr('class','title').text(range.dim(0).name);
-    return $elem.append('div').attr('class', 'body');
+    return $elem.append('div').attr('class', 'body').node();
   }
 
   function createColumn(inputs, parameter, graph) {
