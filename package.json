@@ -11,7 +11,8 @@
     "caleydo_provenance": "*",
     "caleydo_vis": "*",
     "caleydo_d3": "*",
-    "wrapper_bootstrap_fontawesome": "*"
+    "wrapper_bootstrap_fontawesome": "*",
+    "clue_demo": "*"
   },
   "caleydo": {
     "plugins": {
