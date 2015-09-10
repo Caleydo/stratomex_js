@@ -318,14 +318,14 @@ define(function (require, exports) {
       var g = that.stratomex.provGraph;
       var s = g.findObject(that);
       if (that.stratomex.canShift(s).left > 0) {
-        g.push(createMoveColumnCmd(s), -1);
+        g.push(createMoveColumnCmd(s, -1));
       }
     });
     $t.append('i').attr('class','fa fa-chevron-right').on('click', function() {
       var g = that.stratomex.provGraph;
       var s = g.findObject(that);
       if (that.stratomex.canShift(s).right < 0) {
-        g.push(createMoveColumnCmd(s), +1);
+        g.push(createMoveColumnCmd(s, +1));
       }
     });
     $t.append('i').attr('class','fa fa-close').on('click', function() {

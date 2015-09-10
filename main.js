@@ -13,6 +13,7 @@ define(function (require) {
   var elems = template.create(document.body, {
     app: 'StratomeX.js'
   });
+  elems.header.addMainMenu('New Workspace', elems.reset.bind(elems));
   var graph = elems.graph;
   elems.$main.append('div').attr('id', 'stratomex');
   elems.$main.append('div').attr('id', 'databrowser');
@@ -34,9 +35,15 @@ define(function (require) {
   } else {
     $left_data.show();
   }
+  function updateLineUp() {
+    if (lineup.lineup) {
+      lineup.lineup.update();
+    }
+  }
   function updateBounds() {
     var bounds = C.bounds(stratomex.parent);
     stratomex.setBounds(bounds.x, bounds.y, bounds.w, bounds.h);
+    updateLineUp();
   }
   elems.on('modeChanged', function(event, new_) {
     if (new_ > cmode.ECLUEMode.Exploration) {
@@ -45,7 +52,8 @@ define(function (require) {
       $left_data.animate({height: 'show'});
     }
 
-    updateBounds();
+    //for the animations to end
+    setTimeout(updateBounds, 700);
   });
   $(window).on('resize', updateBounds);
   updateBounds();

@@ -23,6 +23,12 @@ define(function (require, exports) {
       return this._data;
     }
   });
+  StratomeXLineUp.prototype.setBounds = function(x,y,w,h) {
+    views.AView.prototype.setBounds.call(this, x, y, w, h);
+    if (this.lineup) {
+      this.lineup.up
+    }
+  }
   function col(name, width) {
     return { column: name,  width: width };
   }
