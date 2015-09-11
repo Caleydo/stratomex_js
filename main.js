@@ -22,11 +22,12 @@ define(function (require) {
   var stratomex = require('./stratomex').create(document.getElementById('stratomex'), graph);
 
   var lineup =  require('./lineup').create(document.getElementById('databrowser'),function (rowStrat) {
-    var d = datavalues.filter(function(di) { return di.desc.name === rowStrat.desc.origin;})[0];
-    if (d.desc.type === 'matrix' && rowStrat.idtypes[0] !== d.idtypes[0]) {
-      d = d.t; //transpose
-    }
-    stratomex.addData(rowStrat, d);
+    rowStrat.origin().then(function(d) {
+      if (d.desc.type === 'matrix' && rowStrat.idtypes[0] !== d.idtypes[0]) {
+        d = d.t; //transpose
+      }
+      stratomex.addData(rowStrat, d);
+    });
   });
 
   var $left_data = $('#databrowser');
