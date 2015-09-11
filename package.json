@@ -10,6 +10,7 @@
     "caleydo_links": "*",
     "caleydo_provenance": "*",
     "caleydo_vis": "*",
+    "caleydo-vis-lineup": "*",
     "caleydo_d3": "*",
     "wrapper_bootstrap_fontawesome": "*",
     "clue_demo": "*"
