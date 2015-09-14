@@ -19,7 +19,7 @@ define(function (require) {
   elems.$main.append('div').attr('id', 'databrowser');
 
   var datavalues;
-  var stratomex = require('./stratomex').create(document.getElementById('stratomex'), graph);
+  var stratomex = require('./StratomeXt').create(document.getElementById('stratomex'), graph);
 
   var lineup =  require('./lineup').create(document.getElementById('databrowser'),function (rowStrat) {
     rowStrat.origin().then(function(d) {

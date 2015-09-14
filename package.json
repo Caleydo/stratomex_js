@@ -40,7 +40,7 @@
         {
           "type": "actionFactory",
           "id": "stratomex-column",
-          "file": "column",
+          "file": "Columnt",
           "factory": "createCmd",
           "creates": "(createStratomeXColumn|removeStratomeXColumn|moveStratomeXColumn|setStratomeXColumnOption|changeStratomeXColumnVis|showStratomeXInDetail)"
         },
