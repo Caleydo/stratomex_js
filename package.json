@@ -45,6 +45,18 @@
           "creates": "(createStratomeXColumn|removeStratomeXColumn|swapStratomeXColumns|setStratomeXColumnOption|changeStratomeXColumnVis|showStratomeXInDetail)"
         },
         {
+          "type": "actionCompressor",
+          "id": "stratomex-compressSwap",
+          "file": "Column",
+          "factory": "compressSwap"
+        },
+        {
+          "type": "actionCompressor",
+          "id": "stratomex-compressCreateRemove",
+          "file": "Column",
+          "factory": "compressCreateRemove"
+        },
+        {
           "type": "app",
           "name": "Stratomex.js"
         }

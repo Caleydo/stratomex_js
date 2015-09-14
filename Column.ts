@@ -173,22 +173,60 @@ export function createCmd(id:string) {
  * @param path
  * @returns {prov.ActionNode[]}
  */
-export function compressSwap(path: prov.ActionNode[]) {
-  const lastByIDType : any = {};
+export function compressCreateRemove(path: prov.ActionNode[]) {
+  const to_remove: number[] = [];
   path.forEach((p, i) => {
-    if (p.f_id === 'createStratomeXColumn') {
-      const para = p.parameter;
-      lastByIDType[para.idtype+'@'+para.type] = p;
+    if (p.f_id === 'removeStratomeXColumn') {
+      const col = p.removes[0]; //removed column
+      //find the matching createStatement and mark all changed in between
+      for (let j = i-1; j >= 0; --j) {
+        let q = path[j];
+        if (q.f_id === 'createStratomeXColumn') {
+          let created_col = q.creates[0];
+          if (created_col === col) {
+            //I found my creation
+            to_remove.push(j, i); //remove both
+            break;
+          }
+        } else if (q.f_id.match(/(changeStratomeXColumnVis|showStratomeXInDetail|setStratomeXColumnOption|swapStratomeXColumns)/)) {
+          if (q.requires.some((d) => d === col)) {
+            to_remove.push(j); //uses the element
+          }
+        }
+      }
     }
   });
-  return path.filter((p) => {
-    if (p.f_id !== 'select') {
-      return true;
+  //decreasing order for right indices
+  for(let i of to_remove.sort((a,b) => b-a)) {
+    path.splice(i,1);
+  }
+  return path;
+}
+
+export function compressSwap(path: prov.ActionNode[]) {
+  const to_remove: number[] = [];
+  path.forEach((p, i) => {
+    if (p.f_id === 'swapStratomeXColumns') {
+      const inputs = p.requires;
+      //assert inputs.length === 3
+      for (let j = i+1; j < path.length; ++j) {
+        let q = path[j];
+        if (q.f_id === 'swapStratomeXColumns') {
+          let otherin = q.requires;
+          if (inputs[1] === otherin[2] && inputs[2] === otherin[1]) {
+            //swapped again
+            to_remove.push(i,j);
+            break;
+          }
+        }
+      }
     }
-    const para = p.parameter;
-    //last one remains
-    return lastByIDType[para.idtype+'@'+para.type] === p;
   });
+  //decreasing order for right indices
+  for(let i of to_remove.sort((a,b) => b-a)) {
+    path.splice(i,1);
+  }
+  return path;
 }
 
 function shiftBy(r, shift) {

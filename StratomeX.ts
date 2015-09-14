@@ -10,7 +10,7 @@ import prov = require('../caleydo_provenance/main');
 
 import { distributeLayout } from '../caleydo_core/layout';
 const layout = distributeLayout(true, 100, {top: 30, left: 30, right: 30, bottom: 10});
-import columns = require('./Columnt');
+import columns = require('./Column');
 
 type ColumnRef = prov.IObjectRef<columns.Column>;
 
