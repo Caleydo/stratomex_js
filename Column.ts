@@ -168,6 +168,28 @@ export function createCmd(id:string) {
   return null;
 }
 
+/**
+ * annihilate two swap operations: A-B and B-A
+ * @param path
+ * @returns {prov.ActionNode[]}
+ */
+export function compressSwap(path: prov.ActionNode[]) {
+  const lastByIDType : any = {};
+  path.forEach((p, i) => {
+    if (p.f_id === 'createStratomeXColumn') {
+      const para = p.parameter;
+      lastByIDType[para.idtype+'@'+para.type] = p;
+    }
+  });
+  return path.filter((p) => {
+    if (p.f_id !== 'select') {
+      return true;
+    }
+    const para = p.parameter;
+    //last one remains
+    return lastByIDType[para.idtype+'@'+para.type] === p;
+  });
+}
 
 function shiftBy(r, shift) {
   if (Array.isArray(r)) {
