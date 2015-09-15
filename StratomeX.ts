@@ -29,7 +29,7 @@ class StratomeX extends views.AView {
       filter: this.areNeighborColumns.bind(this),
       mode: 'link-group',
       idTypeFilter: function (idtype, i) {
-        return i == 0; //just the row i.e. first one
+        return i === 0; //just the row i.e. first one
       }
     });
   }

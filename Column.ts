@@ -3,7 +3,6 @@
  */
 import d3 = require('d3');
 import $ = require('jquery');
-import vis = require('../caleydo_core/vis');
 import C = require('../caleydo_core/main');
 import multiform = require('../caleydo_core/multiform');
 import geom = require('../caleydo_core/geom');
@@ -58,7 +57,7 @@ function createColumn(inputs, parameter, graph) {
     return {
       created: [r],
       inverse: createRemoveCmd(inputs[0], r)
-    }
+    };
   });
 }
 function removeColumn(inputs, parameter, graph) {
@@ -141,7 +140,7 @@ export function createSetOption(column, name, value, old) {
   });
 }
 export function createColumnCmd(stratomex, data, partitioning) {
-  return prov.action(prov.meta('Create Column for ' + data.value.desc.name, prov.cat.visual, prov.op.create), 'createStratomeXColumn', createColumn, [stratomex, data], {partitioning: partitioning.toString()})
+  return prov.action(prov.meta('Create Column for ' + data.value.desc.name, prov.cat.visual, prov.op.create), 'createStratomeXColumn', createColumn, [stratomex, data], {partitioning: partitioning.toString()});
 }
 export function createRemoveCmd(stratomex, column) {
   return prov.action(prov.meta('Remove Column', prov.cat.visual, prov.op.remove), 'removeStratomeXColumn', removeColumn, [stratomex, column]);
@@ -287,25 +286,25 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
       }
     });
     this.grid = multiform.createGrid(data, partitioning, <Element>this.$clusters.node(), function (data, range) {
-      return (<any>data).view(range)
+      return (<any>data).view(range);
     }, {
       initialVis: guessInitial(data.desc),
       wrap: createWrapper
     });
     //zooming
-    var grid_z = this.grid_zoom = new behaviors.ZoomLogic(this.grid, this.grid.asMetaData);
-    var summary_z = this.summary_zoom = new behaviors.ZoomLogic(this.summary, this.summary.asMetaData);
+    this.grid_zoom = new behaviors.ZoomLogic(this.grid, this.grid.asMetaData);
+    this.summary_zoom = new behaviors.ZoomLogic(this.summary, this.summary.asMetaData);
     var layoutOptions = {
       animate: true,
       'set-call': function (s) {
         s.style('opacity', 1);
       },
       onSetBounds: function () {
-        that.layouted()
+        that.layouted();
       },
       prefWidth: this.options.width
     };
-    var g = this.grid.on('changed', function (event, to, from) {
+    this.grid.on('changed', function (event, to, from) {
       that.fire('changed', to, from);
     });
     //create layout version
@@ -346,20 +345,17 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
   }
 
   locate(...args:any[]) {
-    var vis = this.grid, that = this;
     if (args.length === 1) {
-      return that.locateImpl(args[0]);
+      return this.locateImpl(args[0]);
     }
-    return args.map(function (arg) {
-      return that.locateImpl(arg)
-    });
+    return args.map((arg) => this.locateImpl(arg));
   }
 
   locateById(...args:any[]) {
     var that = this;
     return this.data.ids().then(function (ids) {
       return that.locate.apply(that, args.map(function (r) {
-        return ids.indexOf(r)
+        return ids.indexOf(r);
       }));
     });
   }
@@ -400,21 +396,21 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
     var $t = this.$toolbar,
       that = this;
     multiform.addIconVisChooser(<Element>$t.node(), this.grid);
-    $t.append('i').attr('class', 'fa fa-chevron-left').on('click', ()=>{
+    $t.append('i').attr('class', 'fa fa-chevron-left').on('click', ()=> {
       var g = that.stratomex.provGraph;
       var s = g.findObject(that);
       if (this.stratomex.canShift(s).left > 0) {
-        g.push(createSwapColumnCmd(this.stratomex.ref, s, this.stratomex.at(that.stratomex.indexOf(s) -1 )));
+        g.push(createSwapColumnCmd(this.stratomex.ref, s, this.stratomex.at(that.stratomex.indexOf(s) - 1)));
       }
     });
-    $t.append('i').attr('class', 'fa fa-chevron-right').on('click', ()=>{
+    $t.append('i').attr('class', 'fa fa-chevron-right').on('click', ()=> {
       var g = that.stratomex.provGraph;
       var s = g.findObject(that);
       if (that.stratomex.canShift(s).right < 0) {
        g.push(createSwapColumnCmd(this.stratomex.ref, s, that.stratomex.at(that.stratomex.indexOf(s) +1 )));
       }
     });
-    $t.append('i').attr('class', 'fa fa-close').on('click', ()=>{
+    $t.append('i').attr('class', 'fa fa-close').on('click', ()=> {
       var g = that.stratomex.provGraph;
       g.push(createRemoveCmd(this.stratomex.ref, g.findObject(that)));
     });
