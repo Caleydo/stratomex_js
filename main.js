@@ -15,7 +15,7 @@ define(function (require) {
   });
   elems.header.addMainMenu('New Workspace', elems.reset.bind(elems));
   var graph = elems.graph;
-  elems.$main.append('div').attr('id', 'stratomex');
+  elems.$main.append('div').attr('id', 'stratomex').attr('data-main',true);
   elems.$main.append('div').attr('id', 'databrowser');
 
   var datavalues;
