@@ -118,10 +118,28 @@ main {
       border-radius: 5px 5px ;
       border: 2px solid gray;
 
+      &.selected {
+        border-color: $select-color;
+        div.title {
+          background-color: $select-color;
+        }
+      }
+
       div.title {
         background-color: #d1d1d1;
         padding: 0 1em;
       }
+
+      div.footer {
+        background-color: black;
+        height: 5px;
+
+        div {
+          background-color: gray;
+          height: 100%;
+        }
+      }
+
     }
   }
 

@@ -29,12 +29,6 @@ function guessInitial(desc):any {
 //create a manager for all columns
 export const manager = new idtypes.ObjectManager<Column>('_column', 'Column');
 
-function createWrapper(elem, data, range) {
-  var $elem = d3.select(elem);
-  $elem.classed('group', true);
-  $elem.append('div').attr('class', 'title').text(range.dim(0).name);
-  return $elem.append('div').attr('class', 'body').node();
-}
 
 function createColumn(inputs, parameter, graph) {
   var stratomex = inputs[0].value,
@@ -285,6 +279,17 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
         nbins: Math.sqrt(data.dim[0])
       }
     });
+
+    function createWrapper(elem, data, cluster) {
+      const $elem = d3.select(elem);
+      $elem.classed('group', true);
+      $elem.append('div').attr('class', 'title').text(cluster.dim(0).name);
+      $elem.append('div').attr('class', 'body');
+      const ratio = cluster.dim(0).length / partitioning.dim(0).length;
+      $elem.append('div').attr('class', 'footer').append('div').style('width', Math.round(ratio*100)+'%');
+      return $elem.select('div.body').node();
+    }
+
     this.grid = multiform.createGrid(data, partitioning, <Element>this.$clusters.node(), function (data, range) {
       return (<any>data).view(range);
     }, {
