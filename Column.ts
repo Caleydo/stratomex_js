@@ -12,6 +12,7 @@ import events = require('../caleydo_core/event');
 import layout = require('../caleydo_core/layout');
 import link_m = require('../caleydo_links/link');
 import layouts = require('../caleydo_d3/layout_d3util');
+import datatypes = require('../caleydo_core/datatype');
 import prov = require('../caleydo_provenance/main');
 import ranges = require('../caleydo_core/range');
 
@@ -222,6 +223,29 @@ export function compressSwap(path: prov.ActionNode[]) {
   return path;
 }
 
+export function compressHideShowDetail(path: prov.ActionNode[]) {
+  const to_remove: number[] = [];
+  path.forEach((p, i) => {
+    if (p.f_id === 'showStratomeXInDetail' && p.parameter.action === 'show') {
+      const column = p.requires[0];
+      const cluster = p.parameter.cluster;
+      for (let j = i+1; j < path.length; ++j) {
+        let q = path[j];
+        if (q.f_id === 'showStratomeXInDetail' && q.parameter.action === 'hide' && q.parameter.cluster === cluster && column === q.requires[0]) {
+          //hide again
+          to_remove.push(i,j);
+          break;
+        }
+      }
+    }
+  });
+  //decreasing order for right indices
+  for(let i of to_remove.sort((a,b) => b-a)) {
+    path.splice(i,1);
+  }
+  return path;
+}
+
 function shiftBy(r, shift) {
   if (Array.isArray(r)) {
     return r.map(function (loc) {
@@ -237,6 +261,7 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
   private options = {
     summaryHeight: 100,
     width: 180,
+    detailWidth: 500,
     padding: 3
   };
 
@@ -253,6 +278,14 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
   private summary_zoom:behaviors.ZoomLogic;
 
   layout:layout.ALayoutElem;
+  private layoutOptions : any;
+
+  private detail: {
+    $node: d3.Selection<any>;
+    multi: multiform.IMultiForm;
+    zoom: behaviors.ZoomLogic;
+  };
+
 
   changeHandler: any;
   optionHandler: any;
@@ -260,6 +293,7 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
   constructor(private stratomex, public data, partitioning:ranges.Range, options:any = {}) {
     super();
     C.mixin(this.options, options);
+
     var that = this;
     this.$parent = d3.select(stratomex.parent).append('div').attr('class', 'column').style('opacity', 0.1);
     this.$toolbar = this.$parent.append('div').attr('class', 'toolbar');
@@ -280,9 +314,15 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
       }
     });
 
-    function createWrapper(elem, data, cluster) {
+    function createWrapper(elem, data, cluster, pos) {
       const $elem = d3.select(elem);
-      $elem.classed('group', true);
+      $elem.classed('group', true).datum(data);
+      var $toolbar = $elem.append('div').attr('class','gtoolbar');
+      $toolbar.append('i').attr('class','fa fa-expand').on('click', () => {
+        var g = that.stratomex.provGraph;
+        var s = g.findObject(that);
+        g.push(createToggleDetailCmd(s, pos[0], true));
+      });
       $elem.append('div').attr('class', 'title').text(cluster.dim(0).name);
       $elem.append('div').attr('class', 'body');
       const ratio = cluster.dim(0).length / partitioning.dim(0).length;
@@ -299,21 +339,17 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
     //zooming
     this.grid_zoom = new behaviors.ZoomLogic(this.grid, this.grid.asMetaData);
     this.summary_zoom = new behaviors.ZoomLogic(this.summary, this.summary.asMetaData);
-    var layoutOptions = {
-      animate: true,
-      'set-call': function (s) {
-        s.style('opacity', 1);
-      },
-      onSetBounds: function () {
-        that.layouted();
-      },
-      prefWidth: this.options.width
-    };
     this.grid.on('changed', function (event, to, from) {
       that.fire('changed', to, from);
     });
     //create layout version
-    this.layout = layouts.wrapDom(<HTMLElement>this.$parent.node(), layoutOptions);
+    this.layoutOptions = {
+      animate: true,
+      'set-call': (s) => s.style('opacity', 1),
+      onSetBounds: this.layouted.bind(this),
+      prefWidth: this.options.width
+    };
+    this.layout = layouts.wrapDom(<HTMLElement>this.$parent.node(), this.layoutOptions);
 
     this.createToolBar();
 
@@ -366,19 +402,61 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
   }
 
   showInDetail(cluster) {
-    this.stratomex.value.showDetail(this, this.grid.getData(cluster));
+    const data = this.grid.getData(cluster);
+
+    const $elem = this.$parent.append('div').classed('detail', true);
+    $elem.classed('group', true).datum(data);
+    var $toolbar = $elem.append('div').attr('class','gtoolbar');
+    $elem.append('div').attr('class', 'title').text((<ranges.CompositeRange1D>this.range.dim(0)).groups[cluster].name);
+    const $body = $elem.append('div').attr('class', 'body');
+    const multi = multiform.create(data, <Element>$body.node(),{
+      initialVis: guessInitial(data.desc)
+    });
+    multiform.addIconVisChooser(<Element>$toolbar.node(), multi);
+    $toolbar.append('i').attr('class','fa fa-close').on('click', () => {
+      var g = this.stratomex.provGraph;
+      var s = g.findObject(this);
+      g.push(createToggleDetailCmd(s, cluster, false));
+    });
+
+    this.detail = {
+      $node: $elem,
+      multi: multi,
+      zoom: new behaviors.ZoomLogic(multi, multi.asMetaData)
+    };
+    this.layoutOptions.prefWidth = this.options.width + this.options.detailWidth;
+    this.stratomex.relayout();
   }
 
   hideDetail(cluster) {
-    this.stratomex.value.hideDetail();
+    this.detail.multi.destroy();
+    this.detail.$node.remove();
+
+    this.detail = null;
+    this.layoutOptions.prefWidth = this.options.width;
+    this.stratomex.relayout();
   }
 
   layouted() {
     //sync the scaling
     var size = this.layout.getSize();
-    this.summary_zoom.zoomTo(size.x - this.options.padding * 2, this.options.summaryHeight - this.options.padding * 2 - 30);
+
     size.y -= this.options.summaryHeight;
     size.y -= (<any>this.range.dim(0)).groups.length * 35; //FIXME hack
+
+    if (this.detail) {
+      size.x -= this.options.detailWidth;
+      this.$summary.style('width', size.x+'px');
+      this.detail.$node.style({
+        width: this.options.detailWidth+'px',
+        height: size.y+'px',
+        top: this.options.summaryHeight+'px',
+        left: (size.x + this.options.padding * 2)+'px'
+      });
+      this.detail.zoom.zoomTo(this.options.detailWidth- this.options.padding * 4, size.y - this.options.padding * 2 - 30);
+    }
+
+    this.summary_zoom.zoomTo(size.x - this.options.padding * 2, this.options.summaryHeight - this.options.padding * 2 - 30);
     this.grid_zoom.zoomTo(size.x, size.y);
 
     //shift the content for the aspect ratio
@@ -426,5 +504,19 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
   destroy() {
     manager.remove(this);
     this.$parent.style('opacity', 1).transition().style('opacity', 0).remove();
+  }
+}
+
+export class DetailView {
+  private $node: d3.Selection<any>;
+  private multi: multiform.IMultiForm;
+
+  constructor($parent: d3.Selection<any>, private cluster: number, private data: datatypes.IDataType) {
+
+  }
+
+  destroy() {
+    this.multi.destroy();
+    this.$node.remove();
   }
 }

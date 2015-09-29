@@ -57,6 +57,12 @@
           "factory": "compressCreateRemove"
         },
         {
+          "type": "actionCompressor",
+          "id": "stratomex-compressHideShowDetail",
+          "file": "Column",
+          "factory": "compressHideShowDetail"
+        },
+        {
           "type": "app",
           "name": "Stratomex.js"
         }

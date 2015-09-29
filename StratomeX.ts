@@ -3,6 +3,7 @@
  */
 
 import views = require('../caleydo_core/layout_view');
+import datatypes = require('../caleydo_core/datatype');
 import C = require('../caleydo_core/main');
 import link_m = require('../caleydo_links/link');
 import ranges = require('../caleydo_core/range');
@@ -43,14 +44,13 @@ class StratomeX extends views.AView {
   relayout() {
     var that = this;
     that._links.hide();
-    layout(this._columns.map(function (c) {
-      return <any>c.value.layout;
-    }), this.dim[0], this.dim[1], null).then(function () {
+    var layouts = this._columns.map((c) => <any>c.value.layout);
+    layout(layouts, this.dim[0], this.dim[1], null).then(function () {
       that._links.update();
     });
   }
 
-  addData(rowStrat, m) {
+  addData(rowStrat, m: datatypes.IDataType) {
     var that = this;
     var mref = this.provGraph.findOrAddObject(m, m.desc.name, 'data');
     rowStrat.range().then(function (r) {
@@ -85,9 +85,7 @@ class StratomeX extends views.AView {
   }
 
   removeColumn(columnRef:ColumnRef) {
-    var i = C.indexOf(this._columns, function (elem) {
-      return elem.value === columnRef.value;
-    });
+    var i = C.indexOf(this._columns, (elem) => elem.value === columnRef.value);
     if (i >= 0) {
       this._columns.splice(i, 1);
       this._links.remove(false, columnRef.value);

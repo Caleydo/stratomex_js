@@ -79,10 +79,7 @@ main {
       opacity: 1;
     }
 
-    div.toolbar {
-      position: absolute;
-      height: 16px;
-      top: -16px;
+    div.toolbar, div.gtoolbar {
       i {
         background-size: 100%;
         margin: 0 1px;
@@ -94,6 +91,12 @@ main {
       i.fa-close {
         color: red;
       }
+    }
+
+    div.toolbar {
+      position: absolute;
+      height: 16px;
+      top: -16px;
 
       div {
         display: inline-block;
@@ -117,6 +120,7 @@ main {
       margin: 5px 0 5px 0;
       border-radius: 5px 5px ;
       border: 2px solid gray;
+      position: relative;
 
       &.selected {
         border-color: $select-color;
@@ -140,6 +144,20 @@ main {
         }
       }
 
+      div.gtoolbar {
+        position: absolute;
+        top: 0;
+        right: 0;
+
+        div {
+          display: inline-block;
+          margin: 0 1px;
+        }
+      }
+    }
+
+    div.detail {
+      position: absolute;
     }
   }
 
