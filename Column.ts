@@ -402,12 +402,12 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
   }
 
   showInDetail(cluster) {
-    const data = this.grid.getData(cluster);
+    const data = cluster < 0 ? this.data : this.grid.getData(cluster);
 
     const $elem = this.$parent.append('div').classed('detail', true);
     $elem.classed('group', true).datum(data);
     var $toolbar = $elem.append('div').attr('class','gtoolbar');
-    $elem.append('div').attr('class', 'title').text((<ranges.CompositeRange1D>this.range.dim(0)).groups[cluster].name);
+    $elem.append('div').attr('class', 'title').text(cluster < 0 ? this.data.desc.name : (<ranges.CompositeRange1D>this.range.dim(0)).groups[cluster].name);
     const $body = $elem.append('div').attr('class', 'body');
     const multi = multiform.create(data, <Element>$body.node(),{
       initialVis: guessInitial(data.desc)
@@ -492,6 +492,11 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
       if (that.stratomex.canShift(s).right < 0) {
        g.push(createSwapColumnCmd(this.stratomex.ref, s, that.stratomex.at(that.stratomex.indexOf(s) +1 )));
       }
+    });
+    $t.append('i').attr('class','fa fa-expand').on('click', () => {
+      var g = this.stratomex.provGraph;
+      var s = g.findObject(this);
+      g.push(createToggleDetailCmd(s, -1, true));
     });
     $t.append('i').attr('class', 'fa fa-close').on('click', ()=> {
       var g = that.stratomex.provGraph;
