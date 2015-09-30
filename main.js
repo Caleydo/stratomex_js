@@ -26,7 +26,11 @@ define(function (require) {
       if (d.desc.type === 'matrix' && rowStrat.idtypes[0] !== d.idtypes[0]) {
         d = d.t; //transpose
       }
-      stratomex.addData(rowStrat, d);
+      if (d.desc.type === 'table') {
+        stratomex.addData(rowStrat, rowStrat);
+      } else {
+        stratomex.addData(rowStrat, d);
+      }
     });
   });
 

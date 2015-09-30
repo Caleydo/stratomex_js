@@ -24,6 +24,9 @@ function guessInitial(desc):any {
   if (desc.type === 'vector') {
     return desc.value.type === 'categorical' ? 'caleydo-vis-mosaic' : 'caleydo-vis-heatmap1d';
   }
+  if (desc.type === 'stratification') {
+    return 'caleydo-vis-mosaic';
+  }
   return -1;
 }
 
@@ -35,7 +38,9 @@ function createColumn(inputs, parameter, graph) {
   var stratomex = inputs[0].value,
     partitioning = ranges.parse(parameter.partitioning);
   return inputs[1].v.then(function (data) {
-    var c = new Column(stratomex, data, partitioning);
+    var c = new Column(stratomex, data, partitioning, {
+      width: (data.desc.type === 'stratification') ? 80 : 160
+    });
     var r = prov.ref(c, 'Column of ' + data.desc.name, prov.cat.visual);
     c.changeHandler = function (event, to, from) {
       if (from) { //have a previous one so not the default
@@ -283,7 +288,7 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
   private detail: {
     $node: d3.Selection<any>;
     multi: multiform.IMultiForm;
-    zoom: behaviors.ZoomLogic;
+    zoom: behaviors.ZoomBehavior;
   };
 
 
@@ -311,6 +316,9 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
       'caleydo-vis-histogram': {
         totalHeight: false,
         nbins: Math.sqrt(data.dim[0])
+      },
+      all: {
+        selectAble: false
       }
     });
 
@@ -323,18 +331,34 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
         var s = g.findObject(that);
         g.push(createToggleDetailCmd(s, pos[0], true));
       });
-      $elem.append('div').attr('class', 'title').text(cluster.dim(0).name);
-      $elem.append('div').attr('class', 'body');
+      const toggleSelection = () => {
+        var isSelected = $elem.classed('select-selected');
+        if (isSelected) {
+          data.select(0, ranges.none());
+        } else {
+          data.select(0, ranges.all());
+        }
+        $elem.classed('select-selected', !isSelected);
+      };
+      $elem.append('div').attr('class', 'title').style('width',that.options.width+'px').text(cluster.dim(0).name).on('click', toggleSelection);
+      $elem.append('div').attr('class', 'body').on('click', toggleSelection);
+
       const ratio = cluster.dim(0).length / partitioning.dim(0).length;
       $elem.append('div').attr('class', 'footer').append('div').style('width', Math.round(ratio*100)+'%');
       return $elem.select('div.body').node();
     }
 
-    this.grid = multiform.createGrid(data, partitioning, <Element>this.$clusters.node(), function (data, range) {
+    this.grid = multiform.createGrid(data, partitioning, <Element>this.$clusters.node(), function (data, range, pos) {
+      if (data.desc.type === 'stratification') {
+        return (<any>data).group(pos[0]);
+      }
       return (<any>data).view(range);
     }, {
       initialVis: guessInitial(data.desc),
-      wrap: createWrapper
+      wrap: createWrapper,
+      all: {
+        selectAble: false
+      }
     });
     //zooming
     this.grid_zoom = new behaviors.ZoomLogic(this.grid, this.grid.asMetaData);
@@ -422,13 +446,16 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
     this.detail = {
       $node: $elem,
       multi: multi,
-      zoom: new behaviors.ZoomLogic(multi, multi.asMetaData)
+      zoom: new behaviors.ZoomBehavior(<Element>$elem.node(), multi, multi.asMetaData)
     };
     this.layoutOptions.prefWidth = this.options.width + this.options.detailWidth;
     this.stratomex.relayout();
   }
 
   hideDetail(cluster) {
+    if (!this.detail) {
+      return;
+    }
     this.detail.multi.destroy();
     this.detail.$node.remove();
 

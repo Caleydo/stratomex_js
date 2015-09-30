@@ -121,6 +121,7 @@ main {
       border-radius: 5px 5px ;
       border: 2px solid gray;
       position: relative;
+      white-space: nowrap;
 
       &.selected {
         border-color: $select-color;
@@ -129,9 +130,16 @@ main {
         }
       }
 
+      div.body {
+        /*disable selection*/
+        pointer-events: none;
+      }
+
       div.title {
         background-color: #d1d1d1;
         padding: 0 1em;
+        overflow: hidden;
+        font-size: small;
       }
 
       div.footer {
