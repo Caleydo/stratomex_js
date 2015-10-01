@@ -10,18 +10,24 @@ define(function (require) {
   var template = require('../clue_demo/template');
   var cmode = require('../caleydo_provenance/mode');
 
+
+  var helper = document.querySelector('#mainhelper');
   var elems = template.create(document.body, {
     app: 'StratomeX.js'
   });
   elems.header.addMainMenu('New Workspace', elems.reset.bind(elems));
   var graph = elems.graph;
-  elems.$main.append('div').attr('id', 'stratomex').attr('data-main',true);
-  elems.$main.append('div').attr('id', 'databrowser');
+  {
+    while(helper.firstChild) {
+      elems.$main.node().appendChild(helper.firstChild);
+    }
+    helper.remove();
+  }
 
   var datavalues;
   var stratomex = require('./StratomeX').create(document.getElementById('stratomex'), graph);
 
-  var lineup =  require('./lineup').create(document.getElementById('databrowser'),function (rowStrat) {
+  var lineup =  require('./lineup').create(document.getElementById('tab_stratifications'),function (rowStrat) {
     if (rowStrat.desc.type === 'stratification') {
       rowStrat.origin().then(function (d) {
         if (d.desc.type === 'matrix' && rowStrat.idtypes[0] !== d.idtypes[0]) {
@@ -40,6 +46,10 @@ define(function (require) {
     }
   });
 
+  var lineupData =  require('./lineup').createData(document.getElementById('tab_data'),function (vector) {
+    //TODO add dependent column
+  });
+
   var $left_data = $('#databrowser');
   if (cmode.getMode() > cmode.ECLUEMode.Exploration) {
     $left_data.hide();
@@ -49,6 +59,9 @@ define(function (require) {
   function updateLineUp() {
     if (lineup.lineup) {
       lineup.lineup.update();
+    }
+    if (lineupData.lineup) {
+      lineupData.lineup.update();
     }
   }
   function updateBounds() {
@@ -75,7 +88,7 @@ define(function (require) {
 
     strat = strat.concat(arr.filter(function(d) { return d.desc.type === 'vector'}));
 
-    //convert all matrixes to slicees with their corresponding name
+    //convert all matrices to slices with their corresponding name
     return Promise.all(arr.filter(function(d) { return d.desc.type === 'matrix'}).map(function(d) {
       return d.cols().then(function(colNames) {
         var cols = d.ncol, r = [];
@@ -105,7 +118,23 @@ define(function (require) {
       return desc.type === 'stratification' && desc.origin != null;
     });
   }
-  data.list().then(data.convertTableToVectors).then(filterTypes).then(splitAndConvert).then(createLineUp);
+
+  function createDataLineUp(r) {
+    lineupData.setData(r);
+  }
+
+  function filterDataTypes(arr) {
+    return arr.filter(function(d) {
+      var desc = d.desc;
+      if (desc.type === 'matrix' || desc.type == 'vector') {
+        return desc.value.type === 'real' || desc.value.type === 'int';
+      }
+      return false;
+    });
+  }
+  var vectors = data.list().then(data.convertTableToVectors);
+  vectors.then(filterTypes).then(splitAndConvert).then(createLineUp);
+  vectors.then(filterDataTypes).then(createDataLineUp);
 
   elems.jumpToStored();
 });

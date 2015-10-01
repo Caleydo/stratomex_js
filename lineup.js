@@ -4,16 +4,15 @@
 define(function (require, exports) {
   var views = require('../caleydo_core/layout_view');
   var C = require('../caleydo_core/main');
-  var events = require('../caleydo_core/event');
-  var layouts = require('../caleydo_core/layout');
   var vis = require('../caleydo_core/vis');
   var tables = require('../caleydo_core/table_impl');
   var d3 = require('d3');
 
-  function StratomeXLineUp(parent, onAdd) {
+  function StratomeXLineUp(parent, showGroups, onAdd) {
     views.AView.call(this);
     this._data = [];
     this.parent = parent;
+    this.showGroups = showGroups;
     this.onAdd = onAdd;
   }
   C.extendClass(StratomeXLineUp, views.AView);
@@ -26,9 +25,9 @@ define(function (require, exports) {
   StratomeXLineUp.prototype.setBounds = function(x,y,w,h) {
     views.AView.prototype.setBounds.call(this, x, y, w, h);
     if (this.lineup) {
-      this.lineup.up
+      this.lineup.update();
     }
-  }
+  };
   function col(name, width) {
     return { column: name,  width: width };
   }
@@ -64,15 +63,19 @@ define(function (require, exports) {
             }, {
               name: 'Dimensions',
               value: { type: 'string' },
-              getter: function(d) { return d.length; }
+              getter: function(d) { return d.dim.join(' x '); }
             }, {
               name: 'ID Type',
               value: { type: 'string' },
-              getter: function(d) { return d.idtype.name; }
+              getter: function(d) { return (d.idtypes.map(String).join(', ')); }
+            }, {
+              name: 'Type',
+              value: { type: 'string' },
+              getter: function(d) { return d.desc.type; }
             }, {
               name: '# Groups',
               value: { type: 'string' },
-              getter: function(d) { return d.ngroups || d.valuetype.categories.length; }
+              getter: function(d) { return d.ngroups || (d.valuetype.categories ? d.valuetype.categories.length : 0); }
             }
           ]
     }, list, function(d) { return d.desc.name });
@@ -107,7 +110,7 @@ define(function (require, exports) {
             primary: [{type: 'actions', width: 40}, {
               type: 'rank',
               width: 40
-            }, col('Dataset', 220), col('Name', 220), col('Dimensions', 90), col('ID Type', 80), col('# Groups', 80)]
+            }, col('Dataset', 220), col('Name', 220), col('Dimensions', 90), col('ID Type', 80), col(that.showGroups ? '# Groups' : 'Type', 80)]
           }
         }
       });
@@ -116,6 +119,9 @@ define(function (require, exports) {
 
   exports.StratomeXLineUp = StratomeXLineUp;
   exports.create = function (parent, onAdd) {
-    return new StratomeXLineUp(parent, onAdd);
+    return new StratomeXLineUp(parent, true, onAdd);
+  };
+  exports.createData = function (parent, onAdd) {
+    return new StratomeXLineUp(parent, false, onAdd);
   }
 });
