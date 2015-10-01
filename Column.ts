@@ -264,14 +264,14 @@ function shiftBy(r, shift) {
  * utility to sync histograms over multiple instances
  * @param expectedNumberOfHists
  */
-function histTotalAggregator(expectedNumberOfHists) {
+function groupTotalAggregator(expectedNumberOfPlots: number, agg: (v: any) => number) {
   var acc = 0;
   var resolvers = [];
-  return (hist : { count: number; largestBin: number}) => {
+  return (v) => {
     return new Promise((resolve) => {
-      acc = Math.max(hist.largestBin, acc);
+      acc = Math.max(agg(v), acc);
       resolvers.push(resolve);
-      if (resolvers.length === expectedNumberOfHists) {
+      if (resolvers.length === expectedNumberOfPlots) {
         resolvers.forEach((r) => r(acc));
         acc = 0;
         resolvers = [];
@@ -385,7 +385,7 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
       wrap: createWrapper,
       all: {
         selectAble: false,
-        total: histTotalAggregator((<ranges.CompositeRange1D>partitioning.dim(0)).groups.length),
+        total: groupTotalAggregator((<ranges.CompositeRange1D>partitioning.dim(0)).groups.length, (v) => v.largestBin),
         nbins: Math.sqrt(data.dim[0])
       },
       'caleydo-vis-mosaic': {
@@ -393,6 +393,9 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
       },
       'caleydo-vis-heatmap1d': {
         width: that.options.width
+      },
+      'caleydo-vis-kaplanmeier': {
+        maxTime: groupTotalAggregator((<ranges.CompositeRange1D>partitioning.dim(0)).groups.length, (v) => v[v.length-1]),
       }
     });
     //zooming
