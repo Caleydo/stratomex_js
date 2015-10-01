@@ -22,16 +22,20 @@ define(function (require) {
   var stratomex = require('./StratomeX').create(document.getElementById('stratomex'), graph);
 
   var lineup =  require('./lineup').create(document.getElementById('databrowser'),function (rowStrat) {
-    rowStrat.origin().then(function(d) {
-      if (d.desc.type === 'matrix' && rowStrat.idtypes[0] !== d.idtypes[0]) {
-        d = d.t; //transpose
-      }
-      if (d.desc.type === 'table') {
-        stratomex.addData(rowStrat, rowStrat);
-      } else {
-        stratomex.addData(rowStrat, d);
-      }
-    });
+    if (rowStrat.desc.type === 'stratification') {
+      rowStrat.origin().then(function (d) {
+        if (d.desc.type === 'matrix' && rowStrat.idtypes[0] !== d.idtypes[0]) {
+          d = d.t; //transpose
+        }
+        if (d.desc.type === 'table') {
+          stratomex.addData(rowStrat, rowStrat);
+        } else {
+          stratomex.addData(rowStrat, d);
+        }
+      });
+    } else if (rowStrat.desc.type === 'vector') {
+      //TODO
+    }
   });
 
   var $left_data = $('#databrowser');
@@ -66,9 +70,24 @@ define(function (require) {
 
   function splitAndConvert(arr) {
     var strat = arr.filter(function(d) { return d.desc.type === 'stratification'});
-    datavalues = arr.filter(function(d) { return d.desc.type !== 'stratification'});
 
-    return strat;
+    strat = strat.concat(arr.filter(function(d) { return d.desc.type === 'vector'}));
+
+    //convert all matrixes to slicees with their corresponding name
+    return Promise.all(arr.filter(function(d) { return d.desc.type === 'matrix'}).map(function(d) {
+      return d.cols().then(function(colNames) {
+        var cols = d.ncol, r = [];
+        for(var i = 0; i < cols; ++i) {
+          var v = d.slice(i);
+          v.desc.name = d.desc.name+'/'+colNames[i];
+          v.desc.fqname = d.desc.fqname+'/'+colNames[i];
+          r.push(v);
+        }
+        return r;
+      });
+    })).then(function(colsarray) {
+      return strat.concat.apply(strat, colsarray);
+    });
   }
 
   function createLineUp(r) {
@@ -79,7 +98,7 @@ define(function (require) {
     return arr.filter(function(d) {
       var desc = d.desc;
       if (desc.type === 'matrix' || desc.type === 'vector') {
-        return desc.value.type.match('(int|real|categorical)');
+        return desc.value.type === 'categorical';
       }
       return desc.type === 'stratification' && desc.origin != null;
     });

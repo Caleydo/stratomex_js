@@ -47,15 +47,15 @@ define(function (require, exports) {
             }, {
               name: 'Dimensions',
               value: { type: 'string' },
-              getter: function(d) { return d.desc.size[0]; }
+              getter: function(d) { return d.length; }
             }, {
               name: 'ID Type',
               value: { type: 'string' },
-              getter: function(d) { return d.idtypes[0].name; }
+              getter: function(d) { return d.idtype.name; }
             }, {
               name: '# Groups',
               value: { type: 'string' },
-              getter: function(d) { return d.desc.ngroups; }
+              getter: function(d) { return d.ngroups || d.valuetype.length; }
             }
           ]
     }, list, function(d) { return d.desc.name });
