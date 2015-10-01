@@ -34,7 +34,9 @@ define(function (require) {
         }
       });
     } else if (rowStrat.desc.type === 'vector') {
-      //TODO
+      rowStrat.stratification().then(function(d) {
+        stratomex.addData(d, d);
+      });
     }
   });
 
