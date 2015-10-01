@@ -307,7 +307,7 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
       'border-color': data.desc.color || 'gray',
       'background-color': data.desc.bgColor || 'lightgray'
     });
-    this.$summary.append('div').attr('class', 'title').text(data.desc.name).style('background-color', data.desc.bgColor || 'lightgray');
+    this.$summary.append('div').attr('class', 'title').style('max-width',that.options.width+'px').text(data.desc.name).style('background-color', data.desc.bgColor || 'lightgray');
     this.$clusters = this.$parent.append('div').attr('class', 'clusters');
     this.range = partitioning;
     //create the vis
@@ -340,7 +340,7 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
         }
         $elem.classed('select-selected', !isSelected);
       };
-      $elem.append('div').attr('class', 'title').style('width',that.options.width+'px').text(cluster.dim(0).name).on('click', toggleSelection);
+      $elem.append('div').attr('class', 'title').style('max-width',that.options.width+'px').text(cluster.dim(0).name).on('click', toggleSelection);
       $elem.append('div').attr('class', 'body').on('click', toggleSelection);
 
       const ratio = cluster.dim(0).length / partitioning.dim(0).length;
@@ -469,7 +469,7 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
     var size = this.layout.getSize();
 
     size.y -= this.options.summaryHeight;
-    size.y -= (<any>this.range.dim(0)).groups.length * 35; //FIXME hack
+    size.y -= (<any>this.range.dim(0)).groups.length * 42; //FIXME hack
 
     if (this.detail) {
       size.x -= this.options.detailWidth;

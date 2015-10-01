@@ -41,9 +41,26 @@ define(function (require, exports) {
           size: [list.length, 4],
           columns: [
             {
+              name: 'Dataset',
+              value: { type: 'string' },
+              getter: function(d) {
+                var s = d.desc.fqname.lastIndexOf('/');
+                if (s < 0) {
+                  return d.desc.name;
+                }
+                return d.desc.fqname.substr(0,s);
+              }
+            },
+            {
               name: 'Name',
               value: { type: 'string' },
-              getter: function(d) { return d.desc.name; }
+              getter: function(d) {
+                var s = d.desc.fqname.lastIndexOf('/');
+                if (s < 0) {
+                  return d.desc.name;
+                }
+                return d.desc.fqname.substr(s+1);
+              }
             }, {
               name: 'Dimensions',
               value: { type: 'string' },
@@ -90,7 +107,7 @@ define(function (require, exports) {
             primary: [{type: 'actions', width: 40}, {
               type: 'rank',
               width: 40
-            }, col('Name', 220), col('Dimensions', 90), col('ID Type', 80), col('# Groups', 80)]
+            }, col('Dataset', 220), col('Name', 220), col('Dimensions', 90), col('ID Type', 80), col('# Groups', 80)]
           }
         }
       });

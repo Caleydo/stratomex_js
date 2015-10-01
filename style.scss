@@ -65,6 +65,7 @@ main {
     width: auto;
     height: auto;
     background-color: #fafafa;
+    white-space: nowrap;
 
     &.select-selected {
       border: 1px solid $select-color;
@@ -110,6 +111,8 @@ main {
 
       div.title {
         padding: 0 1em;
+        overflow: hidden;
+        font-size: small;
       }
 
       > .multiform {
@@ -121,7 +124,6 @@ main {
       border-radius: 5px 5px ;
       border: 2px solid gray;
       position: relative;
-      white-space: nowrap;
 
       &.selected {
         border-color: $select-color;

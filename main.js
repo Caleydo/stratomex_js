@@ -81,7 +81,7 @@ define(function (require) {
         var cols = d.ncol, r = [];
         for(var i = 0; i < cols; ++i) {
           var v = d.slice(i);
-          v.desc.name = d.desc.name+'/'+colNames[i];
+          v.desc.name = colNames[i];
           v.desc.fqname = d.desc.fqname+'/'+colNames[i];
           r.push(v);
         }
