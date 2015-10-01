@@ -260,6 +260,26 @@ function shiftBy(r, shift) {
   return r ? geom.wrap(r).shift(shift) : r;
 }
 
+/**
+ * utility to sync histograms over multiple instances
+ * @param expectedNumberOfHists
+ */
+function histTotalAggregator(expectedNumberOfHists) {
+  var acc = 0;
+  var resolvers = [];
+  return (hist : { count: number; largestBin: number}) => {
+    return new Promise((resolve) => {
+      acc = Math.max(hist.largestBin, acc);
+      resolvers.push(resolve);
+      if (resolvers.length === expectedNumberOfHists) {
+        resolvers.forEach((r) => r(acc));
+        acc = 0;
+        resolvers = [];
+      }
+    });
+  };
+}
+
 export class Column extends events.EventHandler implements idtypes.IHasUniqueId, link_m.IDataVis {
   id:number;
 
@@ -318,7 +338,7 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
     this.summary = multiform.create(data, <Element>this.$summary.node(), {
       initialVis: 'caleydo-vis-histogram',
       'caleydo-vis-histogram': {
-        totalHeight: false,
+        total: false,
         nbins: Math.sqrt(data.dim[0])
       },
       all: {
@@ -364,9 +384,14 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
       initialVis: guessInitial(data.desc),
       wrap: createWrapper,
       all: {
-        selectAble: false
+        selectAble: false,
+        total: histTotalAggregator((<ranges.CompositeRange1D>partitioning.dim(0)).groups.length),
+        nbins: Math.sqrt(data.dim[0])
       },
       'caleydo-vis-mosaic': {
+        width: that.options.width
+      },
+      'caleydo-vis-heatmap1d': {
         width: that.options.width
       }
     });
@@ -389,6 +414,7 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
 
     this.id = manager.nextId(this);
     manager.on('select',this.highlightMe);
+    manager.select([this.id]);
   }
 
   ids() {
