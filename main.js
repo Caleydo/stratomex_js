@@ -47,7 +47,7 @@ define(function (require) {
   });
 
   var lineupData =  require('./lineup').createData(document.getElementById('tab_data'),function (vector) {
-    //TODO add dependent column
+    stratomex.addDependentData(vector);
   });
 
   var $left_data = $('#databrowser');

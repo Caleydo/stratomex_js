@@ -295,6 +295,10 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
   changeHandler: any;
   optionHandler: any;
 
+  private highlightMe = (event: events.IEvent, type: string, act: ranges.Range) => {
+    this.$parent.classed('select-'+type, act.dim(0).contains(this.id));
+  };
+
   constructor(private stratomex, public data, partitioning:ranges.Range, options:any = {}) {
     super();
     C.mixin(this.options, options);
@@ -320,6 +324,9 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
       all: {
         selectAble: false
       }
+    });
+    this.$summary.on('click', () => {
+      manager.select([this.id], idtypes.toSelectOperation(d3.event));
     });
 
     function createWrapper(elem, data, cluster, pos) {
@@ -381,6 +388,7 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
     this.createToolBar();
 
     this.id = manager.nextId(this);
+    manager.on('select',this.highlightMe);
   }
 
   ids() {
@@ -537,6 +545,7 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
   }
 
   destroy() {
+    manager.off('select', this.highlightMe);
     manager.remove(this);
     this.$parent.style('opacity', 1).transition().style('opacity', 0).remove();
   }

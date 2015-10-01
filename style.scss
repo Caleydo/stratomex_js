@@ -68,8 +68,12 @@ main {
     white-space: nowrap;
 
     &.select-selected {
-      border: 1px solid $select-color;
+      //border: 1px solid $select-color;
       background: none;
+
+      div.summary, div.group {
+        border-color: $select-color !important;
+      }
     }
     &.select-hovered {
       border: 1px solid $hover-color;
@@ -250,7 +254,7 @@ main {
   }
 }
 
-.select-selected {
+.multiform .select-selected {
   //html variant
   border: 1px solid $select-color;
   background-color: $select-color;

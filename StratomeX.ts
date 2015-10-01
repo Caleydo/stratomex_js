@@ -50,6 +50,21 @@ class StratomeX extends views.AView {
     });
   }
 
+  addDependentData(m: datatypes.IDataType) {
+    const base = columns.manager.selectedObjects()[0];
+    //nothing selected
+    if (!base) {
+      return false;
+    }
+    //check if idtypes match otherwise makes no sense
+    if (base.data.idtypes[0] === m.idtypes[0]) {
+      let mref = this.provGraph.findOrAddObject(m, m.desc.name, 'data');
+      this.provGraph.push(columns.createColumnCmd(this.ref, mref, base.range));
+      return true;
+    }
+    return false;
+  }
+
   addData(rowStrat, m: datatypes.IDataType) {
     var that = this;
     var mref = this.provGraph.findOrAddObject(m, m.desc.name, 'data');
