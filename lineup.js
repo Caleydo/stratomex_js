@@ -72,7 +72,7 @@ define(function (require, exports) {
             }, {
               name: '# Groups',
               value: { type: 'string' },
-              getter: function(d) { return d.ngroups || d.valuetype.length; }
+              getter: function(d) { return d.ngroups || d.valuetype.categories.length; }
             }
           ]
     }, list, function(d) { return d.desc.name });

@@ -358,6 +358,9 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
       wrap: createWrapper,
       all: {
         selectAble: false
+      },
+      'caleydo-vis-mosaic': {
+        width: that.options.width
       }
     });
     //zooming
@@ -469,7 +472,7 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
     var size = this.layout.getSize();
 
     size.y -= this.options.summaryHeight;
-    size.y -= (<any>this.range.dim(0)).groups.length * 42; //FIXME hack
+    size.y -= (<any>this.range.dim(0)).groups.length * 30; //FIXME hack
 
     if (this.detail) {
       size.x -= this.options.detailWidth;
