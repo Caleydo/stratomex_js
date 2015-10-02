@@ -59,7 +59,10 @@ class StratomeX extends views.AView {
     //check if idtypes match otherwise makes no sense
     if (base.data.idtypes[0] === m.idtypes[0]) {
       let mref = this.provGraph.findOrAddObject(m, m.desc.name, 'data');
-      this.provGraph.push(columns.createColumnCmd(this.ref, mref, base.range));
+      var r = ranges.list(base.range.dim(0));
+      base.data.ids(r).then(m.fromIdRange.bind(m)).then((target) => {
+        this.provGraph.push(columns.createColumnCmd(this.ref, mref, target));
+      });
       return true;
     }
     return false;

@@ -141,6 +141,12 @@ main {
         /*disable selection*/
         pointer-events: none;
         line-height: 0;
+        background-color: #d1d1d1;
+        text-align: center;
+
+        * {
+          background-color: white;
+        }
       }
 
       div.title {

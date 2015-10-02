@@ -21,6 +21,9 @@ function guessInitial(desc):any {
   if (desc.type === 'matrix') {
     return 'caleydo-vis-heatmap';
   }
+  if (desc.type === 'vector' && desc.value.type === 'int' && desc.name.toLowerCase().indexOf('daystodeath') >= 0) {
+    return 'caleydo-vis-kaplanmeier';
+  }
   if (desc.type === 'vector') {
     return desc.value.type === 'categorical' ? 'caleydo-vis-mosaic' : 'caleydo-vis-heatmap1d';
   }
@@ -335,7 +338,7 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
     this.$clusters = this.$parent.append('div').attr('class', 'clusters');
     this.range = partitioning;
     //create the vis
-    this.summary = multiform.create(data, <Element>this.$summary.node(), {
+    this.summary = multiform.create(data.desc.type !== 'stratification' ? data.view(partitioning) : data, <Element>this.$summary.node(), {
       initialVis: 'caleydo-vis-histogram',
       'caleydo-vis-histogram': {
         total: false,
@@ -395,7 +398,7 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
         width: that.options.width
       },
       'caleydo-vis-kaplanmeier': {
-        maxTime: groupTotalAggregator((<ranges.CompositeRange1D>partitioning.dim(0)).groups.length, (v) => v[v.length-1]),
+        maxTime: groupTotalAggregator((<ranges.CompositeRange1D>partitioning.dim(0)).groups.length, (v) => v.length === 0 ? 0 : v[v.length-1]),
       }
     });
     //zooming
@@ -524,7 +527,7 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
     }
 
     this.summary_zoom.zoomTo(size.x - this.options.padding * 2, this.options.summaryHeight - this.options.padding * 2 - 30);
-    this.grid_zoom.zoomTo(size.x, size.y);
+    this.grid_zoom.zoomTo(size.x - this.options.padding * 2, size.y);
 
     //shift the content for the aspect ratio
     var shift = [null, null];
