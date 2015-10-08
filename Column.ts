@@ -398,7 +398,7 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
         width: that.options.width
       },
       'caleydo-vis-kaplanmeier': {
-        maxTime: groupTotalAggregator((<ranges.CompositeRange1D>partitioning.dim(0)).groups.length, (v) => v.length === 0 ? 0 : v[v.length-1]),
+        maxTime: groupTotalAggregator((<ranges.CompositeRange1D>partitioning.dim(0)).groups.length, (v) => v.length === 0 ? 0 : v[v.length-1])
       }
     });
     //zooming
