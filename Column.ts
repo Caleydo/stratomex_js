@@ -459,8 +459,21 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
     return args.map((arg) => this.locateImpl(arg));
   }
 
+  private locateHack(groups: ranges.Range[]) {
+    const nGroups = this.grid.dimSizes[0];
+    if (groups.length !== nGroups) {
+      return null;
+    }
+    return groups.map((g, i) => shiftBy(this.grid.getBounds(i), this.visPos()));
+  }
+
   locateById(...args:any[]) {
-    var that = this;
+    const that = this;
+    //TODO use the real thing not a heuristic.
+    var r = this.locateHack(args);
+    if (r) {
+      return r;
+    }
     return this.data.ids().then(function (ids) {
       return that.locate.apply(that, args.map(function (r) {
         return ids.indexOf(r);
