@@ -72,7 +72,7 @@ class StratomeX extends views.AView {
   addData(rowStrat: stratification.IStratification, m: datatypes.IDataType, colStrat?: stratification.IStratification) {
     var that = this;
     var mref = this.provGraph.findOrAddObject(m, m.desc.name, 'data');
-    Promise.all<ranges.Range1D[]>([rowStrat.range(), colStrat? colStrat.range() : ranges.Range1D.all()]).then((range_list: ranges.Range1D[]) =>{
+    Promise.all<ranges.Range1D[]>([rowStrat.range(), colStrat ? colStrat.range() : ranges.Range1D.all()]).then((range_list:ranges.Range1D[]) => {
       const range = ranges.list(range_list);
       that.provGraph.push(columns.createColumnCmd(that.ref, mref, range));
     });
