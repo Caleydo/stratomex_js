@@ -30,13 +30,23 @@ define(function (require) {
   var lineup =  require('./lineup').create(document.getElementById('tab_stratifications'),function (rowStrat) {
     if (rowStrat.desc.type === 'stratification') {
       rowStrat.origin().then(function (d) {
-        if (d.desc.type === 'matrix' && rowStrat.idtypes[0] !== d.idtypes[0]) {
-          d = d.t; //transpose
+        var colStrat = null;
+        if (d.desc.type === 'matrix') {
+          if(rowStrat.idtypes[0] !== d.idtypes[0]) {
+            d = d.t; //transpose
+          }
+          //look for stratification that has the other idtype and the same origin
+          var available = lineup.rawData,
+              targetType = d.idtypes[1];
+          available = available.filter(function(ds) {
+            return ds.idtype === targetType && ds.desc.origin === d.desc.fqname;
+          });
+          colStrat = available[0];
         }
         if (d.desc.type === 'table') {
           stratomex.addData(rowStrat, rowStrat);
         } else {
-          stratomex.addData(rowStrat, d);
+          stratomex.addData(rowStrat, d, colStrat);
         }
       });
     } else if (rowStrat.desc.type === 'vector') {

@@ -4,6 +4,7 @@
 
 import views = require('../caleydo_core/layout_view');
 import datatypes = require('../caleydo_core/datatype');
+import stratification = require('../caleydo_core/stratification');
 import C = require('../caleydo_core/main');
 import link_m = require('../caleydo_links/link');
 import ranges = require('../caleydo_core/range');
@@ -68,11 +69,12 @@ class StratomeX extends views.AView {
     return false;
   }
 
-  addData(rowStrat, m: datatypes.IDataType) {
+  addData(rowStrat: stratification.IStratification, m: datatypes.IDataType, colStrat?: stratification.IStratification) {
     var that = this;
     var mref = this.provGraph.findOrAddObject(m, m.desc.name, 'data');
-    rowStrat.range().then(function (r) {
-      that.provGraph.push(columns.createColumnCmd(that.ref, mref, ranges.list(r, ranges.Range1D.all())));
+    Promise.all<ranges.Range1D[]>([rowStrat.range(), colStrat? colStrat.range() : ranges.Range1D.all()]).then((range_list: ranges.Range1D[]) =>{
+      const range = ranges.list(range_list);
+      that.provGraph.push(columns.createColumnCmd(that.ref, mref, range));
     });
   }
 

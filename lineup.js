@@ -83,6 +83,7 @@ define(function (require, exports) {
   StratomeXLineUp.prototype.setData = function(stratifications) {
     var that = this;
     var data = convertToTable(stratifications);
+    this.rawData = stratifications;
     this._data = [data];
     this.parent.__data__  = data;
     var v = vis.list(data);
