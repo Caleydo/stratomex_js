@@ -74,6 +74,10 @@ define(function (require) {
       lineupData.lineup.update();
     }
   }
+  $('a[data-toggle="tab"]').on('shown.bs.tab', function() {
+    updateLineUp();
+  });
+
   function updateBounds() {
     var bounds = C.bounds(stratomex.parent);
     stratomex.setBounds(bounds.x, bounds.y, bounds.w, bounds.h);

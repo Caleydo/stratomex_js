@@ -111,7 +111,7 @@ define(function (require, exports) {
             primary: [{type: 'actions', width: 40}, {
               type: 'rank',
               width: 40
-            }, col('Dataset', 220), col('Name', 220), col('Dimensions', 90), col('ID Type', 80), col(that.showGroups ? '# Groups' : 'Type', 80)]
+            }, col('Dataset', 220), col('Name', 220), col('Dimensions', 90), col('ID Type', 120), col(that.showGroups ? '# Groups' : 'Type', 80)]
           }
         }
       });
