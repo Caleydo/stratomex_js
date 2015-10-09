@@ -39,7 +39,7 @@ define(function (require) {
           var available = lineup.rawData,
               targetType = d.idtypes[1];
           available = available.filter(function(ds) {
-            return ds.idtype === targetType && ds.desc.origin === d.desc.fqname;
+            return ds.idtype === targetType && ds.desc.origin === d.desc.fqname && ds.desc.ngroups === 1;
           });
           colStrat = available[0];
         }
