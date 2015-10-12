@@ -61,7 +61,7 @@ define(function (require) {
   });
 
   var $left_data = $('#databrowser');
-  if (cmode.getMode() > cmode.ECLUEMode.Exploration) {
+  if (cmode.getMode().exploration < 0.8) {
     $left_data.hide();
   } else {
     $left_data.show();
@@ -84,7 +84,7 @@ define(function (require) {
     updateLineUp();
   }
   elems.on('modeChanged', function(event, new_) {
-    if (new_ > cmode.ECLUEMode.Exploration) {
+    if (new_.exploration < 0.8) {
       $left_data.animate({height: 'hide'});
     } else {
       $left_data.animate({height: 'show'});
