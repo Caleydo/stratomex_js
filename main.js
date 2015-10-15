@@ -85,9 +85,9 @@ define(function (require) {
   }
   elems.on('modeChanged', function(event, new_) {
     if (new_.exploration < 0.8) {
-      $left_data.animate({height: 'hide'});
+      $left_data.hide(); //.animate({height: 'hide'});
     } else {
-      $left_data.animate({height: 'show'});
+      $left_data.show(); //.animate({height: 'show'});
     }
 
     //for the animations to end
