@@ -36,6 +36,14 @@ class StratomeX extends views.AView {
     });
   }
 
+  reset() {
+    this._columns.forEach((c) => {
+      c.value.destroy();
+    });
+    this._columns = [];
+    this._links.clear();
+  }
+
   setBounds(x, y, w, h) {
     super.setBounds(x, y, w, h);
     this.dim = [w, h];
