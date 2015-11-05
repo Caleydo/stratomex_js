@@ -540,10 +540,10 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
     }
 
     this.summary.actLoader.then(() => {
-      this.summary_zoom.zoomTo(size.x - this.options.padding * 2, this.options.summaryHeight - this.options.padding * 2 - 30)
+      this.summary_zoom.zoomTo(size.x - this.options.padding * 2, this.options.summaryHeight - this.options.padding * 2 - 30);
     });
     this.grid.actLoader.then(() => {
-      this.grid_zoom.zoomTo(size.x - this.options.padding * 2, size.y)
+      this.grid_zoom.zoomTo(size.x - this.options.padding * 2, size.y);
     });
 
     //shift the content for the aspect ratio
