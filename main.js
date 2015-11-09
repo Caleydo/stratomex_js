@@ -13,7 +13,8 @@ define(function (require) {
 
   var helper = document.querySelector('#mainhelper');
   var elems = template.create(document.body, {
-    app: 'StratomeX.js'
+    app: 'StratomeX.js',
+    id: 'clue_stratomex'
   });
   elems.header.addMainMenu('New Workspace', elems.reset.bind(elems));
   var graph = elems.graph;
