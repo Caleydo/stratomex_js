@@ -189,7 +189,12 @@ main {
     position: absolute;
   }
 
+  .readonly {
+    pointer-events: none !important;
+  }
+
   .link-container {
+
     svg {
       position: absolute;
 

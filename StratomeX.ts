@@ -23,6 +23,8 @@ class StratomeX extends views.AView {
   private _links:link_m.LinkContainer;
   ref:prov.IObjectRef<StratomeX>;
 
+  private interactive = true;
+
   constructor(private parent:Element, private provGraph:prov.ProvenanceGraph) {
     super();
     this.ref = provGraph.findOrAddObject(this, 'StratomeX', 'visual');
@@ -37,7 +39,13 @@ class StratomeX extends views.AView {
   }
 
   setInteractive(interactive: boolean) {
+    this.interactive = interactive;
     this._columns.forEach((c) => c.value.setInteractive(interactive));
+    if (interactive) {
+      this._links.node.classList.remove('readonly');
+    } else {
+      this._links.node.classList.add('readonly');
+    }
   }
 
   reset() {
@@ -112,6 +120,7 @@ class StratomeX extends views.AView {
   addColumn(columnRef:ColumnRef) {
     this._columns.push(columnRef);
     columnRef.value.on('changed', C.bind(this.relayout, this));
+    columnRef.value.setInteractive(this.interactive);
     this._links.push(false, columnRef.value);
     this.relayout();
   }
