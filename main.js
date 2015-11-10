@@ -67,6 +67,7 @@ define(function (require) {
   } else {
     $left_data.show();
   }
+  stratomex.setInteractive(cmode.getMode().exploration >= 0.8);
   function updateLineUp() {
     if (lineup.lineup) {
       lineup.lineup.update();
@@ -90,6 +91,7 @@ define(function (require) {
     } else {
       $left_data.show(); //.animate({height: 'show'});
     }
+    stratomex.setInteractive(new_.exploration >= 0.8);
 
     //for the animations to end
     setTimeout(updateBounds, 700);

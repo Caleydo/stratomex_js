@@ -423,6 +423,13 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
     manager.select([this.id]);
   }
 
+  setInteractive(interactive: boolean) {
+    this.$toolbar.style('display',interactive ? null : 'none');
+    this.$clusters.selectAll('.gtoolbar').style('display',interactive ? null : 'none');
+
+    this.$clusters.selectAll('.group .title, .group .body').style('pointer-events', interactive ? null : 'none');
+  }
+
   ids() {
     return this.data.ids(this.range);
   }
