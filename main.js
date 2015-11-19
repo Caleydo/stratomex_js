@@ -14,6 +14,7 @@ define(function (require) {
   var helper = document.querySelector('#mainhelper');
   var elems = template.create(document.body, {
     app: 'StratomeX.js',
+    application: '/stratomex.js',
     id: 'clue_stratomex'
   });
   {
