@@ -47,6 +47,7 @@ function createColumn(inputs, parameter, graph) {
     var r = prov.ref(c, 'Column of ' + data.desc.name, prov.cat.visual);
     c.changeHandler = function (event, to, from) {
       if (from) { //have a previous one so not the default
+        console.log('fire change vis');
         graph.push(createChangeVis(r, to.id, from ? from.id : null));
       }
     };
@@ -85,12 +86,12 @@ function changeVis(inputs, parameter) {
     to = parameter.to,
     from = parameter.from || column.grid.act.id;
   column.off('changed', column.changeHandler);
-  column.grid.switchTo(to).then(function () {
+  return column.grid.switchTo(to).then(function () {
     column.on('changed', column.changeHandler);
+    return {
+      inverse: createChangeVis(inputs[0], from, to)
+    };
   });
-  return {
-    inverse: createChangeVis(inputs[0], from, to)
-  };
 }
 
 export function showInDetail(inputs, parameter) {
