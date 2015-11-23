@@ -144,13 +144,13 @@ export function createSetOption(column, name, value, old) {
   });
 }
 export function createColumnCmd(stratomex, data, partitioning) {
-  return prov.action(prov.meta('Create Column for ' + data.value.desc.name, prov.cat.visual, prov.op.create), 'createStratomeXColumn', createColumn, [stratomex, data], {partitioning: partitioning.toString()});
+  return prov.action(prov.meta('column for ' + data.value.desc.name, prov.cat.visual, prov.op.create), 'createStratomeXColumn', createColumn, [stratomex, data], {partitioning: partitioning.toString()});
 }
 export function createRemoveCmd(stratomex, column) {
-  return prov.action(prov.meta('Remove Column', prov.cat.visual, prov.op.remove), 'removeStratomeXColumn', removeColumn, [stratomex, column]);
+  return prov.action(prov.meta('column', prov.cat.visual, prov.op.remove), 'removeStratomeXColumn', removeColumn, [stratomex, column]);
 }
 export function createSwapColumnCmd(stratomex, columnA, columnB) {
-  return prov.action(prov.meta('Swap Columns', prov.cat.layout, prov.op.update), 'swapStratomeXColumns', swapColumns, [stratomex, columnA, columnB]);
+  return prov.action(prov.meta('swap clumns', prov.cat.layout, prov.op.update), 'swapStratomeXColumns', swapColumns, [stratomex, columnA, columnB]);
 }
 
 export function createCmd(id:string) {
