@@ -57,28 +57,31 @@ function createColumn(inputs, parameter, graph) {
     c.on('changed', c.changeHandler);
     c.on('option', c.optionHandler);
 
-    stratomex.addColumn(r);
-    return {
-      created: [r],
-      inverse: createRemoveCmd(inputs[0], r)
-    };
+    return stratomex.addColumn(r).then(() => {
+      return {
+        created: [r],
+        inverse: createRemoveCmd(inputs[0], r)
+      };
+    });
   });
 }
 function removeColumn(inputs, parameter, graph) {
   var column = inputs[1].value,
     inv = createColumnCmd(inputs[0], graph.findObject(column.data), column.range.toString());
   column.destroy();
-  inputs[0].value.removeColumn(inputs[1]);
-  return {
-    removed: [inputs[1]],
-    inverse: inv
-  };
+  return inputs[0].value.removeColumn(inputs[1]).then(() => {
+    return {
+      removed: [inputs[1]],
+      inverse: inv
+    };
+  });
 }
 function swapColumns(inputs) {
-  inputs[0].value.swapColumn(inputs[1], inputs[2]);
-  return {
-    inverse: createSwapColumnCmd(inputs[0], inputs[2], inputs[1])
-  };
+  return inputs[0].value.swapColumn(inputs[1], inputs[2]).then(() => {
+    return {
+      inverse: createSwapColumnCmd(inputs[0], inputs[2], inputs[1])
+    };
+  });
 }
 
 function changeVis(inputs, parameter) {
@@ -98,14 +101,17 @@ export function showInDetail(inputs, parameter) {
   var column = inputs[0].value,
     cluster = parameter.cluster,
     show = parameter.action === 'show';
+  var r;
   if (show) {
-    column.showInDetail(cluster);
+    r = column.showInDetail(cluster);
   } else {
-    column.hideDetail(cluster);
+    r = column.hideDetail(cluster);
   }
-  return {
-    inverse: createToggleDetailCmd(inputs[0], cluster, !show)
-  };
+  return r.next(() => {
+    return {
+      inverse: createToggleDetailCmd(inputs[0], cluster, !show)
+    };
+  });
 }
 
 export function createToggleDetailCmd(column, cluster, show) {
@@ -513,7 +519,7 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
       zoom: new behaviors.ZoomBehavior(<Element>$elem.node(), multi, multi.asMetaData)
     };
     this.layoutOptions.prefWidth = this.options.width + this.options.detailWidth;
-    this.stratomex.relayout();
+    return this.stratomex.relayout();
   }
 
   hideDetail(cluster) {
@@ -525,7 +531,7 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
 
     this.detail = null;
     this.layoutOptions.prefWidth = this.options.width;
-    this.stratomex.relayout();
+    return this.stratomex.relayout();
   }
 
   layouted() {

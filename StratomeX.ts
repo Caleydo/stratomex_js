@@ -66,7 +66,7 @@ class StratomeX extends views.AView {
     var that = this;
     that._links.hide();
     var layouts = this._columns.map((c) => <any>c.value.layout);
-    layout(layouts, this.dim[0], this.dim[1], null).then(function () {
+    return layout(layouts, this.dim[0], this.dim[1], null).then(function () {
       that._links.update();
     });
   }
@@ -122,7 +122,7 @@ class StratomeX extends views.AView {
     columnRef.value.on('changed', C.bind(this.relayout, this));
     columnRef.value.setInteractive(this.interactive);
     this._links.push(false, columnRef.value);
-    this.relayout();
+    return this.relayout();
   }
 
   removeColumn(columnRef:ColumnRef) {
@@ -130,8 +130,9 @@ class StratomeX extends views.AView {
     if (i >= 0) {
       this._columns.splice(i, 1);
       this._links.remove(false, columnRef.value);
-      this.relayout();
+      return this.relayout();
     }
+    return Promise.resolve(null);
   }
 
   swapColumn(columnRefA: ColumnRef, columnRefB: ColumnRef) {
@@ -139,7 +140,7 @@ class StratomeX extends views.AView {
       j = this.indexOf(columnRefB);
     this._columns[i] = columnRefB;
     this._columns[j] = columnRefA;
-    this.relayout();
+    return this.relayout();
   }
 
   indexOf(columnRef:ColumnRef) {
