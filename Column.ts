@@ -67,7 +67,7 @@ function createColumn(inputs, parameter, graph) {
   });
 }
 function removeColumn(inputs, parameter, graph) {
-  var column = inputs[1].value
+  var column = inputs[1].value;
   return inputs[0].value.removeColumn(inputs[1]).then((index) => {
     const inv = createColumnCmd(inputs[0], graph.findObject(column.data), column.range.toString(), index);
     return {
