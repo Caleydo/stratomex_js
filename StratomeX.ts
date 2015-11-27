@@ -59,7 +59,7 @@ class StratomeX extends views.AView {
   setBounds(x, y, w, h) {
     super.setBounds(x, y, w, h);
     this.dim = [w, h];
-    this.relayout();
+    return this.relayout();
   }
 
   relayout() {
@@ -68,6 +68,7 @@ class StratomeX extends views.AView {
     var layouts = this._columns.map((c) => <any>c.value.layout);
     return layout(layouts, this.dim[0], this.dim[1], null).then(function () {
       that._links.update();
+      return null;
     });
   }
 
@@ -128,9 +129,12 @@ class StratomeX extends views.AView {
   removeColumn(columnRef:ColumnRef) {
     var i = C.indexOf(this._columns, (elem) => elem.value === columnRef.value);
     if (i >= 0) {
+      columnRef.value.destroy();
       this._columns.splice(i, 1);
       this._links.remove(false, columnRef.value);
       return this.relayout();
+    } else {
+      console.error('cant find column');
     }
     return Promise.resolve(null);
   }

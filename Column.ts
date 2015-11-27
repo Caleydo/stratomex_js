@@ -68,7 +68,6 @@ function createColumn(inputs, parameter, graph) {
 function removeColumn(inputs, parameter, graph) {
   var column = inputs[1].value,
     inv = createColumnCmd(inputs[0], graph.findObject(column.data), column.range.toString());
-  column.destroy();
   return inputs[0].value.removeColumn(inputs[1]).then(() => {
     return {
       removed: [inputs[1]],
@@ -554,9 +553,13 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
     }
 
     this.summary.actLoader.then(() => {
+      var size = this.layout.getSize();
       this.summary_zoom.zoomTo(size.x - this.options.padding * 2, this.options.summaryHeight - this.options.padding * 2 - 30);
     });
     this.grid.actLoader.then(() => {
+      var size = this.layout.getSize();
+      size.y -= this.options.summaryHeight;
+      size.y -= (<any>this.range.dim(0)).groups.length * 30; //FIXME hack
       this.grid_zoom.zoomTo(size.x - this.options.padding * 2, size.y);
     });
 
