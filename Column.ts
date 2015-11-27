@@ -39,7 +39,8 @@ export const manager = new idtypes.ObjectManager<Column>('_column', 'Column');
 
 function createColumn(inputs, parameter, graph) {
   var stratomex = inputs[0].value,
-    partitioning = ranges.parse(parameter.partitioning);
+    partitioning = ranges.parse(parameter.partitioning),
+    index = parameter.hasOwnProperty('index') ? parameter.index : -1 ;
   return inputs[1].v.then(function (data) {
     var c = new Column(stratomex, data, partitioning, {
       width: (data.desc.type === 'stratification') ? 80 : 160
@@ -57,7 +58,7 @@ function createColumn(inputs, parameter, graph) {
     c.on('changed', c.changeHandler);
     c.on('option', c.optionHandler);
 
-    return stratomex.addColumn(r).then(() => {
+    return stratomex.addColumn(r, index).then(() => {
       return {
         created: [r],
         inverse: createRemoveCmd(inputs[0], r)
@@ -66,9 +67,9 @@ function createColumn(inputs, parameter, graph) {
   });
 }
 function removeColumn(inputs, parameter, graph) {
-  var column = inputs[1].value,
-    inv = createColumnCmd(inputs[0], graph.findObject(column.data), column.range.toString());
-  return inputs[0].value.removeColumn(inputs[1]).then(() => {
+  var column = inputs[1].value
+  return inputs[0].value.removeColumn(inputs[1]).then((index) => {
+    const inv = createColumnCmd(inputs[0], graph.findObject(column.data), column.range.toString(), index);
     return {
       removed: [inputs[1]],
       inverse: inv
@@ -148,8 +149,11 @@ export function createSetOption(column, name, value, old) {
     old: old
   });
 }
-export function createColumnCmd(stratomex, data, partitioning) {
-  return prov.action(prov.meta('column for ' + data.value.desc.name, prov.cat.visual, prov.op.create), 'createStratomeXColumn', createColumn, [stratomex, data], {partitioning: partitioning.toString()});
+export function createColumnCmd(stratomex, data, partitioning, index: number = -1) {
+  return prov.action(prov.meta('column for ' + data.value.desc.name, prov.cat.visual, prov.op.create), 'createStratomeXColumn', createColumn, [stratomex, data], {
+    partitioning: partitioning.toString(),
+    index: index
+  });
 }
 export function createRemoveCmd(stratomex, column) {
   return prov.action(prov.meta('column', prov.cat.visual, prov.op.remove), 'removeStratomeXColumn', removeColumn, [stratomex, column]);

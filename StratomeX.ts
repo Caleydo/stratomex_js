@@ -118,8 +118,12 @@ class StratomeX extends views.AView {
     });
   }
 
-  addColumn(columnRef:ColumnRef) {
-    this._columns.push(columnRef);
+  addColumn(columnRef:ColumnRef, index: number = -1) {
+    if (index < 0) {
+      this._columns.push(columnRef);
+    } else {
+      this._columns.splice(index, 0, columnRef);
+    }
     columnRef.value.on('changed', C.bind(this.relayout, this));
     columnRef.value.setInteractive(this.interactive);
     this._links.push(false, columnRef.value);
@@ -132,11 +136,11 @@ class StratomeX extends views.AView {
       columnRef.value.destroy();
       this._columns.splice(i, 1);
       this._links.remove(false, columnRef.value);
-      return this.relayout();
+      return this.relayout().then(() => i);
     } else {
       console.error('cant find column');
     }
-    return Promise.resolve(null);
+    return Promise.resolve(-1);
   }
 
   swapColumn(columnRefA: ColumnRef, columnRefB: ColumnRef) {
