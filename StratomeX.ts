@@ -93,13 +93,19 @@ class StratomeX extends views.AView {
   addData(rowStrat: stratification.IStratification, m: datatypes.IDataType, colStrat?: stratification.IStratification) {
     var that = this;
     var mref = this.provGraph.findOrAddObject(m, m.desc.name, 'data');
-    Promise.all<ranges.Range1D>([rowStrat.idRange(), colStrat ? colStrat.idRange() : ranges.Range1D.all()]).then((range_list:ranges.Range1D[]) => {
-      //FIXME the ranges are in the local notation not the data notation
-      const idRange = ranges.list(range_list);
-      return m.fromIdRange(idRange);
-    }).then((range) => {
-      that.provGraph.push(columns.createColumnCmd(that.ref, mref, range));
-    });
+    if (rowStrat === m) {
+      //both are stratifications
+      rowStrat.range().then((range) => {
+        that.provGraph.push(columns.createColumnCmd(that.ref, mref, range));
+      });
+    } else {
+      Promise.all<ranges.Range1D>([rowStrat.idRange(), colStrat ? colStrat.idRange() : ranges.Range1D.all()]).then((range_list:ranges.Range1D[]) => {
+        const idRange = ranges.list(range_list);
+        return m.fromIdRange(idRange);
+      }).then((range) => {
+        that.provGraph.push(columns.createColumnCmd(that.ref, mref, range));
+      });
+    }
   }
 
   areNeighborColumns(ca, cb) {
