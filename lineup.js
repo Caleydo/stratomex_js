@@ -40,25 +40,27 @@ define(function (require, exports) {
           size: [list.length, 4],
           columns: [
             {
+              name: 'Package',
+              value: { type: 'string' },
+              getter: function(d) {
+                var s = d.desc.fqname.split('/');
+                return s[0];
+              }
+            },
+            {
               name: 'Dataset',
               value: { type: 'string' },
               getter: function(d) {
-                var s = d.desc.fqname.lastIndexOf('/');
-                if (s < 0) {
-                  return d.desc.name;
-                }
-                return d.desc.fqname.substr(0,s);
+                var s = d.desc.fqname.split('/');
+                return s.length === 2 ? s[0] : s[1];
               }
             },
             {
               name: 'Name',
               value: { type: 'string' },
               getter: function(d) {
-                var s = d.desc.fqname.lastIndexOf('/');
-                if (s < 0) {
-                  return d.desc.name;
-                }
-                return d.desc.fqname.substr(s+1);
+                var s = d.desc.fqname.split('/');
+                return s[s.length-1];
               }
             }, {
               name: 'Dimensions',
@@ -111,7 +113,7 @@ define(function (require, exports) {
             primary: [{type: 'actions', width: 40}, {
               type: 'rank',
               width: 40
-            }, col('Dataset', 220), col('Name', 220), col('Dimensions', 90), col('ID Type', 120), col(that.showGroups ? '# Groups' : 'Type', 80)]
+            }, col('Package', 150), col('Dataset', 220), col('Name', 220), col('Dimensions', 90), col('ID Type', 120), col(that.showGroups ? '# Groups' : 'Type', 80)]
           }
         }
       });
