@@ -150,16 +150,16 @@ export function createSetOption(column, name, value, old) {
   });
 }
 export function createColumnCmd(stratomex, data, partitioning, index: number = -1) {
-  return prov.action(prov.meta('column for ' + data.value.desc.name, prov.cat.visual, prov.op.create), 'createStratomeXColumn', createColumn, [stratomex, data], {
+  return prov.action(prov.meta(data.value.desc.name, prov.cat.visual, prov.op.create), 'createStratomeXColumn', createColumn, [stratomex, data], {
     partitioning: partitioning.toString(),
     index: index
   });
 }
 export function createRemoveCmd(stratomex, column) {
-  return prov.action(prov.meta('column', prov.cat.visual, prov.op.remove), 'removeStratomeXColumn', removeColumn, [stratomex, column]);
+  return prov.action(prov.meta(column.value.name, prov.cat.visual, prov.op.remove), 'removeStratomeXColumn', removeColumn, [stratomex, column]);
 }
 export function createSwapColumnCmd(stratomex, columnA, columnB) {
-  return prov.action(prov.meta('swap clumns', prov.cat.layout, prov.op.update), 'swapStratomeXColumns', swapColumns, [stratomex, columnA, columnB]);
+  return prov.action(prov.meta(`swap ${columnA.value.name} - ${columnB.value.name}`, prov.cat.layout, prov.op.update), 'swapStratomeXColumns', swapColumns, [stratomex, columnA, columnB]);
 }
 
 export function createCmd(id:string) {
@@ -438,6 +438,10 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
     this.$parent.selectAll('.gtoolbar').style('display',interactive ? null : 'none');
 
     this.$parent.selectAll('.group .title, .group .body').classed('readonly', !interactive);
+  }
+
+  get name() {
+    return this.data.desc.name;
   }
 
   ids() {
