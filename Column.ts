@@ -296,10 +296,10 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
   id:number;
 
   private options = {
-    summaryHeight: 100,
+    summaryHeight: 90,
     width: 180,
     detailWidth: 500,
-    padding: 3
+    padding: 2
   };
 
   private $parent:d3.Selection<any>;
@@ -394,6 +394,7 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
       return (<any>data).view(range);
     }, {
       initialVis: guessInitial(data.desc),
+      singleRowOptimization: false,
       wrap: createWrapper,
       all: {
         selectAble: false,
@@ -401,10 +402,10 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
         nbins: Math.sqrt(data.dim[0])
       },
       'caleydo-vis-mosaic': {
-        width: that.options.width
+        width: that.options.width - this.options.padding * 2
       },
       'caleydo-vis-heatmap1d': {
-        width: that.options.width
+        width: that.options.width - this.options.padding * 2
       },
       'caleydo-vis-kaplanmeier': {
         maxTime: groupTotalAggregator((<ranges.CompositeRange1D>partitioning.dim(0)).groups.length, (v) => v.length === 0 ? 0 : v[v.length-1])
@@ -545,7 +546,7 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
     var size = this.layout.getSize();
 
     size.y -= this.options.summaryHeight;
-    size.y -= (<any>this.range.dim(0)).groups.length * 30; //FIXME hack
+    size.y -= (<any>this.range.dim(0)).groups.length * 32; //remove the grid height
 
     if (this.detail) {
       size.x -= this.options.detailWidth;
@@ -561,29 +562,38 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
 
     this.summary.actLoader.then(() => {
       var size = this.layout.getSize();
-      this.summary_zoom.zoomTo(size.x - this.options.padding * 2, this.options.summaryHeight - this.options.padding * 2 - 30);
+      if (this.detail) {
+        size.x -= this.options.detailWidth;
+      }
+      this.summary_zoom.zoomTo(size.x - this.options.padding * 3, this.options.summaryHeight - this.options.padding * 3 - 30);
     });
     this.grid.actLoader.then(() => {
       var size = this.layout.getSize();
+      if (this.detail) {
+        size.x -= this.options.detailWidth;
+      }
       size.y -= this.options.summaryHeight;
-      size.y -= (<any>this.range.dim(0)).groups.length * 30; //FIXME hack
+      size.y -= (<any>this.range.dim(0)).groups.length * 32; //remove the grid height
+      console.log(size.x, size.x - this.options.padding * 2);
       this.grid_zoom.zoomTo(size.x - this.options.padding * 2, size.y);
+
+      //shift the content for the aspect ratio
+      var shift = [null, null];
+      if (this.grid_zoom.isFixedAspectRatio) {
+        var act = this.grid.size;
+        shift[0] = ((size.x - act[0]) / 2) + 'px';
+        shift[1] = ((size.y - act[1]) / 2) + 'px';
+      }
+      this.$parent.select('div.multiformgrid').style({
+        left: shift[0],
+        top: shift[1]
+      });
     });
 
-    //shift the content for the aspect ratio
-    var shift = [null, null];
-    if (this.grid_zoom.isFixedAspectRatio) {
-      var act = this.grid.size;
-      shift[0] = ((size[0] - act[0]) / 2) + 'px';
-      shift[1] = ((size[1] - act[1]) / 2) + 'px';
-    }
-    this.$parent.select('div.multiformgrid').style({
-      left: shift[0],
-      top: shift[1]
-    });
+
     //center the toolbar
-    var w = (18 * (1 + this.grid.visses.length));
-    this.$toolbar.style('left', ((size.x - w) / 2) + 'px');
+    //var w = (18 * (1 + this.grid.visses.length));
+    //this.$toolbar.style('left', ((size.x - w) / 2) + 'px');
   }
 
   createToolBar() {

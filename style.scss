@@ -112,9 +112,13 @@ main {
       position: absolute;
       height: 16px;
       top: -16px;
+      left: 0;
+      right: 0;
+      max-width: 180px;
+      text-align: center;
 
       div {
-        display: inline-block;
+        display: inline;
         margin: 0 1px;
       }
     }
@@ -135,8 +139,8 @@ main {
       }
     }
     div.group {
-      margin: 5px 0 5px 0;
-      border-radius: 5px 5px ;
+      margin: 5px 0 0px 0;
+      border-radius: 5px;
       border: 2px solid gray;
       position: relative;
 
@@ -152,7 +156,7 @@ main {
         pointer-events: none;
         line-height: 0;
         background-color: #d1d1d1;
-        text-align: center;
+        //text-align: center;
 
         * {
           background-color: white;
