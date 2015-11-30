@@ -2,6 +2,9 @@
  * Created by Samuel Gratzl on 15.12.2014.
  */
 
+$exploration-stage: #a6cee3;
+$exploration-stage-hover: #1f78b4;
+
 body, html {
   padding: 0;
   margin: 0;
@@ -246,7 +249,10 @@ main {
 }
 
 #databrowser {
-  background-color: #e5e5e5;
+  background-color: white;
+  border: 2px solid $exploration-stage;
+  border-radius: 5px;
+  margin: 2px;
 
   position: relative;
   width: 100%;
@@ -264,11 +270,27 @@ main {
     .row.hover rect.bg {
       stroke: $hover-color;
       stroke-width: 1;
+
     }
   }
 
   div.lu {
     top: 42px;
+
+    left: 2px;
+  }
+
+  .nav-tabs {
+    background-color: $exploration-stage;
+    li.active a {
+      //background-color: $exploration-stage;
+    }
+    a {
+      color: black;
+      font-weight: 500;
+      font-size: 18px;
+      padding: 0.2em 1em;
+    }
   }
 }
 
