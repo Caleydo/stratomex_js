@@ -44,7 +44,7 @@ function createColumn(inputs, parameter, graph) {
   return inputs[1].v.then(function (data) {
     var c = new Column(stratomex, data, partitioning, {
       width: (data.desc.type === 'stratification') ? 80 : 160
-    });
+    }, inputs[1]);
     var r = prov.ref(c, 'Column of ' + data.desc.name, prov.cat.visual);
     c.changeHandler = function (event, to, from) {
       if (from) { //have a previous one so not the default
@@ -58,26 +58,25 @@ function createColumn(inputs, parameter, graph) {
     c.on('changed', c.changeHandler);
     c.on('option', c.optionHandler);
 
-    return stratomex.addColumn(r, index).then(() => {
+    return stratomex.addColumn(c, index).then(() => {
       return {
         created: [r],
-        inverse: createRemoveCmd(inputs[0], r)
+        inverse: (inputs, created) => createRemoveCmd(inputs[0], created[0])
       };
     });
   });
 }
 function removeColumn(inputs, parameter, graph) {
   var column = inputs[1].value;
-  return inputs[0].value.removeColumn(inputs[1]).then((index) => {
-    const inv = createColumnCmd(inputs[0], graph.findObject(column.data), column.range.toString(), index);
+  return inputs[0].value.removeColumn(column).then((index) => {
     return {
       removed: [inputs[1]],
-      inverse: inv
+      inverse: (inputs, created) => createColumnCmd(inputs[0], column.dataRef, index)
     };
   });
 }
 function swapColumns(inputs) {
-  return inputs[0].value.swapColumn(inputs[1], inputs[2]).then(() => {
+  return inputs[0].value.swapColumn(inputs[1].value, inputs[2].value).then(() => {
     return {
       inverse: createSwapColumnCmd(inputs[0], inputs[2], inputs[1])
     };
@@ -332,7 +331,7 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
     this.$parent.classed('select-'+type, act.dim(0).contains(this.id));
   };
 
-  constructor(private stratomex, public data, partitioning:ranges.Range, options:any = {}) {
+  constructor(private stratomex, public data, partitioning:ranges.Range, public dataRef, options:any = {}) {
     super();
     C.mixin(this.options, options);
 

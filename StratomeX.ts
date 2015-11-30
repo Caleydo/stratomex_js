@@ -14,10 +14,10 @@ import { distributeLayout } from '../caleydo_core/layout';
 const layout = distributeLayout(true, 100, {top: 30, left: 30, right: 30, bottom: 10});
 import columns = require('./Column');
 
-type ColumnRef = prov.IObjectRef<columns.Column>;
+//type ColumnRef = prov.IObjectRef<columns.Column>;
 
 class StratomeX extends views.AView {
-  private _columns:ColumnRef[] = [];
+  private _columns:columns.Column[] = [];
 
   private dim:[number, number];
   private _links:link_m.LinkContainer;
@@ -40,7 +40,7 @@ class StratomeX extends views.AView {
 
   setInteractive(interactive: boolean) {
     this.interactive = interactive;
-    this._columns.forEach((c) => c.value.setInteractive(interactive));
+    this._columns.forEach((c) => c.setInteractive(interactive));
     if (interactive) {
       this._links.node.classList.remove('readonly');
     } else {
@@ -50,7 +50,7 @@ class StratomeX extends views.AView {
 
   reset() {
     this._columns.forEach((c) => {
-      c.value.destroy();
+      c.destroy();
     });
     this._columns = [];
     this._links.clear();
@@ -65,7 +65,7 @@ class StratomeX extends views.AView {
   relayout() {
     var that = this;
     that._links.hide();
-    var layouts = this._columns.map((c) => <any>c.value.layout);
+    var layouts = this._columns.map((c) => <any>c.layout);
     return layout(layouts, this.dim[0], this.dim[1], null).then(function () {
       that._links.update();
       return null;
@@ -119,32 +119,34 @@ class StratomeX extends views.AView {
     }
     //none in between
     return !this._columns.some(function (c) {
-      if (c.value === ca || c.value === cb) {
+      if (c === ca || c === cb) {
         return false;
       }
-      var l = c.value.location;
+      var l = c.location;
       return loca.x <= l.x && l.x <= locb.x;
     });
   }
 
-  addColumn(columnRef:ColumnRef, index: number = -1) {
+  addColumn(column:columns.Column, index: number = -1) {
     if (index < 0) {
-      this._columns.push(columnRef);
+      this._columns.push(column);
     } else {
-      this._columns.splice(index, 0, columnRef);
+      this._columns.splice(index, 0, column);
     }
-    columnRef.value.on('changed', C.bind(this.relayout, this));
-    columnRef.value.setInteractive(this.interactive);
-    this._links.push(false, columnRef.value);
+    console.log('add '+column.id);
+    column.on('changed', C.bind(this.relayout, this));
+    column.setInteractive(this.interactive);
+    this._links.push(false, column);
     return this.relayout();
   }
 
-  removeColumn(columnRef:ColumnRef) {
-    var i = C.indexOf(this._columns, (elem) => elem.value === columnRef.value);
+  removeColumn(column:columns.Column) {
+    var i = this._columns.indexOf(column); //C.indexOf(this._columns, (elem) => elem === column);
     if (i >= 0) {
-      columnRef.value.destroy();
+      console.log('remove '+column.id);
+      column.destroy();
       this._columns.splice(i, 1);
-      this._links.remove(false, columnRef.value);
+      this._links.remove(false, column);
       return this.relayout().then(() => i);
     } else {
       console.error('cant find column');
@@ -152,17 +154,17 @@ class StratomeX extends views.AView {
     return Promise.resolve(-1);
   }
 
-  swapColumn(columnRefA: ColumnRef, columnRefB: ColumnRef) {
-    const i = this.indexOf(columnRefA),
-      j = this.indexOf(columnRefB);
-    this._columns[i] = columnRefB;
-    this._columns[j] = columnRefA;
+  swapColumn(columnA: columns.Column, columnB: columns.Column) {
+    const i = this.indexOf(columnA),
+      j = this.indexOf(columnB);
+    this._columns[i] = columnB;
+    this._columns[j] = columnA;
     return this.relayout();
   }
 
-  indexOf(columnRef:ColumnRef) {
+  indexOf(column:columns.Column) {
     return C.indexOf(this._columns, function (elem) {
-      return elem.value === columnRef.value;
+      return elem === column;
     });
   }
 
@@ -170,9 +172,9 @@ class StratomeX extends views.AView {
     return this._columns[index];
   }
 
-  canShift(columnRef:ColumnRef) {
+  canShift(column:columns.Column) {
     var i = C.indexOf(this._columns, function (elem) {
-      return elem.value === columnRef.value;
+      return elem === column;
     });
     return {
       left: i,
