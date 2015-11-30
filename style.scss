@@ -265,6 +265,12 @@ main {
   height: 25vh;
   padding: 0;
 
+
+  display: -webkit-flex;
+  display: flex;
+
+
+
   > div {
     //height: 100%;
     max-width: none;
@@ -281,13 +287,27 @@ main {
   }
 
   div.lu {
-    top: 42px;
 
-    left: 2px;
+  }
+
+  .tab-content {
+    flex: 1 1 auto;
+    -webkit-flex: 1 1 auto;
+
+    position: relative;
   }
 
   .nav-tabs {
+    width: 10em;
+
     background-color: $exploration-stage;
+    border-bottom: none;
+    border-right: 1px solid $exploration-stage;
+    li {
+      float: none;
+      margin-bottom: 2px;
+      margin-right: -1px;
+    }
     li.active a {
       //background-color: $exploration-stage;
     }
@@ -296,6 +316,8 @@ main {
       font-weight: 500;
       font-size: 18px;
       padding: 0.2em 1em;
+      border-radius: 4px 0 0 4px;
+      margin-right: 0;
     }
   }
 }
