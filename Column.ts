@@ -343,7 +343,7 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
       'border-color': data.desc.color || 'gray',
       'background-color': data.desc.bgColor || 'lightgray'
     });
-    this.$summary.append('div').attr('class', 'title').style('max-width',that.options.width+'px').text(data.desc.name).style('background-color', data.desc.bgColor || 'lightgray');
+    this.$summary.append('div').attr('class', 'title').style('max-width',(that.options.width-this.options.padding*2)+'px').text(data.desc.name).style('background-color', data.desc.bgColor || 'lightgray');
     this.$clusters = this.$parent.append('div').attr('class', 'clusters');
     this.range = partitioning;
     //create the vis
@@ -379,7 +379,7 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
         }
         $elem.classed('select-selected', !isSelected);
       };
-      $elem.append('div').attr('class', 'title').style('max-width',that.options.width+'px').text(cluster.dim(0).name).on('click', toggleSelection);
+      $elem.append('div').attr('class', 'title').style('max-width',(that.options.width-that.options.padding*2)+'px').text(cluster.dim(0).name).on('click', toggleSelection);
       $elem.append('div').attr('class', 'body').on('click', toggleSelection);
 
       const ratio = cluster.dim(0).length / partitioning.dim(0).length;
