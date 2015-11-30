@@ -110,7 +110,8 @@ define(function (require, exports) {
         },
         dump: {
           layout: {
-            primary: [{type: 'actions', width: 40}, {
+            primary: [
+              {type: 'actions', width: 20, label: ' '}, {
               type: 'rank',
               width: 40
             }, col('Package', 150), col('Dataset', 220), col('Name', 220), col('Dimensions', 90), col('ID Type', 120), col(that.showGroups ? '# Groups' : 'Type', 80)]
