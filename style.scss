@@ -154,12 +154,13 @@ main {
 
       div.body {
         /*disable selection*/
-        pointer-events: none;
+
         line-height: 0;
         background-color: #d1d1d1;
         //text-align: center;
 
         * {
+          pointer-events: none;
           background-color: white;
         }
       }

@@ -122,7 +122,9 @@ export function createToggleDetailCmd(column, cluster, show) {
 }
 
 export function createChangeVis(column, to, from) {
-  return prov.action(prov.meta('change vis ' + column.toString() + ' to ' + to, prov.cat.visual), 'changeStratomeXColumnVis', changeVis, [column], {
+  const visses = column.value.grid.visses;
+  const vis_desc = visses.filter((v) => v.id === to)[0];
+  return prov.action(prov.meta(column.value.name + ' as ' + vis_desc.name, prov.cat.visual), 'changeStratomeXColumnVis', changeVis, [column], {
     to: to,
     from: from
   });
@@ -158,7 +160,7 @@ export function createRemoveCmd(stratomex, column) {
   return prov.action(prov.meta(column.value.name, prov.cat.visual, prov.op.remove), 'removeStratomeXColumn', removeColumn, [stratomex, column]);
 }
 export function createSwapColumnCmd(stratomex, columnA, columnB) {
-  return prov.action(prov.meta(`swap ${columnA.value.name} - ${columnB.value.name}`, prov.cat.layout, prov.op.update), 'swapStratomeXColumns', swapColumns, [stratomex, columnA, columnB]);
+  return prov.action(prov.meta(`${columnA.value.name}⇄${columnB.value.name}`, prov.cat.layout, prov.op.update), 'swapStratomeXColumns', swapColumns, [stratomex, columnA, columnB]);
 }
 
 export function createCmd(id:string) {
@@ -369,6 +371,7 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
         var g = that.stratomex.provGraph;
         var s = g.findObject(that);
         g.push(createToggleDetailCmd(s, pos[0], true));
+        d3.event.stopPropagation();
       });
       const toggleSelection = () => {
         var isSelected = $elem.classed('select-selected');

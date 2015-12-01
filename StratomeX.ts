@@ -174,7 +174,7 @@ class StratomeX extends views.AView {
 
   atRef(index: number) {
     const c = this.at(index);
-    return this.graph.findObject(c);
+    return this.provGraph.findObject(c);
   }
 
   canShift(column:columns.Column) {
