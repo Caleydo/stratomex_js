@@ -43,7 +43,7 @@ function createColumn(inputs, parameter, graph) {
     index = parameter.hasOwnProperty('index') ? parameter.index : -1 ;
   return inputs[1].v.then(function (data) {
     var c = new Column(stratomex, data, partitioning, inputs[1], {
-      width: (data.desc.type === 'stratification') ? 80 : 160
+      width: (data.desc.type === 'stratification') ? 60 : 160
     });
     var r = prov.ref(c, 'Column of ' + data.desc.name, prov.cat.visual);
     c.changeHandler = function (event, to, from) {
@@ -100,13 +100,13 @@ export function showInDetail(inputs, parameter) {
   var column = inputs[0].value,
     cluster = parameter.cluster,
     show = parameter.action === 'show';
-  var r;
+  var r: Promise<any>;
   if (show) {
     r = column.showInDetail(cluster);
   } else {
     r = column.hideDetail(cluster);
   }
-  return r.next(() => {
+  return r.then(() => {
     return {
       inverse: createToggleDetailCmd(inputs[0], cluster, !show)
     };
@@ -531,7 +531,7 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
 
   hideDetail(cluster) {
     if (!this.detail) {
-      return;
+      return Promise.resolve([]);
     }
     this.detail.multi.destroy();
     this.detail.$node.remove();
@@ -604,14 +604,14 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
       var g = that.stratomex.provGraph;
       var s = g.findObject(that);
       if (this.stratomex.canShift(s).left > 0) {
-        g.push(createSwapColumnCmd(this.stratomex.ref, s, this.stratomex.at(that.stratomex.indexOf(s) - 1)));
+        g.push(createSwapColumnCmd(this.stratomex.ref, s, this.stratomex.atRef(that.stratomex.indexOf(s) - 1)));
       }
     });
     $t.append('i').attr('class', 'fa fa-chevron-right').on('click', ()=> {
       var g = that.stratomex.provGraph;
       var s = g.findObject(that);
       if (that.stratomex.canShift(s).right < 0) {
-       g.push(createSwapColumnCmd(this.stratomex.ref, s, that.stratomex.at(that.stratomex.indexOf(s) +1 )));
+       g.push(createSwapColumnCmd(this.stratomex.ref, s, that.stratomex.atRef(that.stratomex.indexOf(s) +1 )));
       }
     });
     $t.append('i').attr('class','fa fa-expand').on('click', () => {

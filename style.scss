@@ -74,7 +74,7 @@ main {
     position: absolute;
     width: auto;
     height: auto;
-    background-color: #fafafa;
+    //background-color: #fafafa;
     white-space: nowrap;
 
     &.select-selected {
@@ -128,7 +128,7 @@ main {
       border-radius: 5px 5px 2px 2px;
 
       div.title {
-        padding: 0 1em;
+        padding: 0 2px;
         overflow: hidden;
         text-overflow: ellipsis;
         font-size: small;
@@ -166,7 +166,7 @@ main {
 
       div.title {
         background-color: #d1d1d1;
-        padding: 0 1em;
+        padding: 0 2px;
         overflow: hidden;
         text-overflow: ellipsis;
         font-size: small;
