@@ -604,15 +604,15 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
     $t.append('i').attr('class', 'fa fa-chevron-left').on('click', ()=> {
       var g = that.stratomex.provGraph;
       var s = g.findObject(that);
-      if (this.stratomex.canShift(s).left > 0) {
-        g.push(createSwapColumnCmd(this.stratomex.ref, s, this.stratomex.atRef(that.stratomex.indexOf(s) - 1)));
+      if (this.stratomex.canShift(that).left > 0) {
+        g.push(createSwapColumnCmd(this.stratomex.ref, s, this.stratomex.atRef(that.stratomex.indexOf(that) - 1)));
       }
     });
     $t.append('i').attr('class', 'fa fa-chevron-right').on('click', ()=> {
       var g = that.stratomex.provGraph;
       var s = g.findObject(that);
-      if (that.stratomex.canShift(s).right < 0) {
-       g.push(createSwapColumnCmd(this.stratomex.ref, s, that.stratomex.atRef(that.stratomex.indexOf(s) +1 )));
+      if (that.stratomex.canShift(that).right < 0) {
+       g.push(createSwapColumnCmd(this.stratomex.ref, s, that.stratomex.atRef(that.stratomex.indexOf(that) +1 )));
       }
     });
     $t.append('i').attr('class','fa fa-expand').on('click', () => {
