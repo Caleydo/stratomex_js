@@ -70,10 +70,28 @@ main {
   position: relative;
   background-color: white;
 
+  display: -webkit-flex !important;
+  display: flex !important;
+
+  -webkit-align-items: stretch;
+  -webkit-flex-flow: row;
+  align-items: stretch;
+  flex-flow: row;
+
+  max-height: 71vh;
+
+  -webkit-justify-content: space-around;
+  justify-content: space-around;
+
   .column {
-    position: absolute;
-    width: auto;
-    height: auto;
+    position: relative;
+    margin-top: 2em;
+    -webkit-flex: 0 0 auto;
+    flex: 0 0 auto;
+
+
+
+    height: inherit;
     //background-color: #fafafa;
     white-space: nowrap;
 
@@ -211,6 +229,9 @@ main {
   }
 
   .link-container {
+    position: absolute;
+    left: 0;
+    top: 0;
 
     svg {
       position: absolute;

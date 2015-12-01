@@ -315,9 +315,6 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
   private grid_zoom:behaviors.ZoomLogic;
   private summary_zoom:behaviors.ZoomLogic;
 
-  layout:layout.ALayoutElem;
-  private layoutOptions : any;
-
   private detail: {
     $node: d3.Selection<any>;
     multi: multiform.IMultiForm;
@@ -337,7 +334,8 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
     C.mixin(this.options, options);
 
     var that = this;
-    this.$parent = d3.select(stratomex.parent).append('div').attr('class', 'column').style('opacity', 0.1);
+    this.$parent = d3.select(stratomex.parent).append('div').attr('class', 'column');
+    this.$parent.style('width', this.options.width+'px');
     this.$toolbar = this.$parent.append('div').attr('class', 'toolbar');
     this.$summary = this.$parent.append('div').attr('class', 'summary').style({
       padding: this.options.padding + 'px',
@@ -419,15 +417,6 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
     this.grid.on('changed', function (event, to, from) {
       that.fire('changed', to, from);
     });
-    //create layout version
-    this.layoutOptions = {
-      animate: true,
-      'set-call': (s) => s.style('opacity', 1),
-      onSetBounds: this.layouted.bind(this),
-      prefWidth: this.options.width
-    };
-    this.layout = layouts.wrapDom(<HTMLElement>this.$parent.node(), this.layoutOptions);
-
     this.createToolBar();
 
     this.id = manager.nextId(this);
@@ -451,7 +440,7 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
   }
 
   get location() {
-    return this.layout.getBounds();
+    return <geom.Rect>geom.wrap(C.bounds(<Element>this.$parent.node()));
   }
 
   visPos() {
@@ -487,7 +476,9 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
     if (groups.length !== nGroups) {
       return null;
     }
-    return groups.map((g, i) => shiftBy(this.grid.getBounds(i), this.visPos()));
+    return groups.map((g, i) => {
+      return shiftBy(this.grid.getBounds(i), this.visPos());
+    });
   }
 
   locateById(...args:any[]) {
@@ -527,7 +518,7 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
       multi: multi,
       zoom: new behaviors.ZoomBehavior(<Element>$elem.node(), multi, multi.asMetaData)
     };
-    this.layoutOptions.prefWidth = this.options.width + this.options.detailWidth;
+    this.$parent.style('width', this.options.width + this.options.detailWidth+'px');
     return this.stratomex.relayout();
   }
 
@@ -539,13 +530,14 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
     this.detail.$node.remove();
 
     this.detail = null;
-    this.layoutOptions.prefWidth = this.options.width;
+    this.$parent.style('width', this.options.width+'px');
     return this.stratomex.relayout();
   }
 
   layouted() {
     //sync the scaling
-    var size = this.layout.getSize();
+    let bounds = C.bounds(<Element>this.$parent.node());
+    var size = {x: bounds.w, y: bounds.h};
 
     size.y -= this.options.summaryHeight;
     size.y -= (<any>this.range.dim(0)).groups.length * 32; //remove the grid height
@@ -563,19 +555,9 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
     }
 
     this.summary.actLoader.then(() => {
-      var size = this.layout.getSize();
-      if (this.detail) {
-        size.x -= this.options.detailWidth;
-      }
       this.summary_zoom.zoomTo(size.x - this.options.padding * 3, this.options.summaryHeight - this.options.padding * 3 - 30);
     });
     this.grid.actLoader.then(() => {
-      var size = this.layout.getSize();
-      if (this.detail) {
-        size.x -= this.options.detailWidth;
-      }
-      size.y -= this.options.summaryHeight;
-      size.y -= (<any>this.range.dim(0)).groups.length * 32; //remove the grid height
       this.grid_zoom.zoomTo(size.x - this.options.padding * 2, size.y);
 
       //shift the content for the aspect ratio

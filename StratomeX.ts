@@ -10,8 +10,6 @@ import link_m = require('../caleydo_links/link');
 import ranges = require('../caleydo_core/range');
 import prov = require('../caleydo_provenance/main');
 
-import { distributeLayout } from '../caleydo_core/layout';
-const layout = distributeLayout(true, 100, {top: 30, left: 30, right: 30, bottom: 10});
 import columns = require('./Column');
 
 //type ColumnRef = prov.IObjectRef<columns.Column>;
@@ -65,10 +63,13 @@ class StratomeX extends views.AView {
   relayout() {
     var that = this;
     that._links.hide();
-    var layouts = this._columns.map((c) => <any>c.layout);
-    return layout(layouts, this.dim[0], this.dim[1], null).then(function () {
-      that._links.update();
-      return null;
+    var animationDuration = 500;
+    return new Promise<void>((resolve) => {
+      setTimeout(() => {
+        that._columns.forEach((d) => d.layouted());
+        that._links.show();
+        resolve();
+      }, animationDuration);
     });
   }
 
