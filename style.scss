@@ -321,26 +321,35 @@ main {
     position: relative;
   }
 
-  .nav-tabs {
+  > div:first-of-type {
     width: 10em;
+    background-color: $exploration-stage;
 
-    border-bottom: none;
-    //border-right: 1px solid $exploration-stage;
+    h2 {
+      margin-top: 10px;
+      font-size: 18px;
+      text-align: center;
+    }
+    ul {
+      border-bottom: none;
+    }
+    border-right: 1px solid $exploration-stage;
     li {
       float: none;
       margin-bottom: 2px;
       margin-right: -1px;
     }
     li.active a {
-      background-color: $exploration-stage;
+      background-color: #ffffff;
     }
     a {
+      border-right: 0;
+      font-size: 15px;
       color: black;
-      font-weight: 500;
-      font-size: 18px;
       padding: 0.2em 1em;
       border-radius: 4px 0 0 4px;
       margin-right: 0;
+      background-color: #dadada;
     }
   }
 }
