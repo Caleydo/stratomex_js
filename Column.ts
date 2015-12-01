@@ -42,9 +42,9 @@ function createColumn(inputs, parameter, graph) {
     partitioning = ranges.parse(parameter.partitioning),
     index = parameter.hasOwnProperty('index') ? parameter.index : -1 ;
   return inputs[1].v.then(function (data) {
-    var c = new Column(stratomex, data, partitioning, {
+    var c = new Column(stratomex, data, partitioning, inputs[1], {
       width: (data.desc.type === 'stratification') ? 80 : 160
-    }, inputs[1]);
+    });
     var r = prov.ref(c, 'Column of ' + data.desc.name, prov.cat.visual);
     c.changeHandler = function (event, to, from) {
       if (from) { //have a previous one so not the default
