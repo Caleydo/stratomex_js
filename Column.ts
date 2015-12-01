@@ -48,7 +48,6 @@ function createColumn(inputs, parameter, graph) {
     var r = prov.ref(c, 'Column of ' + data.desc.name, prov.cat.visual);
     c.changeHandler = function (event, to, from) {
       if (from) { //have a previous one so not the default
-        console.log('fire change vis');
         graph.push(createChangeVis(r, to.id, from ? from.id : null));
       }
     };
@@ -577,7 +576,6 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
       }
       size.y -= this.options.summaryHeight;
       size.y -= (<any>this.range.dim(0)).groups.length * 32; //remove the grid height
-      console.log(size.x, size.x - this.options.padding * 2);
       this.grid_zoom.zoomTo(size.x - this.options.padding * 2, size.y);
 
       //shift the content for the aspect ratio
