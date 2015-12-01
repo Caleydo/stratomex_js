@@ -387,6 +387,8 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
       return $elem.select('div.body').node();
     }
 
+    const initialHeight = 500 / (<ranges.CompositeRange1D>partitioning.dim(0)).groups.length;
+
     this.grid = multiform.createGrid(data, partitioning, <Element>this.$clusters.node(), function (data, range, pos) {
       if (data.desc.type === 'stratification') {
         return (<any>data).group(pos[0]);
@@ -399,13 +401,17 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
       all: {
         selectAble: false,
         total: groupTotalAggregator((<ranges.CompositeRange1D>partitioning.dim(0)).groups.length, (v) => v.largestBin),
-        nbins: Math.sqrt(data.dim[0])
+        nbins: Math.sqrt(data.dim[0]),
+        heightTo: initialHeight
       },
       'caleydo-vis-mosaic': {
         width: that.options.width - this.options.padding * 2
       },
       'caleydo-vis-heatmap1d': {
-        width: that.options.width - this.options.padding * 2
+        width: that.options.width - this.options.padding * 2,
+      },
+      'caleydo-vis-heatmap': {
+        scaleTo: [that.options.width - this.options.padding * 2, initialHeight]
       },
       'caleydo-vis-kaplanmeier': {
         maxTime: groupTotalAggregator((<ranges.CompositeRange1D>partitioning.dim(0)).groups.length, (v) => v.length === 0 ? 0 : v[v.length-1])
