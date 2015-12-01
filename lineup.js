@@ -65,7 +65,10 @@ define(function (require, exports) {
             }, {
               name: 'Dimensions',
               value: { type: 'string' },
-              getter: function(d) { return d.dim.join(' x '); }
+              getter: function(d) { return d.dim.join(' x '); },
+              lineup: {
+                alignment: 'right'
+              }
             }, {
               name: 'ID Type',
               value: { type: 'string' },
@@ -77,7 +80,10 @@ define(function (require, exports) {
             }, {
               name: '# Groups',
               value: { type: 'string' },
-              getter: function(d) { return d.ngroups || (d.valuetype.categories ? d.valuetype.categories.length : 0); }
+              getter: function(d) { return d.ngroups || (d.valuetype.categories ? d.valuetype.categories.length : 0); },
+              lineup: {
+                alignment: 'right'
+              }
             }
           ]
     }, list, function(d) { return d.desc.name });
