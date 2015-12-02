@@ -385,7 +385,9 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
       return $elem.select('div.body').node();
     }
 
-    const initialHeight = 500 / (<ranges.CompositeRange1D>partitioning.dim(0)).groups.length;
+    const r = (<ranges.CompositeRange1D>partitioning.dim(0));
+    console.log(this.range, r);
+    const initialHeight = 500 / (r.groups || []).length;
 
     this.grid = multiform.createGrid(data, partitioning, <Element>this.$clusters.node(), function (data, range, pos) {
       if (data.desc.type === 'stratification') {

@@ -81,9 +81,9 @@ define(function (require) {
 
     elems.on('modeChanged', function (event, new_) {
       if (new_.exploration < 0.8) {
-        $left_data.hide(); //.animate({height: 'hide'});
+        $left_data.animate({height: 'hide'}, 'fast');
       } else {
-        $left_data.show(); //.animate({height: 'show'});
+        $left_data.animate({height: 'show'}, 'fast');
       }
       stratomex.setInteractive(new_.exploration >= 0.8);
 
