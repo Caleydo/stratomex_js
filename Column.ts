@@ -9,9 +9,7 @@ import geom = require('../caleydo_core/geom');
 import idtypes = require('../caleydo_core/idtype');
 import behaviors = require('../caleydo_core/behavior');
 import events = require('../caleydo_core/event');
-import layout = require('../caleydo_core/layout');
 import link_m = require('../caleydo_links/link');
-import layouts = require('../caleydo_d3/layout_d3util');
 import datatypes = require('../caleydo_core/datatype');
 import prov = require('../caleydo_provenance/main');
 import ranges = require('../caleydo_core/range');
@@ -408,7 +406,7 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
         width: that.options.width - this.options.padding * 2
       },
       'caleydo-vis-heatmap1d': {
-        width: that.options.width - this.options.padding * 2,
+        width: that.options.width - this.options.padding * 2
       },
       'caleydo-vis-heatmap': {
         scaleTo: [that.options.width - this.options.padding * 2, initialHeight]
