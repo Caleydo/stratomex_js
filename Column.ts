@@ -435,8 +435,14 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
     this.$parent.selectAll('.group .title, .group .body').classed('readonly', !interactive);
   }
 
+  get node() {
+    return <Element>this.$parent.node();
+  }
+
   get name() {
-    return this.data.desc.name;
+    const n : string= this.data.desc.name;
+    const i = n.lastIndexOf('/');
+    return i >= 0 ? n.slice(i+1) : n;
   }
 
   ids() {
@@ -444,7 +450,9 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
   }
 
   get location() {
-    return <geom.Rect>geom.wrap(C.bounds(<Element>this.$parent.node()));
+    const abspos = C.bounds(<Element>this.$parent.node());
+    const parent = C.bounds((<Element>this.$parent.node()).parentElement);
+    return geom.rect(abspos.x - parent.x, abspos.y - parent.y, abspos.w, abspos.h);
   }
 
   visPos() {

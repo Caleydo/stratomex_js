@@ -65,7 +65,7 @@ main {
 
 #stratomex {
   -webkit-flex: 1 1 50vh;
-  flex: 1 1 inherit;
+  flex: 1 1 50vh;
 
   position: relative;
   background-color: white;
@@ -78,6 +78,8 @@ main {
   align-items: stretch;
   flex-flow: row;
 
+  padding-top: 2em;
+
   //max-height: 71vh;
 
   -webkit-justify-content: space-around;
@@ -85,7 +87,6 @@ main {
 
   .column {
     position: relative;
-    margin-top: 2em;
     -webkit-flex: 0 0 auto;
     flex: 0 0 auto;
 

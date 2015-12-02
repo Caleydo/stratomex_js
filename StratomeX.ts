@@ -63,11 +63,11 @@ class StratomeX extends views.AView {
   relayout() {
     var that = this;
     that._links.hide();
-    var animationDuration = 500;
+    var animationDuration = 200;
     return new Promise<void>((resolve) => {
       setTimeout(() => {
         that._columns.forEach((d) => d.layouted());
-        that._links.show();
+        that._links.update();
         resolve();
       }, animationDuration);
     });
@@ -160,6 +160,11 @@ class StratomeX extends views.AView {
       j = this.indexOf(columnB);
     this._columns[i] = columnB;
     this._columns[j] = columnA;
+    if (i < j) {
+      this.parent.insertBefore(columnB.node, columnA.node);
+    } else {
+      this.parent.insertBefore(columnA.node, columnB.node);
+    }
     return this.relayout();
   }
 
