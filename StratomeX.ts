@@ -60,17 +60,29 @@ class StratomeX extends views.AView {
     return this.relayout();
   }
 
+  private relayoutTimer = -1;
+
   relayout() {
     var that = this;
     that._links.hide();
-    var animationDuration = 200;
+    return new Promise<void>((resolve) => {
+      setTimeout(() => {
+        that._columns.forEach((d) => d.layouted());
+        if (that.relayoutTimer >= 0) {
+          clearTimeout(that.relayoutTimer);
+        }
+        that.relayoutTimer = setTimeout(that._links.update.bind(that._links), 400);
+        resolve();
+      }, 5);
+    });
+    /*var animationDuration = 200;
     return new Promise<void>((resolve) => {
       setTimeout(() => {
         that._columns.forEach((d) => d.layouted());
         that._links.update();
         resolve();
       }, animationDuration);
-    });
+    });*/
   }
 
   addDependentData(m: datatypes.IDataType) {

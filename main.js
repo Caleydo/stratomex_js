@@ -88,8 +88,8 @@ define(function (require) {
       stratomex.setInteractive(new_.exploration >= 0.8);
 
       //for the animations to end
-      //setTimeout(updateBounds, 700);
       updateBounds();
+      setTimeout(updateBounds, 300);
     });
     $(window).on('resize', updateBounds);
     updateBounds();

@@ -40,7 +40,7 @@ function createColumn(inputs, parameter, graph) {
     partitioning = ranges.parse(parameter.partitioning),
     index = parameter.hasOwnProperty('index') ? parameter.index : -1 ;
   return inputs[1].v.then(function (data) {
-    console.log(new Date(), 'create column', data.desc.name, index);
+    //console.log(new Date(), 'create column', data.desc.name, index);
     var c = new Column(stratomex, data, partitioning, inputs[1], {
       width: (data.desc.type === 'stratification') ? 60 : 160
     });
@@ -56,9 +56,9 @@ function createColumn(inputs, parameter, graph) {
     c.on('changed', c.changeHandler);
     c.on('option', c.optionHandler);
 
-    console.log(new Date(), 'add column', data.desc.name, index);
+    //console.log(new Date(), 'add column', data.desc.name, index);
     return stratomex.addColumn(c, index).then(() => {
-      console.log(new Date(), 'added column', data.desc.name, index);
+      //console.log(new Date(), 'added column', data.desc.name, index);
       return {
         created: [r],
         inverse: (inputs, created) => createRemoveCmd(inputs[0], created[0])
@@ -70,10 +70,10 @@ function removeColumn(inputs, parameter, graph) {
   var column = inputs[1].value;
   const dataRef = column.dataRef;
   const partitioning = column.range.toString();
-  console.log(new Date(), 'remove column', column.data.desc.name);
+  //console.log(new Date(), 'remove column', column.data.desc.name);
 
   return inputs[0].value.removeColumn(column).then((index) => {
-    console.log(new Date(), 'removed column', dataRef.value.desc.name, index);
+    //console.log(new Date(), 'removed column', dataRef.value.desc.name, index);
     return {
       removed: [inputs[1]],
       inverse: (inputs, created) => createColumnCmd(inputs[0], dataRef, partitioning, index)
@@ -394,7 +394,7 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
     }
 
     const r = (<ranges.CompositeRange1D>partitioning.dim(0));
-    console.log(this.range, r);
+    //console.log(this.range, r);
     const initialHeight = 500 / (r.groups || []).length;
 
     this.grid = multiform.createGrid(data, partitioning, <Element>this.$clusters.node(), function (data, range, pos) {
