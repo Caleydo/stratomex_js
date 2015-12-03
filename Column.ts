@@ -40,10 +40,11 @@ function createColumn(inputs, parameter, graph) {
     partitioning = ranges.parse(parameter.partitioning),
     index = parameter.hasOwnProperty('index') ? parameter.index : -1 ;
   return inputs[1].v.then(function (data) {
+    console.log(new Date(), 'create column', data.desc.name, index);
     var c = new Column(stratomex, data, partitioning, inputs[1], {
       width: (data.desc.type === 'stratification') ? 60 : 160
     });
-    var r = prov.ref(c, 'Column of ' + data.desc.name, prov.cat.visual);
+    var r = prov.ref(c, c.name, prov.cat.visual, c.hashString);
     c.changeHandler = function (event, to, from) {
       if (from) { //have a previous one so not the default
         graph.push(createChangeVis(r, to.id, from ? from.id : null));
@@ -55,7 +56,9 @@ function createColumn(inputs, parameter, graph) {
     c.on('changed', c.changeHandler);
     c.on('option', c.optionHandler);
 
+    console.log(new Date(), 'add column', data.desc.name, index);
     return stratomex.addColumn(c, index).then(() => {
+      console.log(new Date(), 'added column', data.desc.name, index);
       return {
         created: [r],
         inverse: (inputs, created) => createRemoveCmd(inputs[0], created[0])
@@ -65,10 +68,15 @@ function createColumn(inputs, parameter, graph) {
 }
 function removeColumn(inputs, parameter, graph) {
   var column = inputs[1].value;
+  const dataRef = column.dataRef;
+  const partitioning = column.range.toString();
+  console.log(new Date(), 'remove column', column.data.desc.name);
+
   return inputs[0].value.removeColumn(column).then((index) => {
+    console.log(new Date(), 'removed column', dataRef.value.desc.name, index);
     return {
       removed: [inputs[1]],
-      inverse: (inputs, created) => createColumnCmd(inputs[0], column.dataRef, index)
+      inverse: (inputs, created) => createColumnCmd(inputs[0], dataRef, partitioning, index)
     };
   });
 }
@@ -141,23 +149,23 @@ function setOption(inputs, parameter) {
 }
 
 export function createSetOption(column, name, value, old) {
-  return prov.action(prov.meta('set option "' + name + +'" of "' + column.toString() + ' to "' + value + '"', prov.cat.visual), 'setStratomeXColumnOption', setOption, [column], {
+  return prov.action(prov.meta('set option "' + name + +'" of "' + column.name + ' to "' + value + '"', prov.cat.visual), 'setStratomeXColumnOption', setOption, [column], {
     name: name,
     value: value,
     old: old
   });
 }
 export function createColumnCmd(stratomex, data, partitioning, index: number = -1) {
-  return prov.action(prov.meta(data.value.desc.name, prov.cat.visual, prov.op.create), 'createStratomeXColumn', createColumn, [stratomex, data], {
+  return prov.action(prov.meta(data.name, prov.cat.visual, prov.op.create), 'createStratomeXColumn', createColumn, [stratomex, data], {
     partitioning: partitioning.toString(),
     index: index
   });
 }
 export function createRemoveCmd(stratomex, column) {
-  return prov.action(prov.meta(column.value.name, prov.cat.visual, prov.op.remove), 'removeStratomeXColumn', removeColumn, [stratomex, column]);
+  return prov.action(prov.meta(column.name, prov.cat.visual, prov.op.remove), 'removeStratomeXColumn', removeColumn, [stratomex, column]);
 }
 export function createSwapColumnCmd(stratomex, columnA, columnB) {
-  return prov.action(prov.meta(`${columnA.value.name}⇄${columnB.value.name}`, prov.cat.layout, prov.op.update), 'swapStratomeXColumns', swapColumns, [stratomex, columnA, columnB]);
+  return prov.action(prov.meta(`${columnA.name}⇄${columnB.name}`, prov.cat.layout, prov.op.update), 'swapStratomeXColumns', swapColumns, [stratomex, columnA, columnB]);
 }
 
 export function createCmd(id:string) {
@@ -439,6 +447,10 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
 
   get node() {
     return <Element>this.$parent.node();
+  }
+
+  get hashString() {
+    return this.data.desc.name+'_'+this.range.toString();
   }
 
   get name() {

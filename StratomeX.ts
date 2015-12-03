@@ -145,9 +145,9 @@ class StratomeX extends views.AView {
     var i = this._columns.indexOf(column); //C.indexOf(this._columns, (elem) => elem === column);
     if (i >= 0) {
       console.log('remove '+column.id);
-      column.destroy();
       this._columns.splice(i, 1);
       this._links.remove(false, column);
+      column.destroy();
       return this.relayout().then(() => i);
     } else {
       console.error('cant find column');
