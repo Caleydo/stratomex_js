@@ -342,17 +342,18 @@ main {
     }
     li.active a {
       background-color: #dadada;
+      border-radius: 5px 0 0 5px;
+      margin-right: 0;
     }
     a {
+      transition: all 200ms;
       border-right: 0;
       font-size: 15px;
       color: black;
       padding: 0.2em 1em;
-      border-radius: 4px 0 0 4px;
-      margin-right: 0;
+      border-radius: 5px;
+      margin-right: 5px;
       background-color: #ffffff;
-
-
     }
   }
 }
