@@ -597,7 +597,7 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
 
     this.$parent.interrupt().style('opacity',1).transition().style({
       left: bounds.x + 'px',
-      top: (bounds.y - 20) + 'px', //for the padding applied in the style to the stratomex
+      //top: (bounds.y - 20) + 'px', //for the padding applied in the style to the stratomex
       width: bounds.w + 'px',
       height: bounds.h +'px'
     });
