@@ -33,7 +33,7 @@ class StratomeX extends views.AView {
       idTypeFilter: function (idtype, i) {
         return i === 0; //just the row i.e. first one
       },
-      hover: true,
+      hover: false,
       canSelect: () => this.interactive
     });
   }
@@ -45,7 +45,7 @@ class StratomeX extends views.AView {
 
   reset() {
     this._columns.forEach((c) => {
-      c.destroy();
+      c.destroy(-1);
     });
     this._columns = [];
     this._links.clear();
@@ -59,27 +59,17 @@ class StratomeX extends views.AView {
 
   private relayoutTimer = -1;
 
-  relayout() {
+  relayout(within = -1) {
     var that = this;
     that._links.hide();
-    return new Promise<void>((resolve) => {
-      setTimeout(() => {
-        that._columns.forEach((d) => d.layouted());
+    return C.resolveIn(5).then(() => {
+        that._columns.forEach((d) => d.layouted(within));
         if (that.relayoutTimer >= 0) {
           clearTimeout(that.relayoutTimer);
         }
-        that.relayoutTimer = setTimeout(that._links.update.bind(that._links), 400);
-        resolve();
-      }, 5);
-    });
-    /*var animationDuration = 200;
-    return new Promise<void>((resolve) => {
-      setTimeout(() => {
-        that._columns.forEach((d) => d.layouted());
-        that._links.update();
-        resolve();
-      }, animationDuration);
-    });*/
+        that.relayoutTimer = setTimeout(that._links.update.bind(that._links), within + 400);
+        return C.resolveIn(within);
+      });
   }
 
   addDependentData(m: datatypes.IDataType) {
@@ -137,44 +127,44 @@ class StratomeX extends views.AView {
     });
   }
 
-  addColumn(column:columns.Column, index: number = -1) {
+  addColumn(column:columns.Column, index: number = -1, within = -1) {
     if (index < 0) {
       this._columns.push(column);
     } else {
       this._columns.splice(index, 0, column);
     }
-    console.log('add '+column.id);
+    //console.log('add '+column.id);
     column.on('changed', C.bind(this.relayout, this));
     column.setInteractive(this.interactive);
     this._links.push(false, column);
     return this.relayout();
   }
 
-  removeColumn(column:columns.Column) {
+  removeColumn(column:columns.Column, within = -1) {
     var i = this._columns.indexOf(column); //C.indexOf(this._columns, (elem) => elem === column);
     if (i >= 0) {
-      console.log('remove '+column.id);
+      //console.log('remove '+column.id);
       this._columns.splice(i, 1);
       this._links.remove(false, column);
-      column.destroy();
-      return this.relayout().then(() => i);
+      column.destroy(within);
+      return this.relayout(within).then(() => i);
     } else {
       console.error('cant find column');
     }
     return Promise.resolve(-1);
   }
 
-  swapColumn(columnA: columns.Column, columnB: columns.Column) {
+  swapColumn(columnA: columns.Column, columnB: columns.Column, within = -1) {
     const i = this.indexOf(columnA),
       j = this.indexOf(columnB);
     this._columns[i] = columnB;
     this._columns[j] = columnA;
     if (i < j) {
-      this.parent.insertBefore(columnB.node, columnA.node);
+      this.parent.insertBefore(columnB.layoutNode, columnA.layoutNode);
     } else {
-      this.parent.insertBefore(columnA.node, columnB.node);
+      this.parent.insertBefore(columnA.layoutNode, columnB.layoutNode);
     }
-    return this.relayout();
+    return this.relayout(within);
   }
 
   indexOf(column:columns.Column) {

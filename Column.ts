@@ -14,6 +14,10 @@ import datatypes = require('../caleydo_core/datatype');
 import prov = require('../caleydo_provenance/main');
 import ranges = require('../caleydo_core/range');
 
+export function animationTime(within = -1) {
+  return within < 0 ? 50 : within;
+}
+
 //guess initial vis method
 function guessInitial(desc):any {
   if (desc.type === 'matrix') {
@@ -35,7 +39,7 @@ function guessInitial(desc):any {
 export const manager = new idtypes.ObjectManager<Column>('_column', 'Column');
 
 
-function createColumn(inputs, parameter, graph) {
+function createColumn(inputs, parameter, graph, within) {
   var stratomex = inputs[0].value,
     partitioning = ranges.parse(parameter.partitioning),
     index = parameter.hasOwnProperty('index') ? parameter.index : -1 ;
@@ -43,7 +47,7 @@ function createColumn(inputs, parameter, graph) {
     //console.log(new Date(), 'create column', data.desc.name, index);
     var c = new Column(stratomex, data, partitioning, inputs[1], {
       width: (data.desc.type === 'stratification') ? 60 : 160
-    });
+    }, within);
     var r = prov.ref(c, c.name, prov.cat.visual, c.hashString);
     c.changeHandler = function (event, to, from) {
       if (from) { //have a previous one so not the default
@@ -57,33 +61,36 @@ function createColumn(inputs, parameter, graph) {
     c.on('option', c.optionHandler);
 
     //console.log(new Date(), 'add column', data.desc.name, index);
-    return stratomex.addColumn(c, index).then(() => {
+    return stratomex.addColumn(c, index, within).then(() => {
       //console.log(new Date(), 'added column', data.desc.name, index);
       return {
         created: [r],
-        inverse: (inputs, created) => createRemoveCmd(inputs[0], created[0])
+        inverse: (inputs, created) => createRemoveCmd(inputs[0], created[0]),
+        consumed: within
       };
     });
   });
 }
-function removeColumn(inputs, parameter, graph) {
-  var column = inputs[1].value;
+function removeColumn(inputs, parameter, graph, within) {
+  var column : Column = inputs[1].value;
   const dataRef = column.dataRef;
   const partitioning = column.range.toString();
   //console.log(new Date(), 'remove column', column.data.desc.name);
 
-  return inputs[0].value.removeColumn(column).then((index) => {
+  return inputs[0].value.removeColumn(column, within).then((index) => {
     //console.log(new Date(), 'removed column', dataRef.value.desc.name, index);
     return {
       removed: [inputs[1]],
-      inverse: (inputs, created) => createColumnCmd(inputs[0], dataRef, partitioning, index)
+      inverse: (inputs, created) => createColumnCmd(inputs[0], dataRef, partitioning, index),
+      consumed: within
     };
   });
 }
-function swapColumns(inputs) {
-  return inputs[0].value.swapColumn(inputs[1].value, inputs[2].value).then(() => {
+function swapColumns(inputs, parameter, graph, within) {
+  return (inputs[0].value).swapColumn(inputs[1].value, inputs[2].value, within).then(() => {
     return {
-      inverse: createSwapColumnCmd(inputs[0], inputs[2], inputs[1])
+      inverse: createSwapColumnCmd(inputs[0], inputs[2], inputs[1]),
+      consumed: within
     };
   });
 }
@@ -101,19 +108,20 @@ function changeVis(inputs, parameter) {
   });
 }
 
-export function showInDetail(inputs, parameter) {
-  var column = inputs[0].value,
+export function showInDetail(inputs, parameter, graph, within) {
+  var column : Column = inputs[0].value,
     cluster = parameter.cluster,
     show = parameter.action === 'show';
   var r: Promise<any>;
   if (show) {
-    r = column.showInDetail(cluster);
+    r = column.showInDetail(cluster, within);
   } else {
-    r = column.hideDetail(cluster);
+    r = column.hideDetail(cluster, within);
   }
   return r.then(() => {
     return {
-      inverse: createToggleDetailCmd(inputs[0], cluster, !show)
+      inverse: createToggleDetailCmd(inputs[0], cluster, !show),
+      consumed: within
     };
   });
 }
@@ -327,6 +335,8 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
     zoom: behaviors.ZoomBehavior;
   };
 
+  private $layoutHelper: d3.Selection<any>;
+
 
   changeHandler: any;
   optionHandler: any;
@@ -335,13 +345,21 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
     this.$parent.classed('select-'+type, act.dim(0).contains(this.id));
   };
 
-  constructor(private stratomex, public data, partitioning:ranges.Range, public dataRef, options:any = {}) {
+  constructor(private stratomex, public data, partitioning:ranges.Range, public dataRef, options:any = {}, within = -1) {
     super();
     C.mixin(this.options, options);
 
     var that = this;
-    this.$parent = d3.select(stratomex.parent).append('div').attr('class', 'column');
+    this.$parent = d3.select(stratomex.parent).append('div').attr('class', 'column').style('opacity', 0);
+    this.$parent.style('top', '34px');
+    {
+      let parentBounds = C.bounds(stratomex.parent);
+      this.$parent.style('left', (parentBounds.w - this.options.width - 20)+'px');
+      this.$parent.style('height', (parentBounds.h-20)+'px');
+    }
+    this.$layoutHelper = d3.select(stratomex.parent).append('div').attr('class', 'column-layout');
     this.$parent.style('width', this.options.width+'px');
+    this.$layoutHelper.style('width', this.options.width+'px');
     this.$toolbar = this.$parent.append('div').attr('class', 'toolbar');
     this.$summary = this.$parent.append('div').attr('class', 'summary').style({
       padding: this.options.padding + 'px',
@@ -436,6 +454,8 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
     this.id = manager.nextId(this);
     manager.on('select',this.highlightMe);
     manager.select([this.id]);
+
+    this.$parent.transition().duration(animationTime(within)).style('opacity', 1);
   }
 
   setInteractive(interactive: boolean) {
@@ -447,6 +467,10 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
 
   get node() {
     return <Element>this.$parent.node();
+  }
+
+  get layoutNode() {
+     return <Element>this.$layoutHelper.node();
   }
 
   get hashString() {
@@ -464,8 +488,8 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
   }
 
   get location() {
-    const abspos = C.bounds(<Element>this.$parent.node());
-    const parent = C.bounds((<Element>this.$parent.node()).parentElement);
+    const abspos = C.bounds(<Element>this.$layoutHelper.node());
+    const parent = C.bounds((<Element>this.$layoutHelper.node()).parentElement);
     return geom.rect(abspos.x - parent.x, abspos.y - parent.y, abspos.w, abspos.h);
   }
 
@@ -521,10 +545,10 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
     });
   }
 
-  showInDetail(cluster) {
+  showInDetail(cluster, within = -1) {
     const data = cluster < 0 ? this.data : this.grid.getData(cluster);
 
-    const $elem = this.$parent.append('div').classed('detail', true);
+    const $elem = this.$parent.append('div').classed('detail', true).style('opacity', 0);
     $elem.classed('group', true).datum(data);
     var $toolbar = $elem.append('div').attr('class','gtoolbar');
     $elem.append('div').attr('class', 'title').text(cluster < 0 ? this.data.desc.name : (<ranges.CompositeRange1D>this.range.dim(0)).groups[cluster].name);
@@ -545,28 +569,38 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
       zoom: new behaviors.ZoomBehavior(<Element>$elem.node(), multi, multi.asMetaData)
     };
     this.$parent.style('width', this.options.width + this.options.detailWidth+'px');
-    return this.stratomex.relayout();
+    this.$layoutHelper.style('width', this.options.width + this.options.detailWidth+'px');
+    $elem.transition().duration(animationTime(within)).style('opacity',1);
+    return this.stratomex.relayout(within);
   }
 
-  hideDetail(cluster) {
+  hideDetail(cluster, within) {
     if (!this.detail) {
       return Promise.resolve([]);
     }
-    this.detail.multi.destroy();
-    this.detail.$node.remove();
+    //this.detail.multi.destroy();
+    this.detail.$node.transition().duration(animationTime(within)).style('opacity',0).remove();
 
     this.detail = null;
     this.$parent.style('width', this.options.width+'px');
-    return this.stratomex.relayout();
+    this.$parent.style('width', this.options.width+'px');
+    return this.stratomex.relayout(within);
   }
 
-  layouted() {
+  layouted(within = -1) {
     //sync the scaling
-    let bounds = C.bounds(<Element>this.$parent.node());
+    let bounds = C.bounds(<Element>this.$layoutHelper.node());
     var size = {x: bounds.w, y: bounds.h};
 
     size.y -= this.options.summaryHeight;
     size.y -= (<any>this.range.dim(0)).groups.length * 32; //remove the grid height
+
+    this.$parent.interrupt().style('opacity',1).transition().style({
+      left: bounds.x + 'px',
+      top: (bounds.y - 20) + 'px', //for the padding applied in the style to the stratomex
+      width: bounds.w + 'px',
+      height: bounds.h +'px'
+    });
 
     if (this.detail) {
       size.x -= this.options.detailWidth;
@@ -636,10 +670,11 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
     $t.style('min-width', w + 'px');
   }
 
-  destroy() {
+  destroy(within) {
     manager.off('select', this.highlightMe);
     manager.remove(this);
-    this.$parent.style('opacity', 1).transition().style('opacity', 0).remove();
+    this.$parent.style('opacity', 1).transition().duration(animationTime(within)).style('opacity', 0).remove();
+    this.$layoutHelper.remove();
   }
 }
 

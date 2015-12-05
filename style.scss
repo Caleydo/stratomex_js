@@ -77,19 +77,21 @@ main {
   align-items: stretch;
   flex-flow: row;
 
-  padding-top: 2em;
+  padding-top: 20px;
 
   //max-height: 71vh;
 
   -webkit-justify-content: space-around;
   justify-content: space-around;
 
-  .column {
-    position: relative;
+  .column-layout {
     -webkit-flex: 0 0 auto;
     flex: 0 0 auto;
+    height: inherit;
+  }
 
-
+  .column {
+    position: absolute;
 
     height: inherit;
     //background-color: #fafafa;
