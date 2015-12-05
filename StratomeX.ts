@@ -32,18 +32,15 @@ class StratomeX extends views.AView {
       mode: 'link-group',
       idTypeFilter: function (idtype, i) {
         return i === 0; //just the row i.e. first one
-      }
+      },
+      hover: true,
+      canSelect: () => this.interactive
     });
   }
 
   setInteractive(interactive: boolean) {
     this.interactive = interactive;
     this._columns.forEach((c) => c.setInteractive(interactive));
-    if (interactive) {
-      this._links.node.classList.remove('readonly');
-    } else {
-      this._links.node.classList.add('readonly');
-    }
   }
 
   reset() {

@@ -270,6 +270,7 @@ main {
         &.select-hovered {
           fill: $hover-data-color;
           pointer-events: none;
+          opacity: 0.5;
         }
       }
     }
@@ -369,4 +370,29 @@ svg .select-selected {
   stroke-width: 1px;
   fill: $select-data-color;
   vector-effect: non-scaling-stroke;
+}
+
+body {
+  &[data-clue="P"], &[data-clue="A"] {
+    #stratomex {
+      .link-container svg {
+        path.rel-item {
+          &.select-hovered {
+            stroke: $hover-presentation-color !important;
+          }
+        }
+        path.rel-group, path.rel-block {
+          &.select-hovered {
+            fill: $hover-presentation-color !important;
+          }
+        }
+      }
+
+      .column {
+        &.select-hovered {
+          border-color: $hover-presentation-color !important;
+        }
+      }
+    }
+  }
 }
