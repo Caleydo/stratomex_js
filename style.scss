@@ -2,8 +2,9 @@
  * Created by Samuel Gratzl on 15.12.2014.
  */
 
-$exploration-stage: #e3e3e3;
-$exploration-stage-hover: #b3b3b3;
+@import "../clue_demo/styles/vars";
+$select-data-color: orange;
+$hover-data-color: #ffc46b;
 
 body, html {
   padding: 0;
@@ -43,8 +44,6 @@ body, html {
   }
 }
 
-$select-color: orange;
-$hover-color: #ffc46b;
 
 svg {
   vector-effect : non-scaling-stroke;
@@ -97,15 +96,15 @@ main {
     white-space: nowrap;
 
     &.select-selected {
-      //border: 1px solid $select-color;
+      //border: 1px solid $select-data-color;
       background: none;
 
       div.summary, div.group {
-        border-color: $select-color !important;
+        border-color: $select-data-color !important;
       }
     }
     &.select-hovered {
-      border: 1px solid $hover-color;
+      border: 1px solid $hover-data-color;
       background: none;
     }
 
@@ -165,9 +164,9 @@ main {
       position: relative;
 
       &.selected {
-        border-color: $select-color;
+        border-color: $select-data-color;
         div.title {
-          background-color: $select-color;
+          background-color: $select-data-color;
         }
       }
 
@@ -249,11 +248,11 @@ main {
         stroke-opacity: 0.9;
 
         &.select-selected {
-          stroke: $select-color;
+          stroke: $select-data-color;
           pointer-events: none;
         }
         &.select-hovered {
-          stroke: $hover-color;
+          stroke: $hover-data-color;
           pointer-events: none;
         }
       }
@@ -265,11 +264,11 @@ main {
         opacity: 0.2;
 
         &.select-selected {
-          fill: $select-color;
+          fill: $select-data-color;
           pointer-events: none;
         }
         &.select-hovered {
-          fill: $hover-color;
+          fill: $hover-data-color;
           pointer-events: none;
         }
       }
@@ -299,11 +298,11 @@ main {
     max-width: none;
 
     .row.selected rect.bg {
-      stroke: $select-color;
+      stroke: $select-data-color;
       stroke-width: 1;
     }
     .row.hover rect.bg {
-      stroke: $hover-color;
+      stroke: $hover-data-color;
       stroke-width: 1;
 
     }
@@ -360,14 +359,14 @@ main {
 
 .multiform .select-selected {
   //html variant
-  border: 1px solid $select-color;
-  background-color: $select-color;
+  border: 1px solid $select-data-color;
+  background-color: $select-data-color;
 }
 
 svg .select-selected {
   //svg variant
-  stroke: $select-color;
+  stroke: $select-data-color;
   stroke-width: 1px;
-  fill: $select-color;
+  fill: $select-data-color;
   vector-effect: non-scaling-stroke;
 }
