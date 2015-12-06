@@ -88,6 +88,7 @@ main {
     -webkit-flex: 0 0 auto;
     flex: 0 0 auto;
     height: inherit;
+    visibility: hidden; //hide layout helper
   }
 
   .column {
