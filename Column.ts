@@ -590,7 +590,7 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
   layouted(within = -1) {
     //sync the scaling
     let bounds = C.bounds(<Element>this.$layoutHelper.node());
-    var size = {x: bounds.w, y: bounds.h};
+    var size = {x: bounds.w, y: bounds.h-5}; //no idea why but needed avoiding an overflow
 
     size.y -= this.options.summaryHeight;
     size.y -= (<any>this.range.dim(0)).groups.length * 32; //remove the grid height
@@ -599,7 +599,7 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
       left: bounds.x + 'px',
       //top: (bounds.y - 20) + 'px', //for the padding applied in the style to the stratomex
       width: bounds.w + 'px',
-      height: bounds.h +'px'
+      height: (bounds.h-5) +'px' //no idea why but needed avoiding an overflow
     });
 
     if (this.detail) {
