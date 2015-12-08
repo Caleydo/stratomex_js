@@ -338,25 +338,30 @@ main {
       border-bottom: none;
     }
     border-right: 1px solid $exploration-stage;
+
     li {
       float: none;
       margin-bottom: 2px;
       margin-right: -1px;
-    }
-    li.active a {
-      background-color: #dadada;
-      border-radius: 5px 0 0 5px;
-      margin-right: 0;
-    }
-    a {
-      transition: all 200ms;
-      border-right: 0;
-      font-size: 15px;
-      color: black;
-      padding: 0.2em 1em;
-      border-radius: 5px;
-      margin-right: 5px;
-      background-color: #ffffff;
+
+      a {
+        background-color: $header-menu-bg-color;
+        color: $header-menu-color;
+
+        transition: all 200ms;
+        border-right: 0;
+        font-size: 15px;
+        padding: 0.2em 1em;
+        border-radius: 5px;
+        margin-right: 5px;
+      }
+
+      &.active a {
+        background-color: white;
+        border-radius: 5px 0 0 5px;
+        margin-right: 0;
+        font-weight: bold;
+      }
     }
   }
 }
