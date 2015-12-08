@@ -351,7 +351,7 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
 
     var that = this;
     this.$parent = d3.select(stratomex.parent).append('div').attr('class', 'column').style('opacity', 0);
-    this.$parent.style('top', '34px');
+    this.$parent.style('top', '20px');
     {
       let parentBounds = C.bounds(stratomex.parent);
       this.$parent.style('left', (parentBounds.w - this.options.width - 20)+'px');
