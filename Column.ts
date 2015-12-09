@@ -583,7 +583,7 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
 
     this.detail = null;
     this.$parent.style('width', this.options.width+'px');
-    this.$parent.style('width', this.options.width+'px');
+    this.$layoutHelper.style('width', this.options.width+'px');
     return this.stratomex.relayout(within);
   }
 
