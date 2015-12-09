@@ -127,8 +127,8 @@ export function showInDetail(inputs, parameter, graph, within) {
 }
 
 export function createToggleDetailCmd(column, cluster, show) {
-  var act = show ? 'show' : 'hide';
-  return prov.action(prov.meta(act + ' detail of cluster ' + cluster + ' of ' + column.toString(), prov.cat.layout), 'showStratomeXInDetail', showInDetail, [column], {
+  var act = show ? 'Show' : 'Hide';
+  return prov.action(prov.meta(act + ' Details of '+column.toString()+' Cluster "' + cluster + '"', prov.cat.layout), 'showStratomeXInDetail', showInDetail, [column], {
     cluster: cluster,
     action: show ? 'show' : 'hide'
   });
