@@ -443,7 +443,8 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
         width: that.options.width - this.options.padding * 2
       },
       'caleydo-vis-heatmap': {
-        scaleTo: [that.options.width - this.options.padding * 2, initialHeight]
+        scaleTo: [that.options.width - this.options.padding * 2, initialHeight],
+        forceThumbnails: true
       },
       'caleydo-vis-kaplanmeier': {
         maxTime: groupTotalAggregator((<ranges.CompositeRange1D>partitioning.dim(0)).groups.length, (v) => v.length === 0 ? 0 : v[v.length-1])
