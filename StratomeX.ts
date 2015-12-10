@@ -22,8 +22,15 @@ function toName(data: string, par: string) {
   var c = par.replace(' Clustering','');
   const j = c.lastIndexOf('/');
   c = j >= 0 ? c.slice(j+1) : c;
-
+  if (base === c) {
+    return base;
+  }
   return base + ' ('+c+')';
+}
+
+function toMiddle(n: string) {
+  const l = n.split('/');
+  return l.length > 1 ? l[l.length-2] : n;
 }
 
 class StratomeX extends views.AView {
@@ -95,7 +102,7 @@ class StratomeX extends views.AView {
       let mref = this.provGraph.findOrAddObject(m, m.desc.name, 'data');
       var r = ranges.list(base.range.dim(0));
       base.data.ids(r).then(m.fromIdRange.bind(m)).then((target) => {
-        this.provGraph.push(columns.createColumnCmd(this.ref, mref, target, toName(m.desc.name, base.range.name)));
+        this.provGraph.push(columns.createColumnCmd(this.ref, mref, target, toName(m.desc.name, base.range.dim(0).name)));
       });
       return true;
     }
@@ -108,7 +115,7 @@ class StratomeX extends views.AView {
     if (rowStrat === m) {
       //both are stratifications
       rowStrat.range().then((range) => {
-        that.provGraph.push(columns.createColumnCmd(that.ref, mref, range, toName(m.desc.name, rowStrat.desc.name)));
+        that.provGraph.push(columns.createColumnCmd(that.ref, mref, range, toName(toMiddle(m.desc.fqname), rowStrat.desc.name)));
       });
     } else {
       Promise.all<ranges.Range1D>([rowStrat.idRange(), colStrat ? colStrat.idRange() : ranges.Range1D.all()]).then((range_list:ranges.Range1D[]) => {

@@ -372,7 +372,7 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
       'border-color': data.desc.color || 'gray',
       'background-color': data.desc.bgColor || 'lightgray'
     });
-    this.$summary.append('div').attr('class', 'title').style('max-width',(that.options.width-this.options.padding*2)+'px').text(data.desc.name).style('background-color', data.desc.bgColor || 'lightgray');
+    this.$summary.append('div').attr('class', 'title').style('max-width',(that.options.width-this.options.padding*2)+'px').text(this.name).style('background-color', data.desc.bgColor || 'lightgray');
     this.$clusters = this.$parent.append('div').attr('class', 'clusters');
     this.range = partitioning;
     //create the vis
