@@ -42,11 +42,14 @@ export const manager = new idtypes.ObjectManager<Column>('_column', 'Column');
 function createColumn(inputs, parameter, graph, within) {
   var stratomex = inputs[0].value,
     partitioning = ranges.parse(parameter.partitioning),
-    index = parameter.hasOwnProperty('index') ? parameter.index : -1 ;
+    index = parameter.hasOwnProperty('index') ? parameter.index : -1,
+    name = parameter.name || inputs[1].name;
+
   return inputs[1].v.then(function (data) {
     //console.log(new Date(), 'create column', data.desc.name, index);
     var c = new Column(stratomex, data, partitioning, inputs[1], {
-      width: (data.desc.type === 'stratification') ? 60 : 160
+      width: (data.desc.type === 'stratification') ? 60 : 160,
+      name : name
     }, within);
     var r = prov.ref(c, c.name, prov.cat.visual, c.hashString);
     c.changeHandler = function (event, to, from) {
@@ -75,13 +78,14 @@ function removeColumn(inputs, parameter, graph, within) {
   var column : Column = inputs[1].value;
   const dataRef = column.dataRef;
   const partitioning = column.range.toString();
+  const columnName = column.name;
   //console.log(new Date(), 'remove column', column.data.desc.name);
 
   return inputs[0].value.removeColumn(column, within).then((index) => {
     //console.log(new Date(), 'removed column', dataRef.value.desc.name, index);
     return {
       removed: [inputs[1]],
-      inverse: (inputs, created) => createColumnCmd(inputs[0], dataRef, partitioning, index),
+      inverse: (inputs, created) => createColumnCmd(inputs[0], dataRef, partitioning, columnName, index),
       consumed: within
     };
   });
@@ -163,9 +167,10 @@ export function createSetOption(column, name, value, old) {
     old: old
   });
 }
-export function createColumnCmd(stratomex, data, partitioning, index: number = -1) {
-  return prov.action(prov.meta(data.name, prov.cat.data, prov.op.create), 'createStratomeXColumn', createColumn, [stratomex, data], {
+export function createColumnCmd(stratomex, data, partitioning, name: string, index: number = -1) {
+  return prov.action(prov.meta(name, prov.cat.data, prov.op.create), 'createStratomeXColumn', createColumn, [stratomex, data], {
     partitioning: partitioning.toString(),
+    name: name,
     index: index
   });
 }
@@ -314,7 +319,8 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
     summaryHeight: 90,
     width: 180,
     detailWidth: 500,
-    padding: 2
+    padding: 2,
+    name: null
   };
 
   private $parent:d3.Selection<any>;
@@ -478,6 +484,9 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
   }
 
   get name() {
+    if (this.options.name) {
+      return this.options.name;
+    }
     const n : string= this.data.desc.name;
     const i = n.lastIndexOf('/');
     return i >= 0 ? n.slice(i+1) : n;
