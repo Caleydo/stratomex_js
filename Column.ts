@@ -48,7 +48,7 @@ function createColumn(inputs, parameter, graph, within) {
   return inputs[1].v.then(function (data) {
     //console.log(new Date(), 'create column', data.desc.name, index);
     var c = new Column(stratomex, data, partitioning, inputs[1], {
-      width: (data.desc.type === 'stratification') ? 60 : 160,
+      width: (data.desc.type === 'stratification') ? 60 : (data.desc.name.toLowerCase().indexOf('death') >= 0 ? 110 : 160),
       name : name
     }, within);
     var r = prov.ref(c, c.name, prov.cat.visual, c.hashString);
