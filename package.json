@@ -73,6 +73,14 @@
         "d3": "~3.5.5"
       }
     },
+    "products": [
+      {
+        "name": "StratomeX",
+        "type": "python",
+        "app": "stratomex.js",
+        "plugins": ["stratomex.js", "caleydo_data_mongo", "caleydo_data_redis", "caleydo_data_hdf"]
+      }
+    ],
     "requirejs-config": {
       "shim": {
         "webcola": {
