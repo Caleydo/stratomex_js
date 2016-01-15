@@ -1,8 +1,8 @@
 {
-  "name": "stratomex.js",
+  "name": "stratomex_js",
   "version": "0.0.1",
   "license" : "SEE LICENSE IN LICENSE",
-  "repository": "Caleydo/stratomex.js",
+  "repository": "Caleydo/stratomex_js",
   "dependencies": {
   },
   "peerDependencies": {
@@ -77,8 +77,8 @@
       {
         "name": "StratomeX",
         "type": "python",
-        "app": "stratomex.js",
-        "plugins": ["stratomex.js", "caleydo_data_mongo", "caleydo_data_redis", "caleydo_data_hdf"]
+        "app": "stratomex_js",
+        "plugins": ["stratomex_js", "caleydo_data_mongo", "caleydo_data_redis", "caleydo_data_hdf"]
       }
     ],
     "requirejs-config": {
