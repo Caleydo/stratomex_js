@@ -43,7 +43,8 @@ function createColumn(inputs, parameter, graph, within) {
   var stratomex = inputs[0].value,
     partitioning = ranges.parse(parameter.partitioning),
     index = parameter.hasOwnProperty('index') ? parameter.index : -1,
-    name = parameter.name || inputs[1].name;
+    name = parameter.name || inputs[1].name,
+    uid = parameter.uid || 'C'+C.random_id();
 
   return inputs[1].v.then(function (data) {
     //console.log(new Date(), 'create column', data.desc.name, index);
@@ -51,6 +52,7 @@ function createColumn(inputs, parameter, graph, within) {
       width: (data.desc.type === 'stratification') ? 60 : (data.desc.name.toLowerCase().indexOf('death') >= 0 ? 110 : 160),
       name : name
     }, within);
+    c.node.setAttribute('data-anchor', uid);
     var r = prov.ref(c, c.name, prov.cat.visual, c.hashString);
     c.changeHandler = function (event, to, from) {
       if (from) { //have a previous one so not the default
@@ -171,7 +173,8 @@ export function createColumnCmd(stratomex, data, partitioning, name: string, ind
   return prov.action(prov.meta(name, prov.cat.data, prov.op.create), 'createStratomeXColumn', createColumn, [stratomex, data], {
     partitioning: partitioning.toString(),
     name: name,
-    index: index
+    index: index,
+    uid: 'C'+ C.random_id()
   });
 }
 export function createRemoveCmd(stratomex, column) {
