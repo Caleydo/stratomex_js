@@ -8,7 +8,7 @@ define(function (require) {
   var vis = require('../caleydo_core/vis');
   var C = require('../caleydo_core/main');
   var template = require('../clue/template');
-  var cmode = require('../caleydo_provenance/mode');
+  var cmode = require('../clue/mode');
 
 
   var helper = document.querySelector('#mainhelper');
