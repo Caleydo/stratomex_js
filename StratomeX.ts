@@ -8,7 +8,7 @@ import stratification = require('../caleydo_core/stratification');
 import C = require('../caleydo_core/main');
 import link_m = require('../caleydo_links/link');
 import ranges = require('../caleydo_core/range');
-import prov = require('../caleydo_provenance/main');
+import prov = require('../clue/prov');
 
 import columns = require('./Column');
 
