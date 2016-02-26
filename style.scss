@@ -2,7 +2,7 @@
  * Created by Samuel Gratzl on 15.12.2014.
  */
 
-@import "../clue/styles/vars";
+@import "../caleydo_clue/styles/vars";
 $select-data-color: orange;
 $hover-data-color: #ffc46b;
 
@@ -98,7 +98,7 @@ main {
     //background-color: #fafafa;
     white-space: nowrap;
 
-    &.select-selected {
+    &.caleydo-select-selected {
       //border: 1px solid $select-data-color;
       background: none;
 
@@ -106,7 +106,7 @@ main {
         border-color: $select-data-color !important;
       }
     }
-    &.select-hovered {
+    &.caleydo-select-hovered {
       border: 1px solid $hover-data-color;
       background: none;
     }
@@ -252,11 +252,11 @@ main {
         stroke-width: 1;
         stroke-opacity: 0.9;
 
-        &.select-selected {
+        &.caleydo-select-selected {
           stroke: $select-data-color;
           pointer-events: none;
         }
-        &.select-hovered {
+        &.caleydo-select-hovered {
           stroke: $hover-data-color;
           pointer-events: none;
         }
@@ -268,11 +268,11 @@ main {
         fill: black;
         opacity: 0.2;
 
-        &.select-selected {
+        &.caleydo-select-selected {
           fill: $select-data-color;
           pointer-events: none;
         }
-        &.select-hovered {
+        &.caleydo-select-hovered {
           fill: $hover-data-color;
           pointer-events: none;
           opacity: 0.5;
@@ -368,13 +368,13 @@ main {
   }
 }
 
-.multiform .select-selected {
+.multiform .caleydo-select-selected {
   //html variant
   border: 1px solid $select-data-color;
   background-color: $select-data-color;
 }
 
-svg .select-selected {
+svg .caleydo-select-selected {
   //svg variant
   stroke: $select-data-color;
   stroke-width: 1px;
@@ -387,19 +387,19 @@ body {
     #stratomex {
       .link-container svg {
         path.rel-item {
-          &.select-hovered {
+          &.caleydo-select-hovered {
             stroke: $hover-presentation-color !important;
           }
         }
         path.rel-group, path.rel-block {
-          &.select-hovered {
+          &.caleydo-select-hovered {
             fill: $hover-presentation-color !important;
           }
         }
       }
 
       .column {
-        &.select-hovered {
+        &.caleydo-select-hovered {
           border-color: $hover-presentation-color !important;
         }
       }

@@ -11,7 +11,7 @@ import behaviors = require('../caleydo_core/behavior');
 import events = require('../caleydo_core/event');
 import link_m = require('../caleydo_d3/link');
 import datatypes = require('../caleydo_core/datatype');
-import prov = require('../clue/prov');
+import prov = require('../caleydo_clue/prov');
 import ranges = require('../caleydo_core/range');
 
 export function animationTime(within = -1) {
@@ -351,7 +351,7 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
   optionHandler: any;
 
   private highlightMe = (event: events.IEvent, type: string, act: ranges.Range) => {
-    this.$parent.classed('select-'+type, act.dim(0).contains(this.id));
+    this.$parent.classed('caleydo-select-'+type, act.dim(0).contains(this.id));
   };
 
   constructor(private stratomex, public data, partitioning:ranges.Range, public dataRef, options:any = {}, within = -1) {
@@ -404,13 +404,13 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
         d3.event.stopPropagation();
       });
       const toggleSelection = () => {
-        var isSelected = $elem.classed('select-selected');
+        var isSelected = $elem.classed('caleydo-select-selected');
         if (isSelected) {
           data.select(0, ranges.none());
         } else {
           data.select(0, ranges.all());
         }
-        $elem.classed('select-selected', !isSelected);
+        $elem.classed('caleydo-select-selected', !isSelected);
       };
       $elem.append('div').attr('class', 'title').style('max-width',(that.options.width-that.options.padding*2)+'px').text(cluster.dim(0).name).on('click', toggleSelection);
       $elem.append('div').attr('class', 'body').on('click', toggleSelection);

@@ -3,7 +3,7 @@
  */
 define(function (require, exports) {
   var C = require('../caleydo_core/main');
-  var prov = require('../clue/prov');
+  var prov = require('../caleydo_clue/prov');
   var d3 = require('d3');
 
   function addNote(inputs, parameter) {
