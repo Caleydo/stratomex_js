@@ -6,7 +6,7 @@ import views = require('../caleydo_core/layout_view');
 import datatypes = require('../caleydo_core/datatype');
 import stratification = require('../caleydo_core/stratification');
 import C = require('../caleydo_core/main');
-import link_m = require('../caleydo_links/link');
+import link_m = require('../caleydo_d3/link');
 import ranges = require('../caleydo_core/range');
 import prov = require('../clue/prov');
 
