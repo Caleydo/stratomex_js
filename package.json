@@ -7,8 +7,6 @@
   },
   "peerDependencies": {
     "caleydo_core": "*",
-    "caleydo_links": "*",
-    "caleydo_provenance": "*",
     "caleydo_vis": "*",
     "caleydo_vis_lineup": "*",
     "caleydo_d3": "*",
