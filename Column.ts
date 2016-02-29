@@ -82,12 +82,13 @@ function removeColumn(inputs, parameter, graph, within) {
   const partitioning = column.range.toString();
   const columnName = column.name;
   //console.log(new Date(), 'remove column', column.data.desc.name);
+  const uid = column.node.getAttribute('data-anchor');
 
   return inputs[0].value.removeColumn(column, within).then((index) => {
     //console.log(new Date(), 'removed column', dataRef.value.desc.name, index);
     return {
       removed: [inputs[1]],
-      inverse: (inputs, created) => createColumnCmd(inputs[0], dataRef, partitioning, columnName, index),
+      inverse: (inputs, created) => createColumnCmd(inputs[0], dataRef, partitioning, columnName, index, uid),
       consumed: within
     };
   });
@@ -169,12 +170,12 @@ export function createSetOption(column, name, value, old) {
     old: old
   });
 }
-export function createColumnCmd(stratomex, data, partitioning, name: string, index: number = -1) {
+export function createColumnCmd(stratomex, data, partitioning, name: string, index: number = -1, uid = 'C'+ C.random_id()) {
   return prov.action(prov.meta(name, prov.cat.data, prov.op.create), 'createStratomeXColumn', createColumn, [stratomex, data], {
     partitioning: partitioning.toString(),
     name: name,
     index: index,
-    uid: 'C'+ C.random_id()
+    uid: uid
   });
 }
 export function createRemoveCmd(stratomex, column) {
