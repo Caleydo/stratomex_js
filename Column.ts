@@ -13,6 +13,8 @@ import link_m = require('../caleydo_d3/link');
 import datatypes = require('../caleydo_core/datatype');
 import prov = require('../caleydo_clue/prov');
 import ranges = require('../caleydo_core/range');
+import statetoken = require('../caleydo_core/statetoken')
+import {IStateToken} from "../caleydo_core/statetoken";
 
 export function animationTime(within = -1) {
   return within < 0 ? 50 : within;
@@ -468,6 +470,21 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
 
     this.$parent.transition().duration(animationTime(within)).style('opacity', 1);
   }
+
+  /*get stateTokens(): statetoken.IStateToken[] {
+    var tokens: statetoken.IStateToken[]  = []
+
+    tokens = tokens.concat({
+       name: "Culumn " + this.id + " Vis-Type",
+       value: this.summary.option("name"),
+       type: statetoken.TokenType.string,
+       importance: 1
+     })
+
+    return tokens;
+  }
+  */
+
 
   setInteractive(interactive: boolean) {
     this.$toolbar.style('display',interactive ? null : 'none');

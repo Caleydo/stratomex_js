@@ -67,9 +67,11 @@ class StratomeX extends views.AView {
       return a.id - b.id;
     });
     for (let i = 0; i < sortedColumns.length; i++) {
+      let t:number = this.indexOf(sortedColumns[i])/(sortedColumns.length-1);
+      if (t===NaN) t= 0.5
       tokens = tokens.concat({
-       name: "Column" + sortedColumns[i].id,
-       value: [0,1,this.indexOf(sortedColumns[i])/(sortedColumns.length-1)],
+        name: "Column" + sortedColumns[i].id,
+       value: [0,1,t],
        type: statetoken.TokenType.ordinal,
        importance: 1
      })
