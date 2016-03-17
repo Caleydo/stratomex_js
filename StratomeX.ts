@@ -9,8 +9,10 @@ import C = require('../caleydo_core/main');
 import link_m = require('../caleydo_d3/link');
 import ranges = require('../caleydo_core/range');
 import prov = require('../caleydo_clue/prov');
+import statetoken = require('../caleydo_core/statetoken')
 
 import columns = require('./Column');
+import {Column} from "./Column";
 
 //type ColumnRef = prov.IObjectRef<columns.Column>;
 
@@ -56,6 +58,25 @@ class StratomeX extends views.AView {
       canSelect: () => this.interactive
     });
   }
+
+  get stateTokens(): statetoken.IStateToken[] {
+    var tokens: statetoken.IStateToken[]  = []
+
+    let sortedColumns = this._columns.slice(0);
+    sortedColumns.sort(function(a:Column, b:Column) {
+      return a.id - b.id;
+    });
+    for (let i = 0; i < sortedColumns.length; i++) {
+      tokens = tokens.concat({
+       name: "Column" + sortedColumns[i].id,
+       value: [0,1,this.indexOf(sortedColumns[i])/(sortedColumns.length-1)],
+       type: statetoken.TokenType.ordinal,
+       importance: 1
+     })
+    }
+    return tokens;
+  }
+
 
   setInteractive(interactive: boolean) {
     this.interactive = interactive;
@@ -178,6 +199,7 @@ class StratomeX extends views.AView {
       j = this.indexOf(columnB);
     this._columns[i] = columnB;
     this._columns[j] = columnA;
+
     if (i < j) {
       this.parent.insertBefore(columnB.layoutNode, columnA.layoutNode);
     } else {
