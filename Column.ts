@@ -15,6 +15,8 @@ import prov = require('../caleydo_clue/prov');
 import ranges = require('../caleydo_core/range');
 import statetoken = require('../caleydo_core/statetoken')
 import {IStateToken} from "../caleydo_core/statetoken";
+import {defaultSelectionType} from "../caleydo_core/idtype";
+import {MultiForm} from "../caleydo_core/multiform";
 
 export function animationTime(within = -1) {
   return within < 0 ? 50 : within;
@@ -349,7 +351,6 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
 
   private $layoutHelper: d3.Selection<any>;
 
-
   changeHandler: any;
   optionHandler: any;
 
@@ -471,19 +472,34 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
     this.$parent.transition().duration(animationTime(within)).style('opacity', 1);
   }
 
-  /*get stateTokens(): statetoken.IStateToken[] {
+  get stateTokens(): statetoken.IStateToken[] {
     var tokens: statetoken.IStateToken[]  = []
-
     tokens = tokens.concat({
-       name: "Culumn " + this.id + " Vis-Type",
-       value: this.summary.option("name"),
-       type: statetoken.TokenType.string,
-       importance: 1
+       name: "Culumn " + this.id + " idtype1",
+       value: this.summary.data.idtypes[0],
+       type: statetoken.TokenType.idtype,
+       importance: 0.5
+    },{
+       name: "Culumn " + this.id + " idtype2",
+       value: this.summary.data.idtypes[1],
+       type: statetoken.TokenType.idtype,
+       importance: 0.5
+    })
+    tokens = tokens.concat({
+        name: "Column " + this.name,
+        value: this.name,
+        type: statetoken.TokenType.string,
+        importance: 1
      })
-
-    return tokens;
+    tokens = tokens.concat({
+        name: "Column " + this.name + "vis Description",
+        value: this.name + " " + this.grid.act.id,
+        type: statetoken.TokenType.string,
+        importance: 0.5
+     })
+    return tokens
   }
-  */
+
 
 
   setInteractive(interactive: boolean) {
