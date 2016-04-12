@@ -13,6 +13,7 @@ import statetoken = require('../caleydo_core/statetoken')
 
 import columns = require('./Column');
 import {Column} from "./Column";
+import {IDType} from "../caleydo_core/idtype";
 
 //type ColumnRef = prov.IObjectRef<columns.Column>;
 
@@ -60,23 +61,43 @@ class StratomeX extends views.AView {
   }
 
   get stateTokens(): statetoken.IStateToken[] {
-    var tokens: statetoken.IStateToken[]  = []
-
-    
+    let tokens: statetoken.IStateToken[]  = []
     let sortedColumns = this._columns.slice(0);
     sortedColumns.sort(function(a:Column, b:Column) {
       return a.id - b.id;
     });
-    
+
+    let selIDtypes:IDType[] = []
     for (let i = 0; i < sortedColumns.length; i++) {
       let t:number = this.indexOf(sortedColumns[i])/(sortedColumns.length-1);
       if (isNaN(t)) t= 0
       tokens = tokens.concat({
-        name: "Column " + sortedColumns[i].id + "_order",
-       value: [0,1,t],
-       type: statetoken.TokenType.ordinal,
-       importance: 0.5
-     })
+        name: "Column " + sortedColumns[i].id,
+        value: [],
+        type: statetoken.TokenType.ordinal,
+        importance: 1,
+        childs : sortedColumns[i].stateTokensRekursive.concat({
+          name: "Column " + sortedColumns[i].id + "_order",
+          value: [0,1,t],
+          type: statetoken.TokenType.ordinal,
+          importance: 1,
+          childs: []})
+      })
+      selIDtypes = selIDtypes.concat(sortedColumns[i].idtypes)
+    }
+    //remove duplicate idtypes
+    selIDtypes = selIDtypes.filter(function(item, pos) {
+      return selIDtypes.indexOf(item) == pos;
+    })
+
+    for (let i =0; i < selIDtypes.length; i++){
+      tokens = tokens.concat({
+        name: selIDtypes[i].name,
+        value: selIDtypes[i],
+        type: statetoken.TokenType.idtype,
+        importance: 1,
+        childs: []
+      })
     }
     return tokens;
   }

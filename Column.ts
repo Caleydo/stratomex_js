@@ -472,30 +472,27 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
     this.$parent.transition().duration(animationTime(within)).style('opacity', 1);
   }
 
-  get stateTokens(): statetoken.IStateToken[] {
-    var tokens: statetoken.IStateToken[]  = []
-    tokens = tokens.concat({
-       name: "Culumn " + this.id + " idtype1",
-       value: this.summary.data.idtypes[0],
-       type: statetoken.TokenType.idtype,
-       importance: 0.5
-    },{
-       name: "Culumn " + this.id + " idtype2",
-       value: this.summary.data.idtypes[1],
-       type: statetoken.TokenType.idtype,
-       importance: 0.5
-    })
+  get idtypes(): idtypes.IDType[]{
+    return [this.summary.data.idtypes[0],
+        this.summary.data.idtypes[1]]
+  }
+
+  get stateTokensRekursive(): statetoken.IStateToken[] {
+    let tokens: statetoken.IStateToken[]  = []
+
     tokens = tokens.concat({
         name: "Column " + this.name,
         value: this.name,
         type: statetoken.TokenType.string,
-        importance: 1
+        importance: 1,
+        childs : []
      })
     tokens = tokens.concat({
-        name: "Column " + this.name + "vis Description",
+        name: "Column " + this.name + "vis Type",
         value: this.name + " " + this.grid.act.id,
         type: statetoken.TokenType.string,
-        importance: 0.5
+        importance: 1,
+        childs:[]
      })
     return tokens
   }
