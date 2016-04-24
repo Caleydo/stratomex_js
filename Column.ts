@@ -485,14 +485,16 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
         value: this.name,
         type: statetoken.TokenType.string,
         importance: 1,
-        childs : []
+        childs : [],
+        category: "data"
      })
     tokens = tokens.concat({
         name: "Column " + this.name + "vis Type",
         value: this.name + " " + this.grid.act.id,
         type: statetoken.TokenType.string,
         importance: 1,
-        childs:[]
+        childs:[],
+        category: "visual"
      })
     return tokens
   }

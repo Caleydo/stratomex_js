@@ -81,7 +81,9 @@ class StratomeX extends views.AView {
           value: [0,1,t],
           type: statetoken.TokenType.ordinal,
           importance: 1,
-          childs: []})
+          childs: [],
+          category: "layout"}),
+        category: "data"
       })
       selIDtypes = selIDtypes.concat(sortedColumns[i].idtypes)
     }
@@ -96,7 +98,8 @@ class StratomeX extends views.AView {
         value: selIDtypes[i],
         type: statetoken.TokenType.idtype,
         importance: 1,
-        childs: []
+        childs: [],
+        category: "selection"
       })
     }
     return tokens;
