@@ -104,16 +104,18 @@ class StratomeX extends views.AView {
         return selIDtypes.indexOf(item) == pos;
       })
     }
-
+    console.log(selIDtypes)
     for (let i =0; i < selIDtypes.length; i++){
-      tokens = tokens.concat({
-        name: selIDtypes[i].name,
-        value: selIDtypes[i],
-        type: statetoken.TokenType.idtype,
-        importance: 1,
-        childs: [],
-        category: "selection"
-      })
+      if (typeof selIDtypes[i] != "undefined") {
+        tokens = tokens.concat({
+          name: selIDtypes[i].name,
+          value: selIDtypes[i],
+          type: statetoken.TokenType.idtype,
+          importance: 1,
+          childs: [],
+          category: "selection"
+        })
+      }
     }
     return tokens;
   }
