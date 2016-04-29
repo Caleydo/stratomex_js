@@ -14,7 +14,7 @@ import datatypes = require('../caleydo_core/datatype');
 import prov = require('../caleydo_clue/prov');
 import ranges = require('../caleydo_core/range');
 import statetoken = require('../caleydo_core/statetoken')
-import {IStateToken} from "../caleydo_core/statetoken";
+import {IStateToken, StateTokenLeaf} from "../caleydo_core/statetoken";
 import {defaultSelectionType} from "../caleydo_core/idtype";
 import {MultiForm} from "../caleydo_core/multiform";
 
@@ -480,22 +480,24 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
   get stateTokensRekursive(): statetoken.IStateToken[] {
     let tokens: statetoken.IStateToken[]  = []
 
-    tokens = tokens.concat({
-        name: "Column " + this.name,
-        value: this.name,
-        type: statetoken.TokenType.string,
-        importance: 1,
-        childs : [],
-        category: "data"
-     })
-    tokens = tokens.concat({
-        name: "Column " + this.name + "vis Type",
-        value: this.name + " " + this.grid.act.id,
-        type: statetoken.TokenType.string,
-        importance: 1,
-        childs:[],
-        category: "visual"
-     })
+    tokens = tokens.concat(
+      new StateTokenLeaf(
+        "Column " + this.name,
+        1,
+        statetoken.TokenType.string,
+        this.name,
+        "data"
+      )
+    )
+    tokens = tokens.concat(
+      new StateTokenLeaf(
+        "Column " + this.name + "vis Type",
+        1,
+        statetoken.TokenType.string,
+        this.name + " " + this.grid.act.id,
+        "visual"
+      )
+    )
     return tokens
   }
 

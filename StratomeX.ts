@@ -14,7 +14,7 @@ import statetoken = require('../caleydo_core/statetoken')
 import columns = require('./Column');
 import {Column} from "./Column";
 import {IDType} from "../caleydo_core/idtype";
-import {IStateToken} from "../caleydo_core/statetoken";
+import {IStateToken, StateTokenNode, StateTokenLeaf} from "../caleydo_core/statetoken";
 import {data} from "../caleydo_core/wrapper";
 
 //type ColumnRef = prov.IObjectRef<columns.Column>;
@@ -70,53 +70,49 @@ class StratomeX extends views.AView {
     });
 
     let selIDtypes:IDType[] = []
-    let colToken:statetoken.IStateToken = {
-        name: "Columns",
-        value: [],
-        type: statetoken.TokenType.string,
-        importance: 1,
-        childs: [],
-        category: "data"
-    }
+    let columns:IStateToken[] = []
     for (let i = 0; i < sortedColumns.length; i++) {
       let t:number = this.indexOf(sortedColumns[i]) / (sortedColumns.length - 1);
       if (isNaN(t)) t = 0
-      colToken.childs = colToken.childs.concat({
-        name: "Column " + sortedColumns[i].id,
-        value: [],
-        type: statetoken.TokenType.ordinal,
-        importance: 1,
-        childs: sortedColumns[i].stateTokensRekursive.concat({
-          name: "Column " + sortedColumns[i].id + "_order",
-          value: [0, 1, t],
-          type: statetoken.TokenType.ordinal,
-          importance: 1,
-          childs: [],
-          category: "layout"
-        }),
-        category: "data"
-      })
+      columns = columns.concat(
+        new StateTokenNode(
+          "Column " + sortedColumns[i].name,
+          1,
+          sortedColumns[i].stateTokensRekursive.concat(
+            new StateTokenLeaf(
+              "Column " + sortedColumns[i].id + "_order",
+              1,
+              statetoken.TokenType.ordinal,
+              [0, 1, t],
+              "layout"
+            )
+          )
+        )
+      )
       selIDtypes = selIDtypes.concat(sortedColumns[i].idtypes)
-
-      tokens = tokens.concat(colToken);
       //remove duplicate idtypes
       selIDtypes = selIDtypes.filter(function (item, pos) {
         return selIDtypes.indexOf(item) == pos;
       })
     }
-    console.log(selIDtypes)
+    tokens = tokens.concat(new StateTokenNode("Columns", 1, columns));
+
+    //console.log(selIDtypes)
+    let selectionTokens: StateTokenLeaf[] = []
     for (let i =0; i < selIDtypes.length; i++){
       if (typeof selIDtypes[i] != "undefined") {
-        tokens = tokens.concat({
-          name: selIDtypes[i].name,
-          value: selIDtypes[i],
-          type: statetoken.TokenType.idtype,
-          importance: 1,
-          childs: [],
-          category: "selection"
-        })
+        selectionTokens = selectionTokens.concat(
+          new StateTokenLeaf(
+            selIDtypes[i].name,
+            1,
+            statetoken.TokenType.idtype,
+            selIDtypes[i],
+            "selection"
+          )
+        )
       }
     }
+    tokens = tokens.concat(new StateTokenNode("Selections", 1, selectionTokens));
     return tokens;
   }
 
