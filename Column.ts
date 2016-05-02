@@ -13,8 +13,8 @@ import link_m = require('../caleydo_d3/link');
 import datatypes = require('../caleydo_core/datatype');
 import prov = require('../caleydo_clue/prov');
 import ranges = require('../caleydo_core/range');
-import statetoken = require('../caleydo_core/statetoken')
-import {IStateToken, StateTokenLeaf} from "../caleydo_core/statetoken";
+import statetoken = require('../caleydo_clue/statetoken')
+import {IStateToken, StateTokenLeaf} from "../caleydo_clue/statetoken";
 import {defaultSelectionType} from "../caleydo_core/idtype";
 import {MultiForm} from "../caleydo_core/multiform";
 

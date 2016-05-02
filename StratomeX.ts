@@ -9,12 +9,12 @@ import C = require('../caleydo_core/main');
 import link_m = require('../caleydo_d3/link');
 import ranges = require('../caleydo_core/range');
 import prov = require('../caleydo_clue/prov');
-import statetoken = require('../caleydo_core/statetoken')
+import statetoken = require('../caleydo_clue/statetoken')
 
 import columns = require('./Column');
 import {Column} from "./Column";
 import {IDType} from "../caleydo_core/idtype";
-import {IStateToken, StateTokenNode, StateTokenLeaf} from "../caleydo_core/statetoken";
+import {IStateToken, StateTokenNode, StateTokenLeaf} from "../caleydo_clue/statetoken";
 import {data} from "../caleydo_core/wrapper";
 
 //type ColumnRef = prov.IObjectRef<columns.Column>;
