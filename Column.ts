@@ -17,6 +17,7 @@ import statetoken = require('../caleydo_clue/statetoken')
 import {IStateToken, StateTokenLeaf} from "../caleydo_clue/statetoken";
 import {defaultSelectionType} from "../caleydo_core/idtype";
 import {MultiForm} from "../caleydo_core/multiform";
+import {isUndefined} from "../caleydo_core/main";
 
 export function animationTime(within = -1) {
   return within < 0 ? 50 : within;
@@ -495,6 +496,21 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
         1,
         statetoken.TokenType.string,
         this.name + " " + this.grid.act.id,
+        "visual"
+      )
+    )
+    let value:string = this.name
+    if (!(this.detail === null || isUndefined(this.detail))) {
+      value += "ID: " +this.detail.multi.id
+    } else {
+      value += "No Detail."
+    }
+    tokens = tokens.concat(
+      new StateTokenLeaf(
+        "Column " + this.name + " Detail",
+        1,
+        statetoken.TokenType.string,
+        value,
         "visual"
       )
     )
