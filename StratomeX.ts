@@ -89,7 +89,7 @@ class StratomeX extends views.AView {
           )
         )
       )
-      selIDtypes = selIDtypes.concat(sortedColumns[i].idtypes)
+      selIDtypes = selIDtypes.concat(sortedColumns[i].idtypes[0])
       //remove duplicate idtypes
       selIDtypes = selIDtypes.filter(function (item, pos) {
         return selIDtypes.indexOf(item) == pos;
