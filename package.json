@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "license" : "SEE LICENSE IN LICENSE",
   "repository": "Caleydo/stratomex_js",
+  "homepage": "http://www.caleydo.org/tools/stratomex/",
   "dependencies": {
   },
   "peerDependencies": {
@@ -14,6 +15,7 @@
     "caleydo_clue": "*"
   },
   "caleydo": {
+    "type": "app",
     "plugins": {
       "web": [
         {
