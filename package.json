@@ -1,5 +1,6 @@
 {
   "name": "stratomex_js",
+  "description": "StratomeX app in Caleydo Web with rudimentary Provenance support",
   "version": "0.0.1",
   "license" : "SEE LICENSE IN LICENSE",
   "repository": "Caleydo/stratomex_js",
