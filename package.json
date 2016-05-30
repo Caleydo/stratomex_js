@@ -1,6 +1,6 @@
 {
   "name": "stratomex_js",
-  "description": "StratomeX app in Caleydo Web with rudimentary Provenance support",
+  "description": "StratomeX is a Caleydo Web application for the visual exploration of genomic stratification of diseases.",
   "version": "0.0.1",
   "license" : "SEE LICENSE IN LICENSE",
   "repository": "Caleydo/stratomex_js",
