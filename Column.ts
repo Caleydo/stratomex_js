@@ -209,7 +209,8 @@ export function createCmd(id:string) {
  * @returns {prov.ActionNode[]}
  */
 export function compressCreateRemove(path: prov.ActionNode[]) {
-  const to_remove: number[] = [];
+  //use a set, e.g. swap uses two columns, to avoid duplicate entries
+  const to_remove = d3.set();
   path.forEach((p, i) => {
     if (p.f_id === 'removeStratomeXColumn') {
       const col = p.removes[0]; //removed column
@@ -221,9 +222,10 @@ export function compressCreateRemove(path: prov.ActionNode[]) {
           let created_col = q.creates[0];
           if (created_col === col) {
             //I found my creation
-            to_remove.push(j, i); //remove both
+            to_remove.add(String(j));
+            to_remove.add(String(i)); //remove both
             //and remove all inbetween
-            to_remove.push(...to_potential_remove);
+            to_potential_remove.forEach(to_remove.add.bind(to_remove));
             break;
           }
         } else if (q.f_id.match(/(changeStratomeXColumnVis|showStratomeXInDetail|setStratomeXColumnOption|swapStratomeXColumns)/)) {
@@ -235,7 +237,7 @@ export function compressCreateRemove(path: prov.ActionNode[]) {
     }
   });
   //decreasing order for right indices
-  for(let i of to_remove.sort(d3.descending)) {
+  for(let i of to_remove.values().map(Number).sort(d3.descending)) {
     path.splice(i,1);
   }
   return path;
