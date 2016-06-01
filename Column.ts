@@ -213,6 +213,7 @@ export function compressCreateRemove(path: prov.ActionNode[]) {
   path.forEach((p, i) => {
     if (p.f_id === 'removeStratomeXColumn') {
       const col = p.removes[0]; //removed column
+      const to_potential_remove = [];
       //find the matching createStatement and mark all changed in between
       for (let j = i-1; j >= 0; --j) {
         let q = path[j];
@@ -221,18 +222,20 @@ export function compressCreateRemove(path: prov.ActionNode[]) {
           if (created_col === col) {
             //I found my creation
             to_remove.push(j, i); //remove both
+            //and remove all inbetween
+            to_remove.push(...to_potential_remove);
             break;
           }
         } else if (q.f_id.match(/(changeStratomeXColumnVis|showStratomeXInDetail|setStratomeXColumnOption|swapStratomeXColumns)/)) {
           if (q.requires.some((d) => d === col)) {
-            to_remove.push(j); //uses the element
+            to_potential_remove.push(j); //uses the element
           }
         }
       }
     }
   });
   //decreasing order for right indices
-  for(let i of to_remove.sort((a,b) => b-a)) {
+  for(let i of to_remove.sort(d3.descending)) {
     path.splice(i,1);
   }
   return path;
@@ -687,7 +690,7 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
   destroy(within) {
     manager.off('select', this.highlightMe);
     manager.remove(this);
-    this.$parent.style('opacity', 1).transition().duration(animationTime(within)).style('opacity', 0).remove();
+    this.$parent.style('opacity', 1).interrupt().transition().duration(animationTime(within)).style('opacity', 0).remove();
     this.$layoutHelper.remove();
   }
 }
