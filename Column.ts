@@ -407,7 +407,7 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
         var g = that.stratomex.provGraph;
         var s = g.findObject(that);
         g.push(createToggleDetailCmd(s, pos[0], true));
-        d3.event.stopPropagation();
+        (<Event>d3.event).stopPropagation();
       });
       const toggleSelection = () => {
         var isSelected = $elem.classed('caleydo-select-selected');
