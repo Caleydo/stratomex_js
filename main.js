@@ -1,6 +1,16 @@
 /**
  * Created by Samuel Gratzl on 15.12.2014.
  */
+
+// Determine the order of css files manually
+
+// HACK! because <amd-dependency path="bootstrap" /> is loaded after all the other stylesheets and not before (as declared)
+/// <amd-dependency path="css!/bower_components/bootstrap/dist/css/bootstrap" />
+
+/// <amd-dependency path="font-awesome" />
+/// <amd-dependency path="css!../caleydo_bootstrap_fontawesome/style.css" />
+/// <amd-dependency path="css!./style.css"/>
+
 define(function (require) {
   'use strict';
   var $ = require('jquery');
