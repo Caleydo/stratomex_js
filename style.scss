@@ -2,7 +2,9 @@
  * Created by Samuel Gratzl on 15.12.2014.
  */
 
-@import "../caleydo_clue/styles/vars";
+// use original CLUE styles as foundation
+@import "../caleydo_clue/style.scss";
+
 $select-data-color: orange;
 $hover-data-color: #ffc46b;
 

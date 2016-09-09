@@ -1,8 +1,10 @@
 {
   "name": "stratomex_js",
+  "description": "StratomeX is a Caleydo Web application for the visual exploration of genomic stratification of diseases.",
   "version": "0.0.1",
   "license" : "SEE LICENSE IN LICENSE",
   "repository": "Caleydo/stratomex_js",
+  "homepage": "http://www.caleydo.org/tools/stratomex/",
   "dependencies": {
   },
   "peerDependencies": {
@@ -14,6 +16,7 @@
     "caleydo_clue": "*"
   },
   "caleydo": {
+    "type": "app",
     "plugins": {
       "web": [
         {
@@ -46,19 +49,22 @@
           "type": "actionCompressor",
           "id": "stratomex-compressSwap",
           "file": "Column",
-          "factory": "compressSwap"
+          "factory": "compressSwap",
+          "matches": "swapStratomeXColumns"
         },
         {
           "type": "actionCompressor",
           "id": "stratomex-compressCreateRemove",
           "file": "Column",
-          "factory": "compressCreateRemove"
+          "factory": "compressCreateRemove",
+          "matches": "(createStratomeXColumn|removeStratomeXColumn)"
         },
         {
           "type": "actionCompressor",
           "id": "stratomex-compressHideShowDetail",
           "file": "Column",
-          "factory": "compressHideShowDetail"
+          "factory": "compressHideShowDetail",
+          "matches": "showStratomeXInDetail"
         },
         {
           "type": "app",

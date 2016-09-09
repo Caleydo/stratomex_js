@@ -11,7 +11,7 @@ import behaviors = require('../caleydo_core/behavior');
 import events = require('../caleydo_core/event');
 import link_m = require('../caleydo_d3/link');
 import datatypes = require('../caleydo_core/datatype');
-import prov = require('../caleydo_clue/prov');
+import prov = require('../caleydo_core/provenance');
 import ranges = require('../caleydo_core/range');
 import statetoken = require('../caleydo_clue/statetoken')
 import {IStateToken, StateTokenLeaf} from "../caleydo_clue/statetoken";
@@ -214,10 +214,12 @@ export function createCmd(id:string) {
  * @returns {prov.ActionNode[]}
  */
 export function compressCreateRemove(path: prov.ActionNode[]) {
-  const to_remove: number[] = [];
+  //use a set, e.g. swap uses two columns, to avoid duplicate entries
+  const to_remove = d3.set();
   path.forEach((p, i) => {
     if (p.f_id === 'removeStratomeXColumn') {
       const col = p.removes[0]; //removed column
+      const to_potential_remove = [];
       //find the matching createStatement and mark all changed in between
       for (let j = i-1; j >= 0; --j) {
         let q = path[j];
@@ -225,19 +227,22 @@ export function compressCreateRemove(path: prov.ActionNode[]) {
           let created_col = q.creates[0];
           if (created_col === col) {
             //I found my creation
-            to_remove.push(j, i); //remove both
+            to_remove.add(String(j));
+            to_remove.add(String(i)); //remove both
+            //and remove all inbetween
+            to_potential_remove.forEach(to_remove.add.bind(to_remove));
             break;
           }
         } else if (q.f_id.match(/(changeStratomeXColumnVis|showStratomeXInDetail|setStratomeXColumnOption|swapStratomeXColumns)/)) {
           if (q.requires.some((d) => d === col)) {
-            to_remove.push(j); //uses the element
+            to_potential_remove.push(j); //uses the element
           }
         }
       }
     }
   });
   //decreasing order for right indices
-  for(let i of to_remove.sort((a,b) => b-a)) {
+  for(let i of to_remove.values().map(Number).sort(d3.descending)) {
     path.splice(i,1);
   }
   return path;
@@ -406,7 +411,7 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
         var g = that.stratomex.provGraph;
         var s = g.findObject(that);
         g.push(createToggleDetailCmd(s, pos[0], true));
-        d3.event.stopPropagation();
+        (<Event>d3.event).stopPropagation();
       });
       const toggleSelection = () => {
         var isSelected = $elem.classed('caleydo-select-selected');
@@ -737,7 +742,7 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
   destroy(within) {
     manager.off('select', this.highlightMe);
     manager.remove(this);
-    this.$parent.style('opacity', 1).transition().duration(animationTime(within)).style('opacity', 0).remove();
+    this.$parent.style('opacity', 1).interrupt().transition().duration(animationTime(within)).style('opacity', 0).remove();
     this.$layoutHelper.remove();
   }
 }
