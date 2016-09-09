@@ -13,11 +13,9 @@ import link_m = require('../caleydo_d3/link');
 import datatypes = require('../caleydo_core/datatype');
 import prov = require('../caleydo_core/provenance');
 import ranges = require('../caleydo_core/range');
-import statetoken = require('../caleydo_clue/statetoken')
-import {IStateToken, StateTokenLeaf} from "../caleydo_clue/statetoken";
-import {defaultSelectionType} from "../caleydo_core/idtype";
-import {MultiForm} from "../caleydo_core/multiform";
-import {isUndefined} from "../caleydo_core/main";
+import statetoken = require('../caleydo_clue/statetoken');
+import {StateTokenLeaf} from '../caleydo_clue/statetoken';
+import {isUndefined} from '../caleydo_core/main';
 
 export function animationTime(within = -1) {
   return within < 0 ? 50 : within;
@@ -480,46 +478,46 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
 
   get idtypes(): idtypes.IDType[]{
     return [this.summary.data.idtypes[0],
-        this.summary.data.idtypes[1]]
+        this.summary.data.idtypes[1]];
   }
 
   get stateTokensRekursive(): statetoken.IStateToken[] {
-    let tokens: statetoken.IStateToken[]  = []
+    let tokens: statetoken.IStateToken[]  = [];
 
     tokens = tokens.concat(
       new StateTokenLeaf(
-        "Column " + this.name,
+        'Column ' + this.name,
         1,
         statetoken.TokenType.string,
         this.name,
-        "data"
+        'data'
       )
-    )
+    );
     tokens = tokens.concat(
       new StateTokenLeaf(
-        "Column " + this.name + "vis Type",
+        'Column ' + this.name + 'vis Type',
         1,
         statetoken.TokenType.string,
-        this.name + " " + this.grid.act.id,
-        "visual"
+        this.name + ' ' + this.grid.act.id,
+        'visual'
       )
-    )
-    let value:string = this.name
+    );
+    let value:string = this.name;
     if (!(this.detail === null || isUndefined(this.detail))) {
-      value += "ID: " +this.detail.multi.id
+      value += 'ID: ' +this.detail.multi.id;
     } else {
-      value += "No Detail."
+      value += 'No Detail.';
     }
     tokens = tokens.concat(
       new StateTokenLeaf(
-        "Column " + this.name + " Detail",
+        'Column ' + this.name + ' Detail',
         1,
         statetoken.TokenType.string,
         value,
-        "visual"
+        'visual'
       )
-    )
-    return tokens
+    );
+    return tokens;
   }
 
 
