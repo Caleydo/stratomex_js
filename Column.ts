@@ -11,7 +11,7 @@ import behaviors = require('../caleydo_core/behavior');
 import events = require('../caleydo_core/event');
 import link_m = require('../caleydo_d3/link');
 import datatypes = require('../caleydo_core/datatype');
-import prov = require('../caleydo_clue/prov');
+import prov = require('../caleydo_core/provenance');
 import ranges = require('../caleydo_core/range');
 
 export function animationTime(within = -1) {
