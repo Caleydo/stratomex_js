@@ -96,6 +96,9 @@ class StratomeX extends views.AView {
         return selIDtypes.indexOf(item) === pos;
       });
     }
+    if (columns.length == 0 ) {
+      columns = columns.concat(new StateTokenLeaf('No_Colum_loaded', 1, statetoken.TokenType.string, 'No clumn loaded', 'data'))
+    }
     tokens = tokens.concat(new StateTokenNode('Columns', 1, columns));
 
     //console.log(selIDtypes)
@@ -112,6 +115,9 @@ class StratomeX extends views.AView {
           )
         );
       }
+    }
+    if (selectionTokens.length == 0 ) {
+      selectionTokens = selectionTokens.concat(new StateTokenLeaf('No_Colum_loaded_Selection', 1, statetoken.TokenType.string, 'No clumn loaded, hence nothing is selected', 'analysis'))
     }
     tokens = tokens.concat(new StateTokenNode('Selections', 1, selectionTokens));
     return tokens;
