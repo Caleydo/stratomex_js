@@ -3,10 +3,8 @@
  */
 
 import * as tables from 'phovea_core/src/table_impl';
-import * as C from 'phovea_core/src/index';
 import * as views from 'phovea_core/src/layout_view';
 import * as vis from 'phovea_core/src/vis';
-import * as d3 from 'd3';
 
 function col(name, width) {
   return {column: name, width: width};
@@ -76,7 +74,7 @@ function convertToTable(list) {
       }
     ]
   }, list, function (d) {
-    return d.desc.name
+    return d.desc.name;
   });
 }
 

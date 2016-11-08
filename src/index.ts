@@ -33,7 +33,6 @@ var elems = template.create(document.body, {
 }
 
 elems.graph.then(function (graph) {
-  var datavalues;
   var stratomex = createStratomeX(document.getElementById('stratomex'), graph);
 
   var lineup = createStratomeXLineUp(document.getElementById('tab_stratifications'), function (rowStrat) {
@@ -104,18 +103,12 @@ elems.graph.then(function (graph) {
   //var notes = require('./notes').create(document.getElementById('notes'), graph);
 
   function splitAndConvert(arr) {
-    var strat = arr.filter(function (d) {
-      return d.desc.type === 'stratification'
-    });
+    var strat = arr.filter((d) => d.desc.type === 'stratification');
 
-    strat = strat.concat(arr.filter(function (d) {
-      return d.desc.type === 'vector'
-    }));
+    strat = strat.concat(arr.filter((d) => d.desc.type === 'vector'));
 
     //convert all matrices to slices with their corresponding name
-    return Promise.all(arr.filter(function (d) {
-      return d.desc.type === 'matrix'
-    }).map(function (d) {
+    return Promise.all(arr.filter((d) => d.desc.type === 'matrix').map(function (d) {
       return d.cols().then(function (colNames) {
         var cols = d.ncol, r = [];
         for (var i = 0; i < cols; ++i) {
@@ -152,7 +145,7 @@ elems.graph.then(function (graph) {
   function filterDataTypes(arr) {
     return arr.filter(function (d) {
       var desc = d.desc;
-      if (desc.type === 'matrix' || desc.type == 'vector') {
+      if (desc.type === 'matrix' || desc.type === 'vector') {
         return desc.value.type === 'real' || desc.value.type === 'int';
       }
       return false;
