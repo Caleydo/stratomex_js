@@ -16,7 +16,7 @@
       {
         "type": "view",
         "id": "stratomex",
-        "module": "stratomex",
+        "module": "StratomeX",
         "extras": {
           "location": "center"
         }
@@ -24,7 +24,7 @@
       {
         "type": "view",
         "id": "stratomex-lineup",
-        "module": "lineup",
+        "module": "Lineup",
         "extras": {
           "location": "bottom"
         }
