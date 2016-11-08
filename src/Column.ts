@@ -1,18 +1,18 @@
 /**
  * Created by sam on 30.01.2015.
  */
-import d3 = require('d3');
-import $ = require('jquery');
-import C = require('../caleydo_core/main');
-import multiform = require('../caleydo_core/multiform');
-import geom = require('../caleydo_core/geom');
-import idtypes = require('../caleydo_core/idtype');
-import behaviors = require('../caleydo_core/behavior');
-import events = require('../caleydo_core/event');
-import link_m = require('../caleydo_d3/link');
-import datatypes = require('../caleydo_core/datatype');
-import prov = require('../caleydo_core/provenance');
-import ranges = require('../caleydo_core/range');
+import * as d3 from 'd3';
+import * as $ from 'jquery';
+import * as C from 'phovea_core/src/index';
+import * as multiform from 'phovea_core/src/multiform';
+import * as geom from 'phovea_core/src/geom';
+import * as idtypes from 'phovea_core/src/idtype';
+import * as behaviors from 'phovea_core/src/behavior';
+import * as events from 'phovea_core/src/event';
+import * as link_m from 'phovea_d3/src/link';
+import * as datatypes from 'phovea_core/src/datatype';
+import * as prov from 'phovea_core/src/provenance';
+import * as ranges from 'phovea_core/src/range';
 
 export function animationTime(within = -1) {
   return within < 0 ? 50 : within;

@@ -2,15 +2,15 @@
  * Created by sam on 24.02.2015.
  */
 
-import views = require('../caleydo_core/layout_view');
-import datatypes = require('../caleydo_core/datatype');
-import stratification = require('../caleydo_core/stratification');
-import C = require('../caleydo_core/main');
-import link_m = require('../caleydo_d3/link');
-import ranges = require('../caleydo_core/range');
-import prov = require('../caleydo_core/provenance');
+import * as views from 'phovea_core/src/layout_view';
+import * as datatypes from 'phovea_core/src/datatype';
+import * as stratification from 'phovea_core/src/stratification';
+import * as C from 'phovea_core/src/index';
+import * as link_m from 'phovea_d3/src/link';
+import * as ranges from 'phovea_core/src/range';
+import * as prov from 'phovea_core/src/provenance';
 
-import columns = require('./Column');
+import * as columns from './Column';
 
 //type ColumnRef = prov.IObjectRef<columns.Column>;
 
