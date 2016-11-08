@@ -1,86 +1,88 @@
 /**
  * Created by sam on 11.02.2015.
  */
-define(function (require, exports) {
-  var C = require('../caleydo_core/main');
-  var prov = require('../caleydo_clue/prov');
-  var d3 = require('d3');
 
-  function addNote(inputs, parameter) {
-    var r = prov.ref(parameter.text, 'Note', prov.cat.annotation);
-    return {
-      created: [r],
-      inverse: removeNoteCmd(r)
-    };
-  }
-  function addNoteCmd(text) {
-    return prov.action(prov.meta('Add Note', prov.cat.annotation, prov.op.create), 'addStratomeXNote', addNote, [], {
-      text : text
-    });
-  }
+import * as C from 'phovea_core/src/index';
+import * as prov from 'phovea_core/src/provenance';
+import * as d3 from 'd3';
 
-  function removeNote(inputs) {
-    var note = inputs[0];
-    var text = note.value;
-    return {
-      removed: [note],
-      inverse: addNoteCmd(text)
-    };
-  }
-  function removeNoteCmd(note) {
-    return prov.action(prov.meta('Remove Note', prov.cat.annotation, prov.op.remove), 'removeStratomeXNote', removeNote, [note]);
-  }
-
-  function changeNote(inputs, parameter) {
-    var note = inputs[0];
-    var text = parameter.text,
-      old = note.value;
-    note.value = text;
-    return {
-      inverse: changeNoteCmd(note, old)
-    };
-  }
-  function changeNoteCmd(note, text) {
-    return prov.action(prov.meta('Change Note', prov.cat.annotation, prov.op.update), 'changeStratomeXNote', changeNote, [note], { text : text} );
-  }
-
-  exports.createCmd = function(id) {
-    switch(id) {
-      case 'changeStratomeXNote' : return changeNote;
-      case 'removeStratomeXNote' : return removeNote;
-      case 'addStratomeXNote': return addNote;
-    }
-    return null;
+function addNote(inputs, parameter) {
+  var r = prov.ref(parameter.text, 'Note', prov.cat.annotation);
+  return {
+    created: [r],
+    inverse: removeNoteCmd(r)
   };
+}
+function addNoteCmd(text) {
+  return prov.action(prov.meta('Add Note', prov.cat.annotation, prov.op.create), 'addStratomeXNote', addNote, [], {
+    text: text
+  });
+}
 
-  exports.create = function (parent, graph) {
-    var $r = d3.select(parent).append('div').attr('class','notes');
-    var $text = $r.append('textarea').attr({
-      rows: 5
-    }).style({
-      width: '100%'
-    });
+function removeNote(inputs) {
+  var note = inputs[0];
+  var text = note.value;
+  return {
+    removed: [note],
+    inverse: addNoteCmd(text)
+  };
+}
+function removeNoteCmd(note) {
+  return prov.action(prov.meta('Remove Note', prov.cat.annotation, prov.op.remove), 'removeStratomeXNote', removeNote, [note]);
+}
 
-    graph.on('switch_state', function() {
-      var l = graph.act.consistsOf.slice().reverse();
-      var lastAnnot = C.search(l, function(elem) {
-        return elem.category === prov.cat.annotation;
-      });
-      $text.property('value', lastAnnot ? lastAnnot.v : '');
-      $text.datum(lastAnnot);
-      //enable buttons
-      $r.selectAll('button + button').attr('disabled',lastAnnot ? null : 'disabled');
-    });
-    $r.append('button').attr('class', 'fa fa-plus').on('click', function() {
-      var d = $text.datum();
-      if (d) {
-        graph.push(changeNoteCmd(d, $text.property('value')));
-      } else {
-        graph.push(addNoteCmd($text.property('value')));
-      }
-    });
-    $r.append('button').attr('class', 'fa fa-remove').attr('disabled','disabled').on('click', function() {
-      graph.push(removeNoteCmd($text.datum()));
-    });
+function changeNote(inputs, parameter) {
+  var note = inputs[0];
+  var text = parameter.text,
+    old = note.value;
+  note.value = text;
+  return {
+    inverse: changeNoteCmd(note, old)
+  };
+}
+function changeNoteCmd(note, text) {
+  return prov.action(prov.meta('Change Note', prov.cat.annotation, prov.op.update), 'changeStratomeXNote', changeNote, [note], {text: text});
+}
+
+export function createCmd(id) {
+  switch (id) {
+    case 'changeStratomeXNote' :
+      return changeNote;
+    case 'removeStratomeXNote' :
+      return removeNote;
+    case 'addStratomeXNote':
+      return addNote;
   }
-});
+  return null;
+}
+
+export function create(parent: Element, graph: prov.ProvenanceGraph) {
+  var $r = d3.select(parent).append('div').attr('class', 'notes');
+  var $text = $r.append('textarea').attr({
+    rows: 5
+  }).style({
+    width: '100%'
+  });
+
+  graph.on('switch_state', function () {
+    var l = graph.act.consistsOf.slice().reverse();
+    var lastAnnot = C.search(l, function (elem) {
+      return elem.category === prov.cat.annotation;
+    });
+    $text.property('value', lastAnnot ? lastAnnot.v : '');
+    $text.datum(lastAnnot);
+    //enable buttons
+    $r.selectAll('button + button').attr('disabled', lastAnnot ? null : 'disabled');
+  });
+  $r.append('button').attr('class', 'fa fa-plus').on('click', function () {
+    var d = $text.datum();
+    if (d) {
+      graph.push(changeNoteCmd(d, $text.property('value')));
+    } else {
+      graph.push(addNoteCmd($text.property('value')));
+    }
+  });
+  $r.append('button').attr('class', 'fa fa-remove').attr('disabled', 'disabled').on('click', function () {
+    graph.push(removeNoteCmd($text.datum()));
+  });
+}

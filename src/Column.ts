@@ -21,16 +21,16 @@ export function animationTime(within = -1) {
 //guess initial vis method
 function guessInitial(desc):any {
   if (desc.type === 'matrix') {
-    return 'caleydo-vis-heatmap';
+    return 'phovea-vis-heatmap';
   }
   if (desc.type === 'vector' && desc.value.type === 'int' && desc.name.toLowerCase().indexOf('daystodeath') >= 0) {
-    return 'caleydo-vis-kaplanmeier';
+    return 'phovea-vis-kaplanmeier';
   }
   if (desc.type === 'vector') {
-    return desc.value.type === 'categorical' ? 'caleydo-vis-mosaic' : 'caleydo-vis-heatmap1d';
+    return desc.value.type === 'categorical' ? 'phovea-vis-mosaic' : 'phovea-vis-heatmap1d';
   }
   if (desc.type === 'stratification') {
-    return 'caleydo-vis-mosaic';
+    return 'phovea-vis-mosaic';
   }
   return -1;
 }
@@ -357,7 +357,7 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
   optionHandler: any;
 
   private highlightMe = (event: events.IEvent, type: string, act: ranges.Range) => {
-    this.$parent.classed('caleydo-select-'+type, act.dim(0).contains(this.id));
+    this.$parent.classed('phovea-select-'+type, act.dim(0).contains(this.id));
   };
 
   constructor(private stratomex, public data, partitioning:ranges.Range, public dataRef, options:any = {}, within = -1) {
@@ -386,8 +386,8 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
     this.range = partitioning;
     //create the vis
     this.summary = multiform.create(data.desc.type !== 'stratification' ? data.view(partitioning) : data, <Element>this.$summary.node(), {
-      initialVis: 'caleydo-vis-histogram',
-      'caleydo-vis-histogram': {
+      initialVis: 'phovea-vis-histogram',
+      'phovea-vis-histogram': {
         total: false,
         nbins: Math.sqrt(data.dim[0])
       },
@@ -410,13 +410,13 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
         (<Event>d3.event).stopPropagation();
       });
       const toggleSelection = () => {
-        var isSelected = $elem.classed('caleydo-select-selected');
+        var isSelected = $elem.classed('phovea-select-selected');
         if (isSelected) {
           data.select(0, ranges.none());
         } else {
           data.select(0, ranges.all());
         }
-        $elem.classed('caleydo-select-selected', !isSelected);
+        $elem.classed('phovea-select-selected', !isSelected);
       };
       $elem.append('div').attr('class', 'title').style('max-width',(that.options.width-that.options.padding*2)+'px').text(cluster.dim(0).name).on('click', toggleSelection);
       $elem.append('div').attr('class', 'body').on('click', toggleSelection);
@@ -445,17 +445,17 @@ export class Column extends events.EventHandler implements idtypes.IHasUniqueId,
         nbins: Math.sqrt(data.dim[0]),
         heightTo: initialHeight
       },
-      'caleydo-vis-mosaic': {
+      'phovea-vis-mosaic': {
         width: that.options.width - this.options.padding * 2
       },
-      'caleydo-vis-heatmap1d': {
+      'phovea-vis-heatmap1d': {
         width: that.options.width - this.options.padding * 2
       },
-      'caleydo-vis-heatmap': {
+      'phovea-vis-heatmap': {
         scaleTo: [that.options.width - this.options.padding * 2, initialHeight],
         forceThumbnails: true
       },
-      'caleydo-vis-kaplanmeier': {
+      'phovea-vis-kaplanmeier': {
         maxTime: groupTotalAggregator((<ranges.CompositeRange1D>partitioning.dim(0)).groups.length, (v) => v.length === 0 ? 0 : v[v.length-1])
       }
     });

@@ -42,7 +42,7 @@ class StratomeX extends views.AView {
 
   private interactive = true;
 
-  constructor(private parent:Element, private provGraph:prov.ProvenanceGraph) {
+  constructor(public parent:Element, private provGraph:prov.ProvenanceGraph) {
     super();
     this.ref = provGraph.findOrAddObject(this, 'StratomeX', 'visual');
     this._links = new link_m.LinkContainer(parent, ['changed'], {
