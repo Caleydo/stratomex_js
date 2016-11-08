@@ -1,0 +1,117 @@
+{
+  "generator-phovea": {
+    "type": "app",
+    "name": "stratomex_js",
+    "author": "The Caleydo Team",
+    "githubAccount": "phovea",
+    "modules": [
+      "phovea_core",
+      "phovea_vis",
+      "phovea_vis_lineup",
+      "phovea_d3",
+      "phovea_bootstrap_fontawesome",
+      "phovea_clue"
+    ],
+    "extensions": [
+      {
+        "type": "view",
+        "id": "stratomex",
+        "module": "stratomex",
+        "extras": {
+          "location": "center"
+        }
+      },
+      {
+        "type": "view",
+        "id": "stratomex-lineup",
+        "module": "lineup",
+        "extras": {
+          "location": "bottom"
+        }
+      },
+      {
+        "type": "actionFactory",
+        "id": "stratomex-note",
+        "module": "notes",
+        "extras": {
+          "factory": "createCmd",
+          "creates": "(addStratomeXNote|changeStratomeXNote|removeStratomeXNote)"
+        }
+      },
+      {
+        "type": "actionFactory",
+        "id": "stratomex-column",
+        "module": "Column",
+        "extras": {
+          "factory": "createCmd",
+          "creates": "(createStratomeXColumn|removeStratomeXColumn|swapStratomeXColumns|setStratomeXColumnOption|changeStratomeXColumnVis|showStratomeXInDetail)"
+        }
+      },
+      {
+        "type": "actionCompressor",
+        "id": "stratomex-compressSwap",
+        "module": "Column",
+        "extras": {
+          "factory": "compressSwap",
+          "matches": "swapStratomeXColumns"
+        }
+      },
+      {
+        "type": "actionCompressor",
+        "id": "stratomex-compressCreateRemove",
+        "module": "Column",
+        "extras": {
+          "factory": "compressCreateRemove",
+          "matches": "(createStratomeXColumn|removeStratomeXColumn)"
+        }
+      },
+      {
+        "type": "actionCompressor",
+        "id": "stratomex-compressHideShowDetail",
+        "module": "Column",
+        "extras": {
+          "factory": "compressHideShowDetail",
+          "matches": "showStratomeXInDetail"
+        }
+      },
+      {
+        "type": "app",
+        "id": "stratomex_js",
+        "module": "",
+        "extras": {
+          "name": "Stratomex.js"
+        }
+      }
+    ],
+    "sextensions": [],
+    "libraries": [
+      "d3"
+    ],
+    "unknown": {
+      "requirements": [],
+      "debianPackages": [],
+      "redhatPackages": []
+    },
+    "app": "",
+    "entries": {
+      "app": "./src/index.ts"
+    },
+    "libraryAliases": {
+      "d3": "d3/d3"
+    },
+    "libraryExternals": [
+      "d3",
+      "d3",
+      "lineupjs",
+      "d3",
+      "font-awesome",
+      "d3",
+      "jquery",
+      "font-awesome",
+      "marked",
+      "marked"
+    ],
+    "ignores": [],
+    "today": "Tue, 08 Nov 2016 10:00:21 GMT"
+  }
+}
