@@ -2,7 +2,7 @@
  * Created by Samuel Gratzl on 15.12.2014.
  */
 
-import 'file?name=index.html!./index.html';
+import 'file?name=index.html!extract!html!./index.html';
 import 'file?name=404.html!./404.html';
 import 'file?name=robots.txt!./robots.txt';
 

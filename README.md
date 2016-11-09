@@ -14,7 +14,7 @@ Installation
 ------------
 
 ```
-git clone https://github.com/phovea/stratomex_js.git
+git clone https://github.com/caleydo/stratomex_js.git
 cd stratomex_js
 npm install
 ```
@@ -45,7 +45,7 @@ This repository is part of **[Phovea](http://phovea.caleydo.org/)**, a platform 
 [phovea-url]: https://phovea.caleydo.org
 [npm-image]: https://badge.fury.io/js/stratomex_js.svg
 [npm-url]: https://npmjs.org/package/stratomex_js
-[travis-image]: https://travis-ci.org/phovea/stratomex_js.svg?branch=master
-[travis-url]: https://travis-ci.org/phovea/stratomex_js
-[daviddm-image]: https://david-dm.org/phovea/stratomex_js.svg?theme=shields.io
-[daviddm-url]: https://david-dm.org/phovea/stratomex_js
+[travis-image]: https://travis-ci.org/caleydo/stratomex_js.svg?branch=master
+[travis-url]: https://travis-ci.org/caleydo/stratomex_js
+[daviddm-image]: https://david-dm.org/caleydo/stratomex_js.svg?theme=shields.io
+[daviddm-url]: https://david-dm.org/caleydo/stratomex_js
