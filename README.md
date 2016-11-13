@@ -23,7 +23,7 @@ Testing
 -------
 
 ```
-npm run test
+npm test
 ```
 
 Building
