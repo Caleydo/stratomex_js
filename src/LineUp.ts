@@ -109,9 +109,9 @@ class StratomeXLineUp extends views.AView {
     v.load().then(function (plugin) {
       that.lineup = plugin.factory(data, that.parent, {
         lineup: {
-          svgLayout: {
-            mode: 'separate',
-            rowActions: [
+          body: {
+            renderer: 'canvas',
+            actions: [
               {
                 name: 'add',
                 icon: '\uf067',
