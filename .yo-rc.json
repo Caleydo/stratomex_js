@@ -101,14 +101,9 @@
     },
     "libraryExternals": [
       "d3",
-      "d3",
       "lineupjs",
-      "d3",
       "font-awesome",
-      "d3",
       "jquery",
-      "font-awesome",
-      "marked",
       "marked"
     ],
     "ignores": [],

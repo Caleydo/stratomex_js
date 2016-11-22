@@ -8,8 +8,13 @@ const {libraryAliases, libraryExternals, modules, entries, ignores, type} = requ
 const resolve = require('path').resolve;
 const pkg = require('./package.json');
 const webpack = require('webpack');
-const exists = require('fs').existsSync;
+const fs = require('fs');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const buildInfo = require('./buildInfo.js');
+
+const now = new Date();
+const buildId = `${now.getUTCFullYear()}${now.getUTCMonth()}${now.getUTCDate()}-${now.getUTCHours()}${now.getUTCMinutes()}${now.getUTCSeconds()}`;
+pkg.version = pkg.version.replace('SNAPSHOT', buildId);
 
 const year = (new Date()).getFullYear();
 const banner = '/*! ' + (pkg.title || pkg.name) + ' - v' + pkg.version + ' - ' + year + '\n' +
@@ -83,8 +88,9 @@ function testPhoveaModules(modules) {
 }
 
 // use ueber registry file if available
-const isUeberContext = exists(resolve(__dirname, '..', 'phovea_registry.js'));
+const isUeberContext = fs.existsSync(resolve(__dirname, '..', 'phovea_registry.js'));
 const registryFile = isUeberContext ? '../phovea_registry.js' : './phovea_registry.js';
+const actBuildInfoFile = `file-loader?name=buildInfo.json!${buildInfo.tmpFile()}`;
 
 /**
  * inject the registry to be included
@@ -94,11 +100,11 @@ const registryFile = isUeberContext ? '../phovea_registry.js' : './phovea_regist
 function injectRegistry(entry) {
   //build also the registry
   if (typeof entry === 'string') {
-    return [registryFile].concat(entry);
+    return [registryFile, actBuildInfoFile].concat(entry);
   } else {
     var transformed = {};
     Object.keys(entry).forEach((eentry) => {
-      transformed[eentry] = [registryFile].concat(entry[eentry]);
+      transformed[eentry] = [registryFile, actBuildInfoFile].concat(entry[eentry]);
     });
     return transformed;
   }
@@ -133,7 +139,11 @@ function generateWebpack(options) {
       //define magic constants that are replaced
       new webpack.DefinePlugin({
         __VERSION__: JSON.stringify(pkg.version),
-        __LICENSE__: JSON.stringify(pkg.license)
+        __LICENSE__: JSON.stringify(pkg.license),
+        __BUILD_ID__: buildId,
+        __DEBUG__: options.isDev || options.isTest,
+        __TEST__: options.isTest,
+        __PRODUCTION__: options.isProduction
       }),
       new webpack.optimize.MinChunkSizePlugin({
         minChunkSize: 10000 //at least 10.000 characters
@@ -191,14 +201,14 @@ function generateWebpack(options) {
 
     //ignore extra modules
     (options.ignore || []).forEach(function (d) {
-      base.module.loaders.push({test: new RegExp(d), loader: 'null'}); //use null loader
+      base.module.loaders.push({test: new RegExp(d), loader: 'null-loader'}); //use null loader
     });
     //ingore phovea module registry calls
     (options.modules || []).forEach(function (m) {
-      base.module.loaders.push({test: new RegExp('.*[\\\\/]' + m + '[\\\\/]phovea_registry.js'), loader: 'null'}); //use null loader
+      base.module.loaders.push({test: new RegExp('.*[\\\\/]' + m + '[\\\\/]phovea_registry.js'), loader: 'null-loader'}); //use null loader
     });
   }
-  if (!options.bundle || options.extractCss) {
+  if (!options.bundle || options.isApp) {
     //extract the included css file to own file
     var p = new ExtractTextPlugin('style' + (options.min && !options.nosuffix ? '.min' : '') + '.css');
     base.plugins.push(p);
@@ -206,6 +216,10 @@ function generateWebpack(options) {
       test: /\.scss$/,
       loader: p.extract(['css-loader', 'sass-loader'])
     };
+  }
+  if (options.isApp) {
+    // create manifest
+    // base.plugins.push(new webpack.optimize.AppCachePlugin());
   }
   if (options.commons) {
     //build a commons plugin
@@ -248,7 +262,10 @@ function generateWebpackConfig(env) {
     libs: libraryAliases,
     externals: libraryExternals,
     modules: modules,
-    ignore: ignores
+    ignore: ignores,
+    isProduction: isProduction,
+    isDev: isDev,
+    isTest: isTest
   };
 
   if (isTest) {
@@ -258,7 +275,7 @@ function generateWebpackConfig(env) {
   }
 
   if (type.startsWith('app')) {
-    base.extractCss = true;
+    base.isApp = true;
     base.bundle = true; //bundle everything together
     base.name = '[name]'; //multiple entries case
     base.commons = true; //extract commons module
