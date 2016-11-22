@@ -210,7 +210,10 @@ function generateWebpack(options) {
   }
   if (!options.bundle || options.isApp) {
     //extract the included css file to own file
-    var p = new ExtractTextPlugin('style' + (options.min && !options.nosuffix ? '.min' : '') + '.css');
+    var p = new ExtractTextPlugin({
+      filename: 'style' + (options.min && !options.nosuffix ? '.min' : '') + '.css',
+      allChunks: true // there seems to be a bug in dynamically loaded chunk styles are not loaded, workaround: extract all styles from all chunks
+    });
     base.plugins.push(p);
     base.module.loaders[0] = {
       test: /\.scss$/,
