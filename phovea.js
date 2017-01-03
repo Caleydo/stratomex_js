@@ -20,13 +20,6 @@ module.exports = function (registry) {
     'location': 'bottom'
   });
 
-  registry.push('actionFactory', 'stratomex-note', function () {
-    return System.import('./src/notes');
-  }, {
-    'factory': 'createCmd',
-    'creates': '(addStratomeXNote|changeStratomeXNote|removeStratomeXNote)'
-  });
-
   registry.push('actionFactory', 'stratomex-column', function () {
     return System.import('./src/Column');
   }, {

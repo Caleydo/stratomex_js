@@ -2,56 +2,56 @@
  * Created by sam on 24.02.2015.
  */
 
-import * as views from 'phovea_core/src/layout_view';
-import * as datatypes from 'phovea_core/src/datatype';
-import * as stratification from 'phovea_core/src/stratification';
-import * as C from 'phovea_core/src/index';
-import * as link_m from 'phovea_d3/src/link';
-import * as ranges from 'phovea_core/src/range';
-import * as prov from 'phovea_core/src/provenance';
-
-import * as columns from './Column';
+import {AView} from 'phovea_core/src/layout_view';
+import {IDataType} from 'phovea_core/src/datatype';
+import {IStratification} from 'phovea_core/src/stratification';
+import {resolveIn} from 'phovea_core/src/index';
+import {LinkContainer} from 'phovea_d3/src/link';
+import {list as rlist, Range1D} from 'phovea_core/src/range';
+import {IObjectRef, ProvenanceGraph} from 'phovea_core/src/provenance';
+import {Column, manager, createColumnCmd} from './Column';
+import Rect from 'phovea_core/src/geom/Rect';
 
 //type ColumnRef = prov.IObjectRef<columns.Column>;
 
 function toName(data: string, par: string) {
-  const n : string= data;
+  const n: string = data;
   const i = n.lastIndexOf('/');
-  var base =  i >= 0 ? n.slice(i+1) : n;
+  const base = i >= 0 ? n.slice(i + 1) : n;
 
-  var c = par.replace(' Clustering','');
+  let c = par.replace(' Clustering', '');
   const j = c.lastIndexOf('/');
-  c = j >= 0 ? c.slice(j+1) : c;
+  c = j >= 0 ? c.slice(j + 1) : c;
   if (base === c) {
     return base;
   }
-  return base + ' ('+c+')';
+  return base + ' (' + c + ')';
 }
 
 function toMiddle(n: string) {
   const l = n.split('/');
-  return l.length > 1 ? l[l.length-2] : n;
+  return l.length > 1 ? l[l.length - 2] : n;
 }
 
-class StratomeX extends views.AView {
-  private _columns:columns.Column[] = [];
+export class StratomeX extends AView {
+  private _columns: Column[] = [];
 
-  private dim:[number, number];
-  private _links:link_m.LinkContainer;
-  ref:prov.IObjectRef<StratomeX>;
+  private dim: [number, number];
+  private _links: LinkContainer;
+  ref: IObjectRef<StratomeX>;
 
   private interactive = true;
 
-  constructor(public parent:Element, private provGraph:prov.ProvenanceGraph) {
+  private bounds: Rect = new Rect(0, 0, 0, 0);
+
+  constructor(public parent: Element, private provGraph: ProvenanceGraph) {
     super();
     this.ref = provGraph.findOrAddObject(this, 'StratomeX', 'visual');
-    this._links = new link_m.LinkContainer(parent, ['changed'], {
+    this._links = new LinkContainer(parent, ['changed'], {
       interactive: false,
       filter: this.areNeighborColumns.bind(this),
       mode: 'link-group',
-      idTypeFilter: function (idtype, i) {
-        return i === 0; //just the row i.e. first one
-      },
+      idTypeFilter: (idtype, i) => i === 0, //just the row i.e. first one
       hover: false,
       canSelect: () => this.interactive
     });
@@ -70,29 +70,41 @@ class StratomeX extends views.AView {
     this._links.clear();
   }
 
+  getBounds() {
+    return this.bounds;
+  }
+
   setBounds(x, y, w, h) {
-    super.setBounds(x, y, w, h);
+    this.bounds = new Rect(x, y, w, h);
     this.dim = [w, h];
     return this.relayout();
   }
 
+  get data() {
+    return [].concat(...this._columns.map((d) => d.data));
+  }
+
+  get idtypes() {
+    return Array.from(new Set([].concat(...this.data.map((d) => d.idtypes))));
+  }
+
+
   private relayoutTimer = -1;
 
   relayout(within = -1) {
-    var that = this;
-    that._links.hide();
-    return C.resolveIn(5).then(() => {
-        that._columns.forEach((d) => d.layouted(within));
-        if (that.relayoutTimer >= 0) {
-          clearTimeout(that.relayoutTimer);
-        }
-        that.relayoutTimer = setTimeout(that._links.update.bind(that._links), within + 400);
-        return C.resolveIn(within);
-      });
+    this._links.hide();
+    return resolveIn(5).then(() => {
+      this._columns.forEach((d) => d.layouted(within));
+      if (this.relayoutTimer >= 0) {
+        clearTimeout(this.relayoutTimer);
+      }
+      this.relayoutTimer = setTimeout(this._links.update.bind(this._links), within + 400);
+      return resolveIn(within);
+    });
   }
 
-  addDependentData(m: datatypes.IDataType) {
-    const base = columns.manager.selectedObjects()[0];
+  addDependentData(m: IDataType) {
+    const base = manager.selectedObjects()[0];
     //nothing selected
     if (!base) {
       return false;
@@ -100,67 +112,65 @@ class StratomeX extends views.AView {
     //check if idtypes match otherwise makes no sense
     if (base.data.idtypes[0] === m.idtypes[0]) {
       let mref = this.provGraph.findOrAddObject(m, m.desc.name, 'data');
-      var r = ranges.list(base.range.dim(0));
+      const r = rlist(base.range.dim(0));
       base.data.ids(r).then(m.fromIdRange.bind(m)).then((target) => {
-        this.provGraph.push(columns.createColumnCmd(this.ref, mref, target, toName(m.desc.name, base.range.dim(0).name)));
+        this.provGraph.push(createColumnCmd(this.ref, mref, target, toName(m.desc.name, base.range.dim(0).name)));
       });
       return true;
     }
     return false;
   }
 
-  addData(rowStrat: stratification.IStratification, m: datatypes.IDataType, colStrat?: stratification.IStratification) {
-    var that = this;
-    var mref = this.provGraph.findOrAddObject(m, m.desc.name, 'data');
+  addData(rowStrat: IStratification, m: IDataType, colStrat?: IStratification) {
+    const mref = this.provGraph.findOrAddObject(m, m.desc.name, 'data');
     if (rowStrat === m) {
       //both are stratifications
       rowStrat.range().then((range) => {
-        that.provGraph.push(columns.createColumnCmd(that.ref, mref, range, toName(toMiddle(m.desc.fqname), rowStrat.desc.name)));
+        this.provGraph.push(createColumnCmd(this.ref, mref, range, toName(toMiddle(m.desc.fqname), rowStrat.desc.name)));
       });
     } else {
-      Promise.all<ranges.Range1D>([rowStrat.idRange(), colStrat ? colStrat.idRange() : ranges.Range1D.all()]).then((range_list:ranges.Range1D[]) => {
-        const idRange = ranges.list(range_list);
+      Promise.all<Range1D>([rowStrat.idRange(), colStrat ? colStrat.idRange() : Range1D.all()]).then((range_list: Range1D[]) => {
+        const idRange = rlist(range_list);
         return m.fromIdRange(idRange);
       }).then((range) => {
-        that.provGraph.push(columns.createColumnCmd(that.ref, mref, range, toName(m.desc.name, rowStrat.desc.name)));
+        this.provGraph.push(createColumnCmd(this.ref, mref, range, toName(m.desc.name, rowStrat.desc.name)));
       });
     }
   }
 
   areNeighborColumns(ca, cb) {
-    var loca = ca.location,
-      locb = cb.location,
-      t = null;
+    let loca = ca.location,
+      locb = cb.location;
     if (loca.x > locb.x) { //swap order
-      t = locb;
+      let t = locb;
       locb = loca;
       loca = t;
     }
     //none in between
-    return !this._columns.some(function (c) {
+    return !this._columns.some((c) => {
       if (c === ca || c === cb) {
         return false;
       }
-      var l = c.location;
+      const l = c.location;
       return loca.x <= l.x && l.x <= locb.x;
     });
   }
 
-  addColumn(column:columns.Column, index: number = -1, within = -1) {
+  addColumn(column: Column, index: number = -1, within = -1) {
     if (index < 0) {
       this._columns.push(column);
     } else {
       this._columns.splice(index, 0, column);
     }
     //console.log('add '+column.id);
-    column.on('changed', C.bind(this.relayout, this));
+    column.on('changed', this.relayout.bind(this));
     column.setInteractive(this.interactive);
     this._links.push(false, column);
     return this.relayout();
   }
 
-  removeColumn(column:columns.Column, within = -1) {
-    var i = this._columns.indexOf(column); //C.indexOf(this._columns, (elem) => elem === column);
+  removeColumn(column: Column, within = -1) {
+    const i = this._columns.indexOf(column); //C.indexOf(this._columns, (elem) => elem === column);
     if (i >= 0) {
       //console.log('remove '+column.id);
       this._columns.splice(i, 1);
@@ -173,7 +183,7 @@ class StratomeX extends views.AView {
     return Promise.resolve(-1);
   }
 
-  swapColumn(columnA: columns.Column, columnB: columns.Column, within = -1) {
+  swapColumn(columnA: Column, columnB: Column, within = -1) {
     const i = this.indexOf(columnA),
       j = this.indexOf(columnB);
     this._columns[i] = columnB;
@@ -186,13 +196,11 @@ class StratomeX extends views.AView {
     return this.relayout(within);
   }
 
-  indexOf(column:columns.Column) {
-    return C.indexOf(this._columns, function (elem) {
-      return elem === column;
-    });
+  indexOf(column: Column) {
+    return this._columns.indexOf(column);
   }
 
-  at(index) {
+  at(index: number) {
     return this._columns[index];
   }
 
@@ -201,16 +209,15 @@ class StratomeX extends views.AView {
     return this.provGraph.findObject(c);
   }
 
-  canShift(column:columns.Column) {
-    var i = C.indexOf(this._columns, function (elem) {
-      return elem === column;
-    });
+  canShift(column: Column) {
+    const i = this._columns.indexOf(column);
     return {
       left: i,
       right: i - this._columns.length + 1
     };
   }
 }
-export function create(parent:Element, provGraph:prov.ProvenanceGraph) {
+
+export function create(parent: Element, provGraph: ProvenanceGraph) {
   return new StratomeX(parent, provGraph);
 }
