@@ -14,7 +14,7 @@ import 'phovea_core/phovea_registry.js';
 import 'phovea_vis/phovea_registry.js';
 import 'phovea_vis_lineup/phovea_registry.js';
 import 'phovea_d3/phovea_registry.js';
-import 'phovea_bootstrap_fontawesome/phovea_registry.js';
+import 'phovea_ui/phovea_registry.js';
 import 'phovea_clue/phovea_registry.js';
 //self
 register('stratomex_js',require('./phovea.js'));

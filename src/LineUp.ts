@@ -2,7 +2,7 @@
  * Created by sam on 24.02.2015.
  */
 
-import * as tables from 'phovea_core/src/table_impl';
+import {wrapObjects} from 'phovea_core/src/table/Table';
 import * as views from 'phovea_core/src/layout_view';
 import * as vis from 'phovea_core/src/vis';
 
@@ -10,7 +10,7 @@ function col(name, width) {
   return {column: name, width: width};
 }
 function convertToTable(list) {
-  return tables.wrapObjects({
+  return wrapObjects({
     id: '_stratification',
     name: 'stratifications',
     fqname: 'stratomex/stratifications',
