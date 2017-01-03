@@ -107,6 +107,7 @@
       "marked"
     ],
     "ignores": [],
-    "today": "Tue, 08 Nov 2016 10:00:21 GMT"
+    "today": "Tue, 08 Nov 2016 10:00:21 GMT",
+    "clientOnly": false
   }
 }
