@@ -3,7 +3,7 @@
  */
 
 // use original CLUE styles as foundation
-@import "../caleydo_clue/style.scss";
+@import "~phovea_clue/src/style.scss";
 
 $select-data-color: orange;
 $hover-data-color: #ffc46b;
@@ -100,7 +100,7 @@ main {
     //background-color: #fafafa;
     white-space: nowrap;
 
-    &.caleydo-select-selected {
+    &.phovea-select-selected {
       //border: 1px solid $select-data-color;
       background: none;
 
@@ -108,7 +108,7 @@ main {
         border-color: $select-data-color !important;
       }
     }
-    &.caleydo-select-hovered {
+    &.phovea-select-hovered {
       border: 1px solid $hover-data-color;
       background: none;
     }
@@ -254,11 +254,11 @@ main {
         stroke-width: 1;
         stroke-opacity: 0.9;
 
-        &.caleydo-select-selected {
+        &.phovea-select-selected {
           stroke: $select-data-color;
           pointer-events: none;
         }
-        &.caleydo-select-hovered {
+        &.phovea-select-hovered {
           stroke: $hover-data-color;
           pointer-events: none;
         }
@@ -270,11 +270,11 @@ main {
         fill: black;
         opacity: 0.2;
 
-        &.caleydo-select-selected {
+        &.phovea-select-selected {
           fill: $select-data-color;
           pointer-events: none;
         }
-        &.caleydo-select-hovered {
+        &.phovea-select-hovered {
           fill: $hover-data-color;
           pointer-events: none;
           opacity: 0.5;
@@ -370,13 +370,13 @@ main {
   }
 }
 
-.multiform .caleydo-select-selected {
+.multiform .phovea-select-selected {
   //html variant
   border: 1px solid $select-data-color;
   background-color: $select-data-color;
 }
 
-svg .caleydo-select-selected {
+svg .phovea-select-selected {
   //svg variant
   stroke: $select-data-color;
   stroke-width: 1px;
@@ -389,19 +389,19 @@ body {
     #stratomex {
       .link-container svg {
         path.rel-item {
-          &.caleydo-select-hovered {
+          &.phovea-select-hovered {
             stroke: $hover-presentation-color !important;
           }
         }
         path.rel-group, path.rel-block {
-          &.caleydo-select-hovered {
+          &.phovea-select-hovered {
             fill: $hover-presentation-color !important;
           }
         }
       }
 
       .column {
-        &.caleydo-select-hovered {
+        &.phovea-select-hovered {
           border-color: $hover-presentation-color !important;
         }
       }

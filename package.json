@@ -1,102 +1,96 @@
 {
-  "name": "stratomex_js",
-  "description": "StratomeX is a Caleydo Web application for the visual exploration of genomic stratification of diseases.",
-  "version": "0.0.1",
-  "license" : "SEE LICENSE IN LICENSE",
-  "repository": "Caleydo/stratomex_js",
-  "homepage": "http://www.caleydo.org/tools/stratomex/",
+  "files": [
+    "src",
+    "index.js",
+    "phovea.js",
+    "phovea_registry.js",
+    "build"
+  ],
+  "engines": {
+    "npm": ">= 3",
+    "node": ">= 6",
+    "iojs": ">= 3"
+  },
+  "scripts": {
+    "compile": "tsc",
+    "lint": "tslint -c tslint.json src/**.ts tests/**.ts",
+    "docs": "typedoc --options typedoc.json src/**.ts",
+    "prebuild": "node -e \"process.exit(process.env.PHOVEA_SKIP_TESTS === undefined?1:0)\" || npm run test",
+    "pretest": "npm run compile",
+    "test": "karma start",
+    "posttest": "npm run lint",
+    "test:watch": "karma start --autoWatch=true --singleRun=false",
+    "build:dev": "webpack",
+    "build": "webpack --env prod",
+    "start": "webpack-dev-server --inline",
+    "start:hot": "webpack-dev-server --inline --hot",
+    "watch": "webpack --watch",
+    "release:major": "npm version major && npm publish && git push --follow-tags",
+    "release:minor": "npm version minor && npm publish && git push --follow-tags",
+    "release:patch": "npm version patch && npm publish && git push --follow-tags",
+    "predist": "npm run build",
+    "dist": "mkdirp dist && cd build && tar cvzf ../dist/stratomex_js.tar.gz *",
+    "predocker": "npm run build",
+    "docker": "docker build -t stratomex_js -f deploy/Dockerfile .",
+    "prepublish": "npm run build"
+  },
+  "devDependencies": {
+    "@types/jasmine": "2.5.35",
+    "awesome-typescript-loader": "2.2.4",
+    "css-loader": "0.25.0",
+    "extract-text-webpack-plugin": "2.0.0-beta.4",
+    "file-loader": "0.9.0",
+    "html-loader": "0.4.4",
+    "imports-loader": "0.6.5",
+    "jasmine": "2.5.2",
+    "json-loader": "0.5.4",
+    "karma": "1.3.0",
+    "karma-chrome-launcher": "2.0.0",
+    "karma-firefox-launcher": "1.0.0",
+    "karma-jasmine": "1.0.2",
+    "karma-junit-reporter": "1.1.0",
+    "karma-sourcemap-loader": "0.3.7",
+    "karma-webpack": "1.8.0",
+    "mkdirp": "0.5.1",
+    "node-sass": "3.10.0",
+    "null-loader": "0.1.1",
+    "raw-loader": "0.5.1",
+    "sass-loader": "4.0.2",
+    "style-loader": "0.13.1",
+    "tslint": "3.15.1",
+    "typedoc": "0.5.3",
+    "typescript": "2.0.6",
+    "url-loader": "0.5.7",
+    "webpack": "2.1.0-beta.26",
+    "webpack-dev-server": "2.1.0-beta.10",
+    "extract-loader": "0.0.2"
+  },
   "dependencies": {
+    "phovea_core": "github:phovea/phovea_core#develop",
+    "phovea_vis": "github:phovea/phovea_vis#develop",
+    "phovea_vis_lineup": "github:phovea/phovea_vis_lineup#develop",
+    "phovea_d3": "github:phovea/phovea_d3#develop",
+    "phovea_ui": "github:phovea/phovea_ui#develop",
+    "phovea_clue": "github:phovea/phovea_clue#develop",
+    "@types/d3": "3.5.36",
+    "d3": "3.5.17"
   },
-  "peerDependencies": {
-    "caleydo_core": "*",
-    "caleydo_vis": "*",
-    "caleydo_vis_lineup": "*",
-    "caleydo_d3": "*",
-    "caleydo_bootstrap_fontawesome": "*",
-    "caleydo_clue": "*"
+  "name": "stratomex_js",
+  "description": "StratomeX is a Phovea application for the visual exploration of genomic stratification of diseases.",
+  "homepage": "http://www.caleydo.org/tools/stratomex/",
+  "version": "1.0.0-SNAPSHOT",
+  "author": {
+    "name": "The Caleydo Team",
+    "email": "contact@caleydo.org",
+    "url": "https://caleydo.org"
   },
-  "caleydo": {
-    "type": "app",
-    "plugins": {
-      "web": [
-        {
-          "type": "view",
-          "id": "stratomex",
-          "file": "stratomex",
-          "location": "center"
-        },
-        {
-          "type": "view",
-          "id": "stratomex-lineup",
-          "file": "lineup",
-          "location": "bottom"
-        },
-        {
-          "type": "actionFactory",
-          "id": "stratomex-note",
-          "file": "notes",
-          "factory": "createCmd",
-          "creates": "(addStratomeXNote|changeStratomeXNote|removeStratomeXNote)"
-        },
-        {
-          "type": "actionFactory",
-          "id": "stratomex-column",
-          "file": "Column",
-          "factory": "createCmd",
-          "creates": "(createStratomeXColumn|removeStratomeXColumn|swapStratomeXColumns|setStratomeXColumnOption|changeStratomeXColumnVis|showStratomeXInDetail)"
-        },
-        {
-          "type": "actionCompressor",
-          "id": "stratomex-compressSwap",
-          "file": "Column",
-          "factory": "compressSwap",
-          "matches": "swapStratomeXColumns"
-        },
-        {
-          "type": "actionCompressor",
-          "id": "stratomex-compressCreateRemove",
-          "file": "Column",
-          "factory": "compressCreateRemove",
-          "matches": "(createStratomeXColumn|removeStratomeXColumn)"
-        },
-        {
-          "type": "actionCompressor",
-          "id": "stratomex-compressHideShowDetail",
-          "file": "Column",
-          "factory": "compressHideShowDetail",
-          "matches": "showStratomeXInDetail"
-        },
-        {
-          "type": "app",
-          "name": "Stratomex.js"
-        }
-      ]
-    },
-    "dependencies": {
-      "web": {
-        "d3": "~3.5.5"
-      }
-    },
-    "products": [
-      {
-        "name": "StratomeX",
-        "type": "python",
-        "app": "stratomex_js",
-        "plugins": ["stratomex_js", "caleydo_data_mongo", "caleydo_data_redis", "caleydo_data_hdf"]
-      }
-    ],
-    "requirejs-config": {
-      "shim": {
-        "webcola": {
-          "deps": [
-            "d3"
-          ],
-          "exports": "cola"
-        }
-      }
-    }
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/caleydo/stratomex_js/issues"
   },
-  "publishConfig": {
-    "registry": "http://registry.caleydo.org/"
-  }
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/caleydo/stratomex_js.git"
+  },
+  "private": true
 }
