@@ -7,7 +7,7 @@ import {IDataType} from 'phovea_core/src/datatype';
 import {IStratification} from 'phovea_core/src/stratification';
 import {resolveIn} from 'phovea_core/src/index';
 import {LinkContainer} from 'phovea_d3/src/link';
-import {list as rlist, Range1D} from 'phovea_core/src/range';
+import {list as rlist, Range1D, Range} from 'phovea_core/src/range';
 import {IObjectRef, ProvenanceGraph} from 'phovea_core/src/provenance';
 import {Column, manager, createColumnCmd} from './Column';
 import Rect from 'phovea_core/src/geom/Rect';
@@ -126,13 +126,13 @@ export class StratomeX extends AView {
     if (rowStrat === m) {
       //both are stratifications
       rowStrat.range().then((range) => {
-        this.provGraph.push(createColumnCmd(this.ref, mref, range, toName(toMiddle(m.desc.fqname), rowStrat.desc.name)));
+        this.provGraph.push(createColumnCmd(this.ref, mref, new Range([range]), toName(toMiddle(m.desc.fqname), rowStrat.desc.name)));
       });
     } else {
       Promise.all<Range1D>([rowStrat.idRange(), colStrat ? colStrat.idRange() : Range1D.all()]).then((range_list: Range1D[]) => {
         const idRange = rlist(range_list);
         return m.fromIdRange(idRange);
-      }).then((range) => {
+      }).then((range: Range) => {
         this.provGraph.push(createColumnCmd(this.ref, mref, range, toName(m.desc.name, rowStrat.desc.name)));
       });
     }

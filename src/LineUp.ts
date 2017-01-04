@@ -7,7 +7,7 @@ import {ITable} from 'phovea_core/src/table/ITable';
 import {wrapObjects} from 'phovea_core/src/table/Table';
 import {AView} from 'phovea_core/src/layout_view';
 import {IVisInstance, list as listVis} from 'phovea_core/src/vis';
-import {assignData, IDataType} from 'phovea_core/src/datatype';
+import {assignData, IDataType, VALUE_TYPE_STRING} from 'phovea_core/src/datatype';
 import {IStratification} from 'phovea_core/src/stratification';
 import Rect from 'phovea_core/src/geom/Rect';
 import {INumericalVector, ICategoricalVector} from 'phovea_core/src/vector';
@@ -16,20 +16,21 @@ import {INumericalMatrix} from 'phovea_core/src/matrix';
 function col(name, width) {
   return {column: name, width: width};
 }
-function convertToTable(list: IDataType[]) {
+function convertToTable(list: IDataType[], name: string) {
   return wrapObjects({
-    id: '_stratification',
-    name: 'stratifications',
-    fqname: 'stratomex/stratifications',
+    id: '_data',
+    name: name,
+    fqname: 'stratomex/'+name,
+    description: '',
     type: 'table',
-    idtype: '_stratification',
+    idtype: '_dataset',
     creator: 'Anonymous',
     ts: Date.now(),
     size: [list.length, 4],
     columns: [
       {
         name: 'Package',
-        value: {type: 'string'},
+        value: {type: VALUE_TYPE_STRING},
         getter: (d) => {
           const s = d.desc.fqname.split('/');
           return s[0];
@@ -37,7 +38,7 @@ function convertToTable(list: IDataType[]) {
       },
       {
         name: 'Dataset',
-        value: {type: 'string'},
+        value: {type: VALUE_TYPE_STRING},
         getter: (d) => {
           const s = d.desc.fqname.split('/');
           return s.length === 2 ? s[0] : s[1];
@@ -45,29 +46,29 @@ function convertToTable(list: IDataType[]) {
       },
       {
         name: 'Name',
-        value: {type: 'string'},
+        value: {type: VALUE_TYPE_STRING},
         getter: (d) => {
           const s = d.desc.fqname.split('/');
           return s[s.length - 1];
         }
-      }, {
+      }, <any>{
         name: 'Dimensions',
-        value: {type: 'string'},
+        value: {type: VALUE_TYPE_STRING},
         getter: (d) => d.dim.join(' x '),
         lineup: {
           alignment: 'right'
         }
       }, {
         name: 'ID Type',
-        value: {type: 'string'},
+        value: {type: VALUE_TYPE_STRING},
         getter: (d) => (d.idtypes.map(String).join(', '))
       }, {
         name: 'Type',
-        value: {type: 'string'},
+        value: {type: VALUE_TYPE_STRING},
         getter: (d) => d.desc.type
       }, {
         name: '# Groups',
-        value: {type: 'string'},
+        value: {type: VALUE_TYPE_STRING},
         getter: (d) => d.ngroups || (d.valuetype.categories ? d.valuetype.categories.length : 0),
         lineup: {
           alignment: 'right'
@@ -108,9 +109,9 @@ class StratomeXLineUp extends AView {
     }
   }
 
-  setData(stratifications: IDataType[]) {
-    const data = convertToTable(stratifications);
-    this.rawData = stratifications;
+  setData(datasets: IDataType[]) {
+    const data = convertToTable(datasets, this.showGroups ? 'Stratifications': 'Datasets');
+    this.rawData = datasets;
     this._data = [data];
     assignData(this.parent, data);
     const v = listVis(data).filter((v) => v.id === 'phovea-vis-lineup')[0];
