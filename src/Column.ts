@@ -20,9 +20,8 @@ import {IVectorDataDescription, IAnyVector} from 'phovea_core/src/vector';
 import {StratomeX} from './StratomeX';
 import {IStratification} from 'phovea_core/src/stratification';
 import {IAnyMatrix} from 'phovea_core/src/matrix';
-import statetoken = require('../caleydo_clue/statetoken');
-import {StateTokenLeaf} from '../caleydo_clue/statetoken';
-import {isUndefined} from '../caleydo_core/main';
+import {StateTokenLeaf, TokenType, IStateToken} from 'phovea_core/src/provenance/StateToken';
+import IDType from 'phovea_core/src/idtype/IDType';
 
 
 export function animationTime(within = -1) {
@@ -314,7 +313,8 @@ function shiftBy(r: any, shift: {x: number, y: number}) {
 
 /**
  * utility to sync histograms over multiple instances
- * @param expectedNumberOfHists
+ * @param expectedNumberOfPlots
+ * @param agg
  */
 function groupTotalAggregator(expectedNumberOfPlots: number, agg: (v: any) => number) {
   let acc = 0;
@@ -493,19 +493,19 @@ export class Column extends EventHandler implements IHasUniqueId, IDataVis {
     this.$parent.transition().duration(animationTime(within)).style('opacity', 1);
   }
 
-  get idtypes(): idtypes.IDType[]{
+  get idtypes(): IDType[]{
     return [this.summary.data.idtypes[0],
         this.summary.data.idtypes[1]];
   }
 
-  get stateTokensRekursive(): statetoken.IStateToken[] {
-    let tokens: statetoken.IStateToken[]  = [];
+  get stateTokensRekursive(): IStateToken[] {
+    let tokens: IStateToken[]  = [];
 
     tokens = tokens.concat(
       new StateTokenLeaf(
         'Column ' + this.name,
         1,
-        statetoken.TokenType.string,
+        TokenType.string,
         this.name,
         'data'
       )
@@ -514,13 +514,13 @@ export class Column extends EventHandler implements IHasUniqueId, IDataVis {
       new StateTokenLeaf(
         'Column ' + this.name + 'vis Type',
         1,
-        statetoken.TokenType.string,
+        TokenType.string,
         this.name + ' ' + this.grid.act.id,
         'visual'
       )
     );
     let value:string = this.name;
-    if (!(this.detail === null || isUndefined(this.detail))) {
+    if (!(this.detail === null || this.detail === undefined)) {
       value += 'ID: ' +this.detail.multi.id;
     } else {
       value += 'No Detail.';
@@ -529,7 +529,7 @@ export class Column extends EventHandler implements IHasUniqueId, IDataVis {
       new StateTokenLeaf(
         'Column ' + this.name + ' Detail',
         1,
-        statetoken.TokenType.string,
+        TokenType.string,
         value,
         'visual'
       )
