@@ -20,7 +20,7 @@ import {IVectorDataDescription, IAnyVector} from 'phovea_core/src/vector';
 import {StratomeX} from './StratomeX';
 import {IStratification} from 'phovea_core/src/stratification';
 import {IAnyMatrix} from 'phovea_core/src/matrix';
-import {StateTokenLeaf, TokenType, IStateToken} from 'phovea_core/src/provenance/StateToken';
+import {StateTokenLeaf, TokenType, IStateToken} from 'phovea_core/src/provenance/token/StateToken';
 import IDType from 'phovea_core/src/idtype/IDType';
 
 

@@ -11,7 +11,7 @@ import {list as rlist, Range1D, Range} from 'phovea_core/src/range';
 import {IObjectRef, ProvenanceGraph} from 'phovea_core/src/provenance';
 import {Column, manager, createColumnCmd} from './Column';
 import Rect from 'phovea_core/src/geom/Rect';
-import {IStateToken, StateTokenNode, StateTokenLeaf, TokenType} from 'phovea_core/src/provenance/StateToken';
+import {IStateToken, StateTokenNode, StateTokenLeaf, TokenType} from 'phovea_core/src/provenance/token/StateToken';
 import IDType from 'phovea_core/src/idtype/IDType';
 
 //type ColumnRef = prov.IObjectRef<columns.Column>;
