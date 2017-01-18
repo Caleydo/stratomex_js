@@ -13,6 +13,7 @@ import {Column, manager, createColumnCmd} from './Column';
 import Rect from 'phovea_core/src/geom/Rect';
 import {IStateToken, StateTokenNode, StateTokenLeaf, TokenType} from 'phovea_core/src/provenance/token/StateToken';
 import IDType from 'phovea_core/src/idtype/IDType';
+import {cat} from '../../phovea_core/src/provenance/ObjectNode';
 
 //type ColumnRef = prov.IObjectRef<columns.Column>;
 
@@ -83,7 +84,7 @@ export class StratomeX extends AView {
               1,
               TokenType.ordinal,
               [0, 1, t],
-              'layout'
+              cat.layout
             )
           )
         )
@@ -95,7 +96,7 @@ export class StratomeX extends AView {
       });
     }
     if (columns.length === 0) {
-      columns = columns.concat(new StateTokenLeaf('No_Colum_loaded', 1, TokenType.string, 'No clumn loaded', 'data'));
+      columns = columns.concat(new StateTokenLeaf('No_Colum_loaded', 1, TokenType.string, 'No clumn loaded', cat.data));
     }
     tokens = tokens.concat(new StateTokenNode('Columns', 1, columns));
 
@@ -109,13 +110,13 @@ export class StratomeX extends AView {
             1,
             TokenType.idtype,
             selIDtypes[i],
-            'selection'
+            cat.selection
           )
         );
       }
     }
     if (selectionTokens.length === 0) {
-      selectionTokens = selectionTokens.concat(new StateTokenLeaf('No_Colum_loaded_Selection', 1, TokenType.string, 'No clumn loaded, hence nothing is selected', 'analysis'));
+      selectionTokens = selectionTokens.concat(new StateTokenLeaf('No_Colum_loaded_Selection', 1, TokenType.string, 'No clumn loaded, hence nothing is selected', cat.logic));
     }
     tokens = tokens.concat(new StateTokenNode('Selections', 1, selectionTokens));
     return tokens;

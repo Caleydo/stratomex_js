@@ -507,7 +507,7 @@ export class Column extends EventHandler implements IHasUniqueId, IDataVis {
         1,
         TokenType.string,
         this.name,
-        'data'
+        cat.data
       )
     );
     tokens = tokens.concat(
@@ -516,7 +516,7 @@ export class Column extends EventHandler implements IHasUniqueId, IDataVis {
         1,
         TokenType.string,
         this.name + ' ' + this.grid.act.id,
-        'visual'
+        cat.visual
       )
     );
     let value:string = this.name;
@@ -531,7 +531,7 @@ export class Column extends EventHandler implements IHasUniqueId, IDataVis {
         1,
         TokenType.string,
         value,
-        'visual'
+        cat.visual
       )
     );
     return tokens;
