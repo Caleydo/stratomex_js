@@ -68,11 +68,11 @@ elems.graph.then((graph) => {
     stratomex.addDependentData(vector);
   });
 
-  const $left_data = $('#databrowser');
+  const $leftData = $('#databrowser');
   if (cmode.getMode().exploration < 0.8) {
-    $left_data.hide();
+    $leftData.hide();
   } else {
-    $left_data.show();
+    $leftData.show();
   }
   stratomex.setInteractive(cmode.getMode().exploration >= 0.8);
   function updateLineUp() {
@@ -94,13 +94,13 @@ elems.graph.then((graph) => {
     updateLineUp();
   }
 
-  elems.on('modeChanged', function (event, new_) {
-    if (new_.exploration < 0.8) {
-      $left_data.animate({height: 'hide'}, 'fast');
+  elems.on('modeChanged', function (event, newMode) {
+    if (newMode.exploration < 0.8) {
+      $leftData.animate({height: 'hide'}, 'fast');
     } else {
-      $left_data.animate({height: 'show'}, 'fast');
+      $leftData.animate({height: 'show'}, 'fast');
     }
-    stratomex.setInteractive(new_.exploration >= 0.8);
+    stratomex.setInteractive(newMode.exploration >= 0.8);
 
     //for the animations to end
     updateBounds();

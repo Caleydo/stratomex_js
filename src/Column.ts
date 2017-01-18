@@ -60,7 +60,7 @@ function createColumn(inputs: IObjectRef<any>[], parameter: any, graph: Provenan
     //console.log(new Date(), 'create column', data.desc.name, index);
     const c = new Column(stratomex, data, partitioning, inputs[1], {
       width: (data.desc.type === 'stratification') ? 60 : (data.desc.name.toLowerCase().indexOf('death') >= 0 ? 110 : 160),
-      name: name
+      name
     }, within);
     c.node.setAttribute('data-anchor', uid);
     const r = ref(c, c.name, cat.visual, c.hashString);
@@ -146,17 +146,17 @@ export function showInDetail(inputs: IObjectRef<any>[], parameter: any, graph: P
 export function createToggleDetailCmd(column: IObjectRef<Column>, cluster: number, show: boolean) {
   const act = show ? 'Show' : 'Hide';
   return action(meta(act + ' Details of ' + column.toString() + ' Cluster "' + cluster + '"', cat.layout), 'showStratomeXInDetail', showInDetail, [column], {
-    cluster: cluster,
+    cluster,
     action: show ? 'show' : 'hide'
   });
 }
 
 export function createChangeVis(column: IObjectRef<Column>, to: string, from: string) {
   const visses = column.value.grid.visses;
-  const vis_desc = visses.filter((v) => v.id === to)[0];
-  return action(meta(column.value.name + ' as ' + vis_desc.name, cat.visual), 'changeStratomeXColumnVis', changeVis, [column], {
-    to: to,
-    from: from
+  const visDesc = visses.filter((v) => v.id === to)[0];
+  return action(meta(column.value.name + ' as ' + visDesc.name, cat.visual), 'changeStratomeXColumnVis', changeVis, [column], {
+    to,
+    from
   });
 }
 
@@ -175,17 +175,17 @@ function setOption(inputs: IObjectRef<any>[], parameter: any) {
 
 export function createSetOption(column: IObjectRef<Column>, name: string, value: any, old: any) {
   return action(meta('set option "' + name + +'" of "' + column.name + ' to "' + value + '"', cat.visual), 'setStratomeXColumnOption', setOption, [column], {
-    name: name,
-    value: value,
-    old: old
+    name,
+    value,
+    old
   });
 }
 export function createColumnCmd(stratomex: IObjectRef<StratomeX>, data: IObjectRef<IDataType>, partitioning: Range, name: string, index: number = -1, uid = 'C' + randomId()) {
   return action(meta(name, cat.data, op.create), 'createStratomeXColumn', createColumn, [stratomex, data], {
     partitioning: partitioning.toString(),
-    name: name,
-    index: index,
-    uid: uid
+    name,
+    index,
+    uid
   });
 }
 export function createRemoveCmd(stratomex: IObjectRef<StratomeX>, column: IObjectRef<Column>) {
@@ -220,52 +220,52 @@ export function createCmd(id: string) {
  */
 export function compressCreateRemove(path: ActionNode[]) {
   //use a set, e.g. swap uses two columns, to avoid duplicate entries
-  const to_remove = d3.set();
+  const toRemove = d3.set();
   path.forEach((p, i) => {
     if (p.f_id === 'removeStratomeXColumn') {
       const col = p.removes[0]; //removed column
-      const to_potential_remove = [];
+      const toPotentialRemove = [];
       //find the matching createStatement and mark all changed in between
       for (let j = i - 1; j >= 0; --j) {
-        let q = path[j];
+        const q = path[j];
         if (q.f_id === 'createStratomeXColumn') {
-          let created_col = q.creates[0];
-          if (created_col === col) {
+          const createdCol = q.creates[0];
+          if (createdCol === col) {
             //I found my creation
-            to_remove.add(String(j));
-            to_remove.add(String(i)); //remove both
+            toRemove.add(String(j));
+            toRemove.add(String(i)); //remove both
             //and remove all inbetween
-            to_potential_remove.forEach(to_remove.add.bind(to_remove));
+            toPotentialRemove.forEach(toRemove.add.bind(toRemove));
             break;
           }
         } else if (q.f_id.match(/(changeStratomeXColumnVis|showStratomeXInDetail|setStratomeXColumnOption|swapStratomeXColumns)/)) {
           if (q.requires.some((d) => d === col)) {
-            to_potential_remove.push(j); //uses the element
+            toPotentialRemove.push(j); //uses the element
           }
         }
       }
     }
   });
   //decreasing order for right indices
-  for (let i of to_remove.values().map(Number).sort(d3.descending)) {
+  for (const i of toRemove.values().map(Number).sort(d3.descending)) {
     path.splice(i, 1);
   }
   return path;
 }
 
 export function compressSwap(path: ActionNode[]) {
-  const to_remove: number[] = [];
+  const toRemove: number[] = [];
   path.forEach((p, i) => {
     if (p.f_id === 'swapStratomeXColumns') {
       const inputs = p.requires;
       //assert inputs.length === 3
       for (let j = i + 1; j < path.length; ++j) {
-        let q = path[j];
+        const q = path[j];
         if (q.f_id === 'swapStratomeXColumns') {
-          let otherin = q.requires;
+          const otherin = q.requires;
           if (inputs[1] === otherin[2] && inputs[2] === otherin[1]) {
             //swapped again
-            to_remove.push(i, j);
+            toRemove.push(i, j);
             break;
           }
         }
@@ -273,30 +273,30 @@ export function compressSwap(path: ActionNode[]) {
     }
   });
   //decreasing order for right indices
-  for (let i of to_remove.sort((a, b) => b - a)) {
+  for (const i of toRemove.sort((a, b) => b - a)) {
     path.splice(i, 1);
   }
   return path;
 }
 
 export function compressHideShowDetail(path: ActionNode[]) {
-  const to_remove: number[] = [];
+  const toRemove: number[] = [];
   path.forEach((p, i) => {
     if (p.f_id === 'showStratomeXInDetail' && p.parameter.action === 'show') {
       const column = p.requires[0];
       const cluster = p.parameter.cluster;
       for (let j = i + 1; j < path.length; ++j) {
-        let q = path[j];
+        const q = path[j];
         if (q.f_id === 'showStratomeXInDetail' && q.parameter.action === 'hide' && q.parameter.cluster === cluster && column === q.requires[0]) {
           //hide again
-          to_remove.push(i, j);
+          toRemove.push(i, j);
           break;
         }
       }
     }
   });
   //decreasing order for right indices
-  for (let i of to_remove.sort((a, b) => b - a)) {
+  for (const i of toRemove.sort((a, b) => b - a)) {
     path.splice(i, 1);
   }
   return path;
@@ -360,8 +360,8 @@ export class Column extends EventHandler implements IHasUniqueId, IDataVis {
   private summary: MultiForm;
   grid: MultiFormGrid;
 
-  private grid_zoom: ZoomLogic;
-  private summary_zoom: ZoomLogic;
+  private gridZoom: ZoomLogic;
+  private summaryZoom: ZoomLogic;
 
   private detail: {
     $node: d3.Selection<any>;
@@ -376,7 +376,7 @@ export class Column extends EventHandler implements IHasUniqueId, IDataVis {
 
   private highlightMe = (event: any, type: string, act: Range) => {
     this.$parent.classed('phovea-select-' + type, act.dim(0).contains(this.id));
-  };
+  }
 
   constructor(private stratomex, public data, partitioning: Range, public dataRef, options: IColumnOptions = {}, within = -1) {
     super();
@@ -385,7 +385,7 @@ export class Column extends EventHandler implements IHasUniqueId, IDataVis {
     this.$parent = d3.select(stratomex.parent).append('div').attr('class', 'column').style('opacity', 0);
     this.$parent.style('top', '20px');
     {
-      let parentBounds = bounds(stratomex.parent);
+      const parentBounds = bounds(stratomex.parent);
       this.$parent.style('left', (parentBounds.w - this.options.width - 20) + 'px');
       this.$parent.style('height', (parentBounds.h - 20) + 'px');
     }
@@ -479,8 +479,8 @@ export class Column extends EventHandler implements IHasUniqueId, IDataVis {
       }
     });
     //zooming
-    this.grid_zoom = new ZoomLogic(this.grid, this.grid.asMetaData);
-    this.summary_zoom = new ZoomLogic(this.summary, this.summary.asMetaData);
+    this.gridZoom = new ZoomLogic(this.grid, this.grid.asMetaData);
+    this.summaryZoom = new ZoomLogic(this.summary, this.summary.asMetaData);
     this.grid.on('changed', (event, to, from) => {
       this.fire('changed', to, from);
     });
@@ -590,7 +590,7 @@ export class Column extends EventHandler implements IHasUniqueId, IDataVis {
     let cluster = range.dim(0);
     cluster = cluster.toSet();
     for (let i = this.grid.dimSizes[0] - 1; i >= 0; --i) {
-      let r = this.grid.getRange(i).dim(0).toSet();
+      const r = this.grid.getRange(i).dim(0).toSet();
       if (r.eq(cluster)) {
         return shiftBy(this.grid.getBounds(i), this.visPos());
       }
@@ -649,7 +649,7 @@ export class Column extends EventHandler implements IHasUniqueId, IDataVis {
 
     this.detail = {
       $node: $elem,
-      multi: multi,
+      multi,
       zoom: new ZoomBehavior(<Element>$elem.node(), multi, multi.asMetaData)
     };
     this.$parent.style('width', this.options.width + this.options.detailWidth + 'px');
@@ -673,7 +673,7 @@ export class Column extends EventHandler implements IHasUniqueId, IDataVis {
 
   layouted(within = -1) {
     //sync the scaling
-    let b = bounds(<Element>this.$layoutHelper.node());
+    const b = bounds(<Element>this.$layoutHelper.node());
     const size = {x: b.w, y: b.h - 5}; //no idea why but needed avoiding an overflow
 
     size.y -= this.options.summaryHeight;
@@ -699,14 +699,14 @@ export class Column extends EventHandler implements IHasUniqueId, IDataVis {
     }
 
     this.summary.actLoader.then(() => {
-      this.summary_zoom.zoomTo(size.x - this.options.padding * 3, this.options.summaryHeight - this.options.padding * 3 - 30);
+      this.summaryZoom.zoomTo(size.x - this.options.padding * 3, this.options.summaryHeight - this.options.padding * 3 - 30);
     });
     this.grid.actLoader.then(() => {
-      this.grid_zoom.zoomTo(size.x - this.options.padding * 2, size.y);
+      this.gridZoom.zoomTo(size.x - this.options.padding * 2, size.y);
 
       //shift the content for the aspect ratio
-      let shift = [null, null];
-      if (this.grid_zoom.isFixedAspectRatio) {
+      const shift = [null, null];
+      if (this.gridZoom.isFixedAspectRatio) {
         const act = this.grid.size;
         shift[0] = ((size.x - act[0]) / 2) + 'px';
         shift[1] = ((size.y - act[1]) / 2) + 'px';

@@ -175,7 +175,7 @@ export class StratomeX extends AView {
     }
     //check if idtypes match otherwise makes no sense
     if (base.data.idtypes[0] === m.idtypes[0]) {
-      let mref = this.provGraph.findOrAddObject(m, m.desc.name, 'data');
+      const mref = this.provGraph.findOrAddObject(m, m.desc.name, 'data');
       const r = rlist(base.range.dim(0));
       base.data.ids(r).then(m.fromIdRange.bind(m)).then((target) => {
         this.provGraph.push(createColumnCmd(this.ref, mref, target, toName(m.desc.name, base.range.dim(0).name)));
@@ -193,8 +193,8 @@ export class StratomeX extends AView {
         this.provGraph.push(createColumnCmd(this.ref, mref, new Range([range]), toName(toMiddle(m.desc.fqname), rowStrat.desc.name)));
       });
     } else {
-      Promise.all<Range1D>([rowStrat.idRange(), colStrat ? colStrat.idRange() : Range1D.all()]).then((range_list: Range1D[]) => {
-        const idRange = rlist(range_list);
+      Promise.all<Range1D>([rowStrat.idRange(), colStrat ? colStrat.idRange() : Range1D.all()]).then((rangesList: Range1D[]) => {
+        const idRange = rlist(rangesList);
         return m.fromIdRange(idRange);
       }).then((range: Range) => {
         this.provGraph.push(createColumnCmd(this.ref, mref, range, toName(m.desc.name, rowStrat.desc.name)));
@@ -206,7 +206,7 @@ export class StratomeX extends AView {
     let loca = ca.location,
       locb = cb.location;
     if (loca.x > locb.x) { //swap order
-      let t = locb;
+      const t = locb;
       locb = loca;
       loca = t;
     }
