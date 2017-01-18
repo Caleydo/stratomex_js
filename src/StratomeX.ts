@@ -61,25 +61,25 @@ export class StratomeX extends AView {
 
   get stateTokens(): IStateToken[] {
     let tokens: IStateToken[] = [];
-    let sortedColumns = this._columns.slice(0);
+    const sortedColumns = this._columns.slice(0);
     sortedColumns.sort(function (a: Column, b: Column) {
       return a.id - b.id;
     });
 
     let selIDtypes: IDType[] = [];
     let columns: IStateToken[] = [];
-    for (let i = 0; i < sortedColumns.length; i++) {
-      let t: number = this.indexOf(sortedColumns[i]) / (sortedColumns.length - 1);
+    for (const sortedColumn of sortedColumns) {
+      let t: number = this.indexOf(sortedColumn) / (sortedColumns.length - 1);
       if (isNaN(t)) {
         t = 0;
       }
       columns = columns.concat(
         new StateTokenNode(
-          'Column ' + sortedColumns[i].name,
+          'Column ' + sortedColumn.name,
           1,
-          sortedColumns[i].stateTokensRekursive.concat(
+          sortedColumn.stateTokensRekursive.concat(
             new StateTokenLeaf(
-              'Column ' + sortedColumns[i].id + '_order',
+              'Column ' + sortedColumn.id + '_order',
               1,
               TokenType.ordinal,
               [0, 1, t],
@@ -88,7 +88,7 @@ export class StratomeX extends AView {
           )
         )
       );
-      selIDtypes = selIDtypes.concat(sortedColumns[i].idtypes[0]);
+      selIDtypes = selIDtypes.concat(sortedColumn.idtypes[0]);
       //remove duplicate idtypes
       selIDtypes = selIDtypes.filter(function (item, pos) {
         return selIDtypes.indexOf(item) === pos;
@@ -101,14 +101,14 @@ export class StratomeX extends AView {
 
     //console.log(selIDtypes)
     let selectionTokens: StateTokenLeaf[] = [];
-    for (let i = 0; i < selIDtypes.length; i++) {
-      if (typeof selIDtypes[i] !== 'undefined') {
+    for (const selIDtype of selIDtypes) {
+      if (typeof selIDtype !== 'undefined') {
         selectionTokens = selectionTokens.concat(
           new StateTokenLeaf(
-            selIDtypes[i].name,
+            selIDtype.name,
             1,
             TokenType.idtype,
-            selIDtypes[i],
+            selIDtype,
             'selection'
           )
         );
