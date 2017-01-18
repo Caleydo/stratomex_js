@@ -14,12 +14,12 @@ import {INumericalVector, ICategoricalVector} from 'phovea_core/src/vector';
 import {INumericalMatrix} from 'phovea_core/src/matrix';
 
 function col(name, width) {
-  return {column: name, width: width};
+  return {column: name, width};
 }
 function convertToTable(list: IDataType[], name: string) {
   return wrapObjects({
     id: '_data',
-    name: name,
+    name,
     fqname: 'stratomex/'+name,
     description: '',
     type: 'table',
