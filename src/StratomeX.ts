@@ -91,9 +91,7 @@ export class StratomeX extends AView {
       );
       selIDtypes = selIDtypes.concat(sortedColumn.idtypes[0]);
       //remove duplicate idtypes
-      selIDtypes = selIDtypes.filter(function (item, pos) {
-        return selIDtypes.indexOf(item) === pos;
-      });
+      selIDtypes = selIDtypes.filter((item, pos) => selIDtypes.indexOf(item) === pos);
     }
     if (columns.length === 0) {
       columns = columns.concat(new StateTokenLeaf('No_Colum_loaded', 1, TokenType.string, 'No clumn loaded', cat.data));
