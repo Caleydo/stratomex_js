@@ -62,25 +62,25 @@ export class StratomeX extends AView {
 
   get stateTokens(): IStateToken[] {
     let tokens: IStateToken[] = [];
-    let sortedColumns = this._columns.slice(0);
+    const sortedColumns = this._columns.slice(0);
     sortedColumns.sort(function (a: Column, b: Column) {
       return a.id - b.id;
     });
 
     let selIDtypes: IDType[] = [];
     let columns: IStateToken[] = [];
-    for (let i = 0; i < sortedColumns.length; i++) {
-      let t: number = this.indexOf(sortedColumns[i]) / (sortedColumns.length - 1);
+    for (const sortedColumn of sortedColumns) {
+      let t: number = this.indexOf(sortedColumn) / (sortedColumns.length - 1);
       if (isNaN(t)) {
         t = 0;
       }
       columns = columns.concat(
         new StateTokenNode(
-          'Column ' + sortedColumns[i].name,
+          'Column ' + sortedColumn.name,
           1,
-          sortedColumns[i].stateTokensRekursive.concat(
+          sortedColumn.stateTokensRekursive.concat(
             new StateTokenLeaf(
-              'Column ' + sortedColumns[i].id + '_order',
+              'Column ' + sortedColumn.id + '_order',
               1,
               TokenType.ordinal,
               [0, 1, t],
@@ -89,7 +89,7 @@ export class StratomeX extends AView {
           )
         )
       );
-      selIDtypes = selIDtypes.concat(sortedColumns[i].idtypes[0]);
+      selIDtypes = selIDtypes.concat(sortedColumn.idtypes[0]);
       //remove duplicate idtypes
       selIDtypes = selIDtypes.filter(function (item, pos) {
         return selIDtypes.indexOf(item) === pos;
@@ -102,14 +102,14 @@ export class StratomeX extends AView {
 
     //console.log(selIDtypes)
     let selectionTokens: StateTokenLeaf[] = [];
-    for (let i = 0; i < selIDtypes.length; i++) {
-      if (typeof selIDtypes[i] !== 'undefined') {
+    for (const selIDtype of selIDtypes) {
+      if (typeof selIDtype !== 'undefined') {
         selectionTokens = selectionTokens.concat(
           new StateTokenLeaf(
-            selIDtypes[i].name,
+            selIDtype.name,
             1,
             TokenType.idtype,
-            selIDtypes[i],
+            selIDtype,
             cat.selection
           )
         );
@@ -176,7 +176,7 @@ export class StratomeX extends AView {
     }
     //check if idtypes match otherwise makes no sense
     if (base.data.idtypes[0] === m.idtypes[0]) {
-      let mref = this.provGraph.findOrAddObject(m, m.desc.name, 'data');
+      const mref = this.provGraph.findOrAddObject(m, m.desc.name, 'data');
       const r = rlist(base.range.dim(0));
       base.data.ids(r).then(m.fromIdRange.bind(m)).then((target) => {
         this.provGraph.push(createColumnCmd(this.ref, mref, target, toName(m.desc.name, base.range.dim(0).name)));
@@ -194,8 +194,8 @@ export class StratomeX extends AView {
         this.provGraph.push(createColumnCmd(this.ref, mref, new Range([range]), toName(toMiddle(m.desc.fqname), rowStrat.desc.name)));
       });
     } else {
-      Promise.all<Range1D>([rowStrat.idRange(), colStrat ? colStrat.idRange() : Range1D.all()]).then((range_list: Range1D[]) => {
-        const idRange = rlist(range_list);
+      Promise.all<Range1D>([rowStrat.idRange(), colStrat ? colStrat.idRange() : Range1D.all()]).then((rangesList: Range1D[]) => {
+        const idRange = rlist(rangesList);
         return m.fromIdRange(idRange);
       }).then((range: Range) => {
         this.provGraph.push(createColumnCmd(this.ref, mref, range, toName(m.desc.name, rowStrat.desc.name)));
@@ -207,7 +207,7 @@ export class StratomeX extends AView {
     let loca = ca.location,
       locb = cb.location;
     if (loca.x > locb.x) { //swap order
-      let t = locb;
+      const t = locb;
       locb = loca;
       loca = t;
     }
