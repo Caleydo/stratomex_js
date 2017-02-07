@@ -411,7 +411,7 @@ export class Column extends EventHandler implements IHasUniqueId, IDataVis {
       }
     });
     this.$summary.on('click', () => {
-      manager.select([this.id], toSelectOperation(d3.event));
+      manager.select([this.id], toSelectOperation(<MouseEvent>d3.event));
     });
 
     const createWrapper = (elem: HTMLElement, data: IDataType, cluster: Range, pos: [number, number]) => {
