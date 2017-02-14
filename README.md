@@ -8,7 +8,7 @@ Further resources:
 * [CLUE Homepage](http://clue.caleydo.org/)
 * Examples using CLUE: [StratomeX](http://vistories.org/v/stratomex) and [Gapminder](http://vistories.org/v/gapminder)
 
-A [demonstration](http://playground.caleydo.org/stratomex_js/) is available in the Caleydo Playground.
+A [demonstration](http://stratomex.caleydoapp.org) is available in the caleydoapp.org.
 
 Installation
 ------------
