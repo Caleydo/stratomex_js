@@ -13,7 +13,7 @@ import {Column, manager, createColumnCmd} from './Column';
 import Rect from 'phovea_core/src/geom/Rect';
 import {IStateToken, StateTokenNode, StateTokenLeaf, TokenType} from 'phovea_core/src/provenance/token/StateToken';
 import IDType from 'phovea_core/src/idtype/IDType';
-import {cat} from '../../phovea_core/src/provenance/ObjectNode';
+import {cat} from 'phovea_core/src/provenance/ObjectNode';
 
 //type ColumnRef = prov.IObjectRef<columns.Column>;
 
