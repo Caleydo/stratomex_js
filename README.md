@@ -8,7 +8,7 @@ Further resources:
 * [CLUE Homepage](http://clue.caleydo.org/)
 * Examples using CLUE: [StratomeX](http://vistories.org/v/stratomex) and [Gapminder](http://vistories.org/v/gapminder)
 
-A [demonstration](http://playground.caleydo.org/stratomex_js/) is available in the Caleydo Playground.
+A [demonstration](http://stratomex.caleydoapp.org) is available in the caleydoapp.org.
 
 Installation
 ------------
@@ -38,7 +38,7 @@ npm run build
 ***
 
 <a href="https://caleydo.org"><img src="http://caleydo.org/assets/images/logos/caleydo.svg" align="left" width="200px" hspace="10" vspace="6"></a>
-This repository is part of **[Phovea](http://phovea.caleydo.org/)**, a platform for developing web-based visualization applications. For tutorials, API docs, and more information about the build and deployment process, see the [documentation page](http://caleydo.org/documentation/).
+This repository is part of **[Phovea](http://phovea.caleydo.org/)**, a platform for developing web-based visualization applications. For tutorials, API docs, and more information about the build and deployment process, see the [documentation page](http://phovea.caleydo.org).
 
 
 [phovea-image]: https://img.shields.io/badge/Phovea-Application-1BA64E.svg
@@ -47,5 +47,5 @@ This repository is part of **[Phovea](http://phovea.caleydo.org/)**, a platform 
 [npm-url]: https://npmjs.org/package/stratomex_js
 [travis-image]: https://travis-ci.org/caleydo/stratomex_js.svg?branch=master
 [travis-url]: https://travis-ci.org/caleydo/stratomex_js
-[daviddm-image]: https://david-dm.org/caleydo/stratomex_js.svg?theme=shields.io
+[daviddm-image]: https://david-dm.org/caleydo/stratomex_js/status.svg
 [daviddm-url]: https://david-dm.org/caleydo/stratomex_js
