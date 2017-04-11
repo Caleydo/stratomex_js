@@ -119,7 +119,7 @@ class StratomeXLineUp extends AView {
       this.lineup = plugin.factory(data, this.parent, {
         lineup: {
           body: {
-            renderer: 'canvas',
+            renderer: 'svg',
             actions: [
               {
                 name: 'add',
