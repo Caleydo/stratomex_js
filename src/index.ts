@@ -68,6 +68,26 @@ elems.graph.then((graph) => {
     stratomex.addDependentData(vector);
   });
 
+
+  // MY AWESOME STUFF -----------------------------------------------------
+  console.log("whoop");
+  const stratoHeaders = document.getElementsByTagName("header");
+  if(stratoHeaders.length > 0)
+  {
+    console.log("adding button");
+    let jaccardButton = document.createElement("button");
+    jaccardButton.innerText = "Calc Jaccard";
+    jaccardButton.id = "jaccardButton";
+    jaccardButton.onclick = (ev) => {
+      console.log("sers");
+    };
+    stratoHeaders[0].appendChild(jaccardButton);
+  } else  {
+    console.log("no header for addin");
+  }
+
+  // -----------------------------------------------------------------------------
+
   const $leftData = $('#databrowser');
   if (cmode.getMode().exploration < 0.8) {
     $leftData.hide();
