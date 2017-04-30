@@ -25,6 +25,8 @@ import {
 import {INumericalVector, ICategoricalVector, IVectorDataDescription} from 'phovea_core/src/vector';
 import {IStratification, IStratificationDataDescription} from 'phovea_core/src/stratification';
 
+import {manager} from './Column';
+
 const helper = document.querySelector('#mainhelper');
 const elems = createCLUE(document.body, {
   app: 'StratomeX.js',
@@ -70,7 +72,7 @@ elems.graph.then((graph) => {
 
 
   // MY AWESOME STUFF -----------------------------------------------------
-  console.log("whoop");
+  console.log("Will add jaccard button");
   const stratoHeaders = document.getElementsByTagName("header");
   if(stratoHeaders.length > 0)
   {
@@ -79,7 +81,10 @@ elems.graph.then((graph) => {
     jaccardButton.innerText = "Calc Jaccard";
     jaccardButton.id = "jaccardButton";
     jaccardButton.onclick = (ev) => {
-      console.log("sers");
+      console.log("Jaccard Buton onclick");
+
+      const base = manager.selectedObjects()[0];
+      console.log("base", base);
     };
     stratoHeaders[0].appendChild(jaccardButton);
   } else  {
