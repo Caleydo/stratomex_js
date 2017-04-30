@@ -523,6 +523,17 @@ export class Column extends EventHandler implements IHasUniqueId, IDataVis {
     return this.data.ids(this.range);
   }
 
+  get isSelected() : boolean {
+    const selectedObjects = manager.selectedObjects();
+    let isColumnSelected : boolean = false;
+
+    for (let i = 0; !isColumnSelected && i < selectedObjects.length; i++) {
+      isColumnSelected = (this === selectedObjects[i]);
+    }
+
+    return isColumnSelected;
+  }
+
   get location() {
     const abspos = bounds(<Element>this.$layoutHelper.node());
     const parent = bounds((<Element>this.$layoutHelper.node()).parentElement);
