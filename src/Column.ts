@@ -524,6 +524,7 @@ export class Column extends EventHandler implements IHasUniqueId, IDataVis {
   }
 
   get isSelected() : boolean {
+    //TODO maybe use code similar to  highlightMe function
     const selectedObjects = manager.selectedObjects();
     let isColumnSelected : boolean = false;
 
@@ -590,6 +591,39 @@ export class Column extends EventHandler implements IHasUniqueId, IDataVis {
         return ids.indexOf(r);
       }));
     });
+  }
+
+  get selectedGroup() {
+    //TODO maybe set selected group directly in toggleSelection function
+
+    let selGroup = null;
+
+    if (this.isSelected) {
+      if (this.range.dim(0) instanceof CompositeRange1D) {
+        const colName = (<CompositeRange1D>this.range.dim(0)).name;
+        const groups = (<CompositeRange1D>this.range.dim(0)).groups;
+
+        const selectedChild = this.$clusters.select("div.phovea-select-selected");
+
+        if (!selectedChild.empty()) {
+          const selectedGroupName = selectedChild.select("div.title").text();
+
+          for (let i = 0; selGroup == null && i<= groups.length; i++) {
+            if (groups[i].name === selectedGroupName) {
+              selGroup = groups[i];
+            }
+          }
+        } else {
+          console.log("no group selected in column: ", colName);
+        }
+      } else {
+        console.log("group data is of unexpected type");
+      }
+    } else {
+      console.log("Column is not selected -> there are no selected groups");
+    }
+
+    return selGroup;
   }
 
   showInDetail(cluster: number, within = -1) {
