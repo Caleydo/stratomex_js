@@ -523,6 +523,11 @@ export class Column extends EventHandler implements IHasUniqueId, IDataVis {
     return this.data.ids(this.range);
   }
 
+  /**
+   * Compares this column's instance to the selected objects returned by the ObjectManager.
+   * @returns Whether this column is selected or not.
+   * @see ObjectManager
+   */
   get isSelected() : boolean {
     //TODO maybe use code similar to  highlightMe function
     const selectedObjects = manager.selectedObjects();
@@ -593,7 +598,11 @@ export class Column extends EventHandler implements IHasUniqueId, IDataVis {
     });
   }
 
-  get selectedGroup() {
+  /**
+   * Looks in the column's HTML for a selected group.
+   * @returns the currently selected group of this column (may be null).
+   */
+  get selectedGroup() : Range1DGroup {
     //TODO maybe set selected group directly in toggleSelection function
 
     let selGroup = null;
@@ -603,9 +612,11 @@ export class Column extends EventHandler implements IHasUniqueId, IDataVis {
         const colName = (<CompositeRange1D>this.range.dim(0)).name;
         const groups = (<CompositeRange1D>this.range.dim(0)).groups;
 
+        // div identifier is important, there is also an svg <g > element,
+        // selected class is set by toggleSelection
         const selectedChild = this.$clusters.select("div.phovea-select-selected");
 
-        if (!selectedChild.empty()) {
+        if (!selectedChild.empty()) { //empty = selection found no elements
           const selectedGroupName = selectedChild.select("div.title").text();
 
           for (let i = 0; selGroup == null && i<= groups.length; i++) {
