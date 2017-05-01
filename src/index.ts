@@ -25,7 +25,7 @@ import {
 import {INumericalVector, ICategoricalVector, IVectorDataDescription} from 'phovea_core/src/vector';
 import {IStratification, IStratificationDataDescription} from 'phovea_core/src/stratification';
 
-import {manager} from './Column';
+import {manager, Column} from './Column';
 
 const helper = document.querySelector('#mainhelper');
 const elems = createCLUE(document.body, {
@@ -72,22 +72,27 @@ elems.graph.then((graph) => {
 
 
   // MY AWESOME STUFF -----------------------------------------------------
-  console.log("Will add jaccard button");
   const stratoHeaders = document.getElementsByTagName("header");
-  if(stratoHeaders.length > 0)
-  {
-    console.log("adding button");
+  if (stratoHeaders.length > 0) {
     let jaccardButton = document.createElement("button");
     jaccardButton.innerText = "Calc Jaccard";
     jaccardButton.id = "jaccardButton";
     jaccardButton.onclick = (ev) => {
       console.log("Jaccard Buton onclick");
 
-      const base = manager.selectedObjects()[0];
-      console.log("base", base);
+      const selected = manager.selectedObjects();
+
+      for (let selectedObj of selected) {
+        if (selectedObj instanceof Column) {
+          const selGroup = selectedObj.selectedGroup;
+          if (selGroup !== null) {
+            console.log("Send group "+selGroup.name+" of column "+selectedObj.name+" to processing queue", selGroup, selectedObj);
+          }
+        }
+      }
     };
     stratoHeaders[0].appendChild(jaccardButton);
-  } else  {
+  } else {
     console.log("no header for addin");
   }
 
