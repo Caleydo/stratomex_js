@@ -22,10 +22,16 @@ function toName(data: string, par: string) {
   let c = par.replace(' Clustering', '');
   const j = c.lastIndexOf('/');
   c = j >= 0 ? c.slice(j + 1) : c;
-  if (base === c) {
-    return base;
+
+  if (par.indexOf('Clustering') != -1) {
+    //if it's some clustering, keep base in name for differentiation
+    if (base === c) {
+      return base;
+    }
+    return base + ' (' + c + ')';
   }
-  return base + ' (' + c + ')';
+
+  return c;
 }
 
 function toMiddle(n: string) {
