@@ -23,7 +23,7 @@ function toName(data: string, par: string) {
   const j = c.lastIndexOf('/');
   c = j >= 0 ? c.slice(j + 1) : c;
 
-  if (par.indexOf('Clustering') != -1) {
+  if (par.indexOf('Clustering') !== -1) {
     //if it's some clustering, keep base in name for differentiation
     if (base === c) {
       return base;
