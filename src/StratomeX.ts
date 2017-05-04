@@ -122,7 +122,6 @@ export class StratomeX extends AView {
   }
 
   addData(rowStrat: IStratification, m: IDataType, colStrat?: IStratification) {
-    console.log("add data")
     const mref = this.provGraph.findOrAddObject(m, m.desc.name, 'data');
     if (rowStrat === m) {
       //both are stratifications
@@ -158,7 +157,6 @@ export class StratomeX extends AView {
   }
 
   addColumn(column: Column, index: number = -1, within = -1) {
-    console.log("add column");
     if (index < 0) {
       this._columns.push(column);
     } else {

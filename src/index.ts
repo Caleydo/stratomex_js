@@ -72,28 +72,28 @@ elems.graph.then((graph) => {
 
 
   // MY AWESOME STUFF -----------------------------------------------------
-  const stratoHeaders = document.getElementsByTagName("header");
+  const stratoHeaders = document.getElementsByTagName('header');
   if (stratoHeaders.length > 0) {
-    let jaccardButton = document.createElement("button");
-    jaccardButton.innerText = "Calc Jaccard";
-    jaccardButton.id = "jaccardButton";
+    const jaccardButton = document.createElement('button');
+    jaccardButton.innerText = 'Calc Jaccard';
+    jaccardButton.id = 'jaccardButton';
     jaccardButton.onclick = (ev) => {
-      console.log("Jaccard Buton onclick");
+      console.log('Jaccard Buton onclick');
 
       const selected = manager.selectedObjects();
 
-      for (let selectedObj of selected) {
+      for (const selectedObj of selected) {
         if (selectedObj instanceof Column) {
           const selGroup = selectedObj.selectedGroup;
           if (selGroup !== null) {
-            console.log("Send group "+selGroup.name+" of column "+selectedObj.name+" to processing queue", selGroup, selectedObj);
+            console.log('Send group '+selGroup.name+' of column '+selectedObj.name+' to processing queue', selGroup, selectedObj);
           }
         }
       }
     };
     stratoHeaders[0].appendChild(jaccardButton);
   } else {
-    console.log("no header for addin");
+    console.log('no header for addin');
   }
 
   // -----------------------------------------------------------------------------

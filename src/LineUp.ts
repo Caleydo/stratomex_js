@@ -17,7 +17,6 @@ function col(name, width) {
   return {column: name, width};
 }
 function convertToTable(list: IDataType[], name: string) {
-  console.log("convert 2 table");
   return wrapObjects({
     id: '_data',
     name,
@@ -111,7 +110,6 @@ class StratomeXLineUp extends AView {
   }
 
   setData(datasets: IDataType[]) {
-    console.log("setData");
     const data = convertToTable(datasets, this.showGroups ? 'Stratifications': 'Datasets');
     this.rawData = datasets;
     this._data = [data];

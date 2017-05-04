@@ -614,10 +614,10 @@ export class Column extends EventHandler implements IHasUniqueId, IDataVis {
 
         // div identifier is important, there is also an svg <g > element,
         // selected class is set by toggleSelection
-        const selectedChild = this.$clusters.select("div.phovea-select-selected");
+        const selectedChild = this.$clusters.select('div.phovea-select-selected');
 
         if (!selectedChild.empty()) { //empty = selection found no elements
-          const selectedGroupName = selectedChild.select("div.title").text();
+          const selectedGroupName = selectedChild.select('div.title').text();
 
           for (let i = 0; selGroup == null && i<= groups.length; i++) {
             if (groups[i].name === selectedGroupName) {
@@ -625,13 +625,13 @@ export class Column extends EventHandler implements IHasUniqueId, IDataVis {
             }
           }
         } else {
-          console.log("no group selected in column: ", colName);
+          console.log('no group selected in column: ', colName);
         }
       } else {
-        console.log("group data is of unexpected type");
+        console.log('group data is of unexpected type');
       }
     } else {
-      console.log("Column is not selected -> there are no selected groups");
+      console.log('Column is not selected -> there are no selected groups');
     }
 
     return selGroup;
