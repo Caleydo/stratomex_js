@@ -1,0 +1,1 @@
+-e git+https://github.com/phovea/phovea_processing_queue.git@develop#egg=phovea_processing_queue
