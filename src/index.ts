@@ -196,3 +196,10 @@ elems.graph.then((graph) => {
 
   elems.jumpToStored();
 });
+
+
+import {getAPIJSON} from 'phovea_processing_queue/src';
+
+getAPIJSON('/stratomex_js/add/5/4').then((r) => {
+  console.log(r);
+});
