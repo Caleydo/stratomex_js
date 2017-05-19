@@ -26,8 +26,7 @@ import {INumericalVector, ICategoricalVector, IVectorDataDescription} from 'phov
 import {IStratification, IStratificationDataDescription} from 'phovea_core/src/stratification';
 
 import {manager, Column} from './Column';
-import {getAPIJSON} from 'phovea_processing_queue/src/index';
-
+import {getAPIJSON} from 'phovea_processing_queue/src';
 
 const helper = document.querySelector('#mainhelper');
 const elems = createCLUE(document.body, {
@@ -89,10 +88,15 @@ elems.graph.then((graph) => {
           const selGroup = selectedObj.selectedGroup;
           if (selGroup !== null) {
             console.log('Send group '+selGroup.name+' of column '+selectedObj.name+' to processing queue', selGroup, selectedObj);
-            console.log('call http://localhost:9000/api/processing/calcJaccardSim2Grp/'+selectedObj.data.desc.id+'/'+selGroup.name);
-            getAPIJSON('/processing/calcJaccardSim2Grp/'+selectedObj.data.desc.id+'/'+selGroup.name).then((res) => {
-                console.log('THEN: sucess :', res);
-            });
+            console.log('call http://localhost:9000/api/stratomex_js/similarity/'+selectedObj.data.desc.id+'/'+encodeURIComponent(selGroup.name));
+
+            getAPIJSON('/stratomex_js/similarity/'+selectedObj.data.desc.id+'/'+selGroup.name)
+              .then((res) => {
+                console.log('success for '+selectedObj.data.desc.id+'/'+selGroup.name+':', res);
+              })
+              .catch((err) => {
+                console.log('error', err);
+              });
           }
         }
       }
@@ -202,9 +206,3 @@ elems.graph.then((graph) => {
   elems.jumpToStored();
 });
 
-
-import {getAPIJSON} from 'phovea_processing_queue/src';
-
-getAPIJSON('/stratomex_js/add/5/4').then((r) => {
-  console.log(r);
-});
