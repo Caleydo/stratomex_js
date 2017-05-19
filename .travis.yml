@@ -1,28 +1,52 @@
-language: node_js
-
+language: python
+sudo: required
+env:
+- TOXENV=py27
+- TOXENV=py34
 node_js:
 - 6
-
 addons:
   firefox: 49.0.1
-
 before_install:
 - export DISPLAY=:99.0
 - sh -e /etc/init.d/xvfb start
+- nvm install 6
 - if [[ `npm -v` != 3* ]]; then npm i -g npm@3; fi
-
+install:
+- "(!(test -f docker_packages.txt) || (cat docker_packages.txt | xargs sudo apt-get
+  install -y))"
+- pip install -r requirements_dev.txt
+- pip install -r requirements.txt
+- npm install
 script: npm run dist
-
-deploy:
-  provider: releases
-  api_key:
-    secure: TK9/P34Bi3WuppiDrBCwVcn41yCBwmILaU8hXTBzUPbT7TbeFIwsC6/4CtH85Z+ZrUve4S5pTmWRNf2dQDxWw3uYu7+bJuemV2J1LHG76mognj+TNEiYxfLQUt3Gql4W7C7FcI4Rlx5/uMN9wY1wro8TWUBMwT6jjSrUWIvK3GXoojd5bHvJx07XpjWl9wCon4D0ruZiFoM2mdeP23lbc2GckETi32oEKswnQXxkMACmxbPzoWbvkxH4aK8Bt2Rj2sl2TbPhVkN6DAkHGkGAvLI+2/aRfG27+oo3OKsaDjbuGABct8TfZccJ970CbQ8kbnCjYxstvqkg1JWjF0W67sX/flBZZOEUA5l0OLWo6HqMGMxm7/lEQhIdPMsRmvXL+HVOxkMrB2dda58QzxVwiZp+rRqUaeabPZp8Kl5xodGrVxsBvxe6zAbJ5jCtCSumG6+kLyKI00/kYlghqQNrgUw0ZsYJlQ34h3lo/24QpaeyDpQoCkGWQgtgqiXGpeKSu7bCnOqIqAy3nbT9Utwj7K8gIasTG5idosEAz/THMampNbGDuyxxc340sYGNMg9Bhm1g2ILWRdtV470p5hwBtIDTKi3/PAizEO26+Wh0zI47Sg3ao57avcbCsTmzbZUeA5J4bojmchhJCHX8su9cSCGh/2fJA/1eBIgEvOQ8LNE=
-  file: dist/stratomex_js.tar.gz
-  on:
-    tags: true
-
 notifications:
   slack:
-    secure: E8/1UIdHSczUbN+6i6gd1d5LM4vmLdwLQ30tpyjvnM0wvfDce76oPxLJAy240WJ5ybXRZUtNrttpVpt4tEXCy8aLFCmxD7s77rVloH+q1J8R/ptTFWZGhFGEujk1awEmVbzcWxJkV9/JENQaeGBKxwv8/EQwWwEkAb7p/+AJb9owmH88b3wUZUGHBWtbMiyyaF4Rm1Wg1stJB8Z1Ga7PRF4cqufTgcDdsCPVv9gAY+VxOIGqX/Vfuc9UWpUH8vq8lHUE7Inn5QS78kuFfSgLWga3H6Mu/Gko1XNlWk0QWWQBUvEZ6ZC6Wuo68KzvUjJHDTnx8WyfHue2JNHIslcX+eJq2WHLeEgM24VeNkILCGo/H/60NGHiSjrIv/Y9h6bQ9FDjo6TUyE4nbdPYN1RN9FQ5UbI9Y4Gi753H9mqnHWlEywBOzHxdZCAuz9Wh03CCF/blsvJ+Obbyo6Jrfe+g44jyi9kQdBNQ78qG6v4EXws8FiYao6x3PpgIwFix42Cpr+soAh5FpA3C1zHSAyZZpXF65/lrDl5yPNofK7Wy0B9bw+0I6Z/u7ZKFNVZXvYPGYvtUVcsALGBdmYc61+LCta36Po0KZseWVAlJj6QnOJDYzv0wvV/zsuf9A5KpYFGiqV9Q7zmtiO5FYF5sBy+lE7O9tHVO4O18IRndhRQgxhs=
+    secure: Bqus22Epmkq/NpI7dfQgY1jis/CAMCnFTaoDm6QdqJqeW4JQkotiK6qejSWlnWufXUAuQQ5ch8dDH6nO4H2JA4aBUxXSKm8uFZK/WdnHzv55WBgvGs1X/YIpcG6RsCrwUmlHr5IF6fexFiTvmokdlwihD1v6/Z+ZvCmnYkfWuilsQrCeykVfu2VoaBMIeWBcaID1WCIBB8vs79Oe59PvVQwk3gaGBKdmIw+19rUTZ5815YVlXWd6A9+RU0WF7532H07FNFq3JAhEbJXFIHHaPMc8WDmyOX6rSuSpGIqMGsswXGiirHiM+1A1SAXuqEzqcjY24PwTLrBAua5YF0vOguLfV8LV+gn68arOtJLhYkiBGbLuer9wtpnXW0wIPDnqtksebENLXXQoKGrwjXw5bx3F7dTJ3QcUFKj/MFvrl7pD7Nj4YE33LRRAtOc4FeQP8BXfTyooCmhyKj4zECNetz1qTUPiduX2tJ5hufpIXRVRM1kIoLIYSSodPcum/QvXwJRzjRdxZ2QepJ/WoeDJbhUs4dcbpsD2pgG7XGmatBALO1x1uShHWV8pHZJ311oJq7JKxqPoxZ3BIpyu+yAER7p2t/EwwlpBmtw6Pn4L7YNstapAagzKtUDrnUSXpN4w1briIZtUG/O9nua67jaU6moNKSUd3RtPpi+sdGH1eQo=
     on_success: change
     on_failure: always
+deploy:
+- provider: releases
+  api_key:
+    secure: kTHum1Q7HCOqWv8h97zVa0/9YauP3dz2QicgNwnpdRJF2Pf+BOrdCUCRQEMh3fJ9tnXo+safIDkBKeNefyzrrqyHax9W+77TCVHIYZowyVD2uUkv85//WzXftFBJ+FBZUbeZCeistyb58YYXQayUKm1bmeeAhpY36FKW1fMYyYmRNh9MI/TK3MVzHchtxV2vNMO6+LaQG8NmL4p+wThRKHadc76SePeLNoxRQHmQEgMVPgjS0dmeNhnOjkdPRCH7sFqxqzIK9iZ1QhVizVR0aCq62Wf8qg7p67N6bbVX2qfUME7JQ2RLVOBp2nl/AaLD95DKDy9yXly3ntz9ga6St76JZ+o/EvPKUTKk0XHzPNE2tbJCPo9zcn55hYXNmVcmSDIuEmMIPfZnK5kOgWhCsdpSza6G8M4u5Ra2JG2qNL+NzU6CEiNqB1CrNdbfaui/gBVIYcEWmAVXavCrt+GNaBGQChEzk3UymKzKSYitdwgmr58Vnqk6fvoPWP1tswW3zgaUacizxuxIpKm2o4imasYP2a4ChBJHU+d2cnkQL7aTZBU1UdQBKNp8KNE/BOcwohxUrzHpMO5jk9A/A/eClYNXEAecv9rOrHxFS2xD3P9KZH3h5GI2DRJuSbzg7fi4+BgZpi0iNwDDfyTCkhi6MfwgGkUfrmUyNf50WnQ0DQw=
+  file_glob: true
+  file:
+  - dist/stratomex_js*.egg
+  - dist/stratomex_js.tar.gz
+  on:
+    tags: true
+    repo: phovea/stratomex_js
+- provider: npm
+  email: samuel.gratzl@jku.at
+  api_key:
+    secure: mC34w6/ue076uW5OkawHoD1K1Bb0O1aU0mraJVF+gRzy4eSJ0d40xENIIU8ULlXWB/l7dntMI/J2VyedtgMl4PVeMWQ/ukLZ8oX1CS/ZdgywwvA/6AEd53psoA9JsDcQBhzc8a2RwHLwQv9k7gbi0jLiHncP4T1IgL37j9bZJDgF06d9qT32JiETYAnwzFvk5MpxhlYgc97EgCJaTyBmo3eHzZIRIaFS7xCXBTAW9S+VHIv0Od4mX6lb71h857/L8eOUnwe51tjbk1nKkyNJWRG3OYYbOtdKW+kaZYRI+oO4dDnIoX1l0Y8kUqctuYISVTv0CH4ur4+bWO1i/rUgTcJJGBcOv7C1NcUBDAsGZKn59N92aGpcK2C5TxYCt5qlrMyCpckD7lWLHmhA+ik0mWQhl98yLNz5JSOe+YlUFualj0yleMqdj/WnK5xQTVDO56PX2m/liGNCnNEw+/AoXTJol7S8Gq2TQ1eIj+9Jof590Ze51qgVRSjmUDTJZ/puEL6lLCA0/vgJxaWr4S72ulXN0idQMXRtDyWs+dVGELdOAHzCw382gLfCIdmWWClHzR+nuvWGazf5/Ra8mKmb3y+vwPmzr9pcR9/6a8N0H0KzQ0gvDfm2mwV1yjFkD1jnchJZ2Jaex2JsDL29aAzLQwLIJZ+VVG1cTtSLgCS3aeg=
+  on:
+    tags: true
+    repo: phovea/stratomex_js
+- provider: pypi
+  user: caleydo-bot
+  password:
+    secure: qSQAVD+hJih0IKHc1dhMXL0gPJqvIC+/MCNYIjQiVk/MBZwy+ZjetN28RxMn0hsG/q8RrS7xAoeVBbRLImN+pcU90sKliYK2SP5/qon1+2WtFC3fD7Q+tqQrm4+h43egr4imQwjlLwDoZjzVUXMKoiVaCrayw1uq145iwnlDo0+B8Jz/GHRxaZwE734dFi7pxUJxQvk6RIHbG+4XnH1eUd2EN91ilNqdVyMgf7w6CcnIHFyS/YHckPmKBa39KCLimhYXHJZV8cVzBEgzTy6pJeVQVLKu7iCIMCD1xiR+LF7Na6tVMPlu4iJlnQxn96dpHplwOT5C0KJVAecPvsBB1BbaV6NezUjwSjuw0Mnj+2KZbG/MG3iWfc9ghz5CyLzJtFo7XjFrob27RP8ArWRD2QXR05EN/o7bnUwHYj6YxUoLIf5ttQD18hyeaGQFrW24LFhOqI3uXWin6uJ9/h7+WgtHRlKoxgrgYuna/ZxFHVJl1bcpbkqGjdWknI6BYOIJPog9iaLEMYq+D+Slc7oOVpnG5OJVvRh9pliqLyBWZ9ABbmW7E//v1O+JE4wYd+k783Uz+UbPjV2OZiw74mp+nbnsvVT+lJs/yR5PsdZGvRmY+xlwpKCThwnWb7aG51PKQqColY2WK/9pbzm/XaqFw79kUcdx3JW6J01GT7r2n+M=
+  on:
+    tags: true
+    distributions: sdist bdist_wheel
+    repo: phovea/stratomex_js

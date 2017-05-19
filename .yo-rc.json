@@ -1,6 +1,6 @@
 {
   "generator-phovea": {
-    "type": "app",
+    "type": "app-slib",
     "name": "stratomex_js",
     "author": "The Caleydo Team",
     "githubAccount": "caleydo",
@@ -10,7 +10,8 @@
       "phovea_vis_lineup",
       "phovea_d3",
       "phovea_ui",
-      "phovea_clue"
+      "phovea_clue",
+	  "phovea_processing_queue"
     ],
     "extensions": [
       {
