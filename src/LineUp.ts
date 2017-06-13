@@ -60,12 +60,6 @@ const columns = [
   }
 ];
 
-export interface IDataRow {
-  // the dataset id for the lookup of the dataset
-  readonly datasetId;
-  readonly score: number;
-}
-
 class StratomeXLineUp extends AView {
   private readonly lineup: LineUp;
   private readonly provider: LocalDataProvider;
@@ -129,17 +123,17 @@ class StratomeXLineUp extends AView {
    * adds a lazy column to LineUp
    * @param label
    * @param domain
-   * @param data
+   * @param data a map of datasetId->scores
    */
-  addNumberColumn(label: string, domain: [number, number], data: Promise<IDataRow[]>) {
-    const lookup = new Map<string, number>();
+  addNumberColumn(label: string, domain: [number, number], data: Promise<Map<string, number>>) {
+    let lookup: Map<string, number> = null;
     const desc = {
       type: 'number',
       label,
       domain,
       lazyLoaded: true,
       accessor: (d: IDataType) => {
-        if (!lookup.has(d.desc.id)) {
+        if (lookup === null || !lookup.has(d.desc.id)) {
           return NaN;
         }
         return lookup.get(d.desc.id);
@@ -150,9 +144,7 @@ class StratomeXLineUp extends AView {
     const column = <NumberColumn>this.provider.push(this.provider.getLastRanking(), desc);
 
     data.then((scores) =>  {
-      scores.forEach((score) => {
-        lookup.set(score.datasetId, score.score);
-      });
+      lookup = scores;
       column.setLoaded(true);
       this.lineup.update();
     });
