@@ -27,6 +27,7 @@ import {IStratification, IStratificationDataDescription} from 'phovea_core/src/s
 
 import {manager, Column} from './Column';
 import {getAPIJSON} from 'phovea_processing_queue/src';
+import {extent} from 'd3';
 
 const helper = document.querySelector('#mainhelper');
 const elems = createCLUE(document.body, {
@@ -90,13 +91,18 @@ elems.graph.then((graph) => {
             console.log('Send group '+selGroup.name+' of column '+selectedObj.name+' to processing queue', selGroup, selectedObj);
             console.log('call http://localhost:9000/api/stratomex_js/similarity/'+selectedObj.data.desc.id+'/'+encodeURIComponent(selGroup.name));
 
-            getAPIJSON('/stratomex_js/similarity/'+selectedObj.data.desc.id+'/'+selGroup.name)
-              .then((res) => {
+
+
+            const data = getAPIJSON('/stratomex_js/similarity/'+selectedObj.data.desc.id+'/'+selGroup.name)
+              .then((res: any) => {
                 console.log('success for '+selectedObj.data.desc.id+'/'+selGroup.name+':', res);
+               return res;
               })
               .catch((err) => {
                 console.log('error', err);
               });
+
+            lineup.addNumberColumn('Jaccard Index',[0, 1], data);
           }
         }
       }
