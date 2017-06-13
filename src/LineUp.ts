@@ -11,6 +11,7 @@ import {INumericalVector, ICategoricalVector} from 'phovea_core/src/vector';
 import {INumericalMatrix} from 'phovea_core/src/matrix';
 import LocalDataProvider from 'lineupjs/src/provider/LocalDataProvider';
 import LineUp from 'lineupjs/src/lineup';
+import 'lineupjs/src/style.scss';
 import {createActionDesc, createRankDesc} from 'lineupjs/src/model';
 import NumberColumn from 'lineupjs/src/model/NumberColumn';
 
