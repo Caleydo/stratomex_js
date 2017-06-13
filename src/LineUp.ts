@@ -16,44 +16,45 @@ import NumberColumn from 'lineupjs/src/model/NumberColumn';
 
 const columns = [
   {
-    name: 'Package',
-    value: {type: 'string'},
+    label: 'Package',
+    type: 'string',
     accessor: (d) => {
       const s = d.desc.fqname.split('/');
       return s[0];
     }
   },
   {
-    name: 'Dataset',
-    value: {type: 'string'},
+    label: 'Dataset',
+    type: 'string',
     accessor: (d) => {
       const s = d.desc.fqname.split('/');
       return s.length === 2 ? s[0] : s[1];
     }
   },
   {
-    name: 'Name',
-    value: {type: 'string'},
+    label: 'Name',
+    type: 'string',
     accessor: (d) => {
       const s = d.desc.fqname.split('/');
       return s[s.length - 1];
     }
   }, <any>{
-    name: 'Dimensions',
-    value: {type: 'string'},
+    label: 'Dimensions',
+    type: 'string',
     accessor: (d) => d.dim.join(' x '),
     alignment: 'right'
   }, {
-    name: 'ID Type',
-    value: {type: 'string'},
+    label: 'ID Type',
+    type: 'string',
     accessor: (d) => (d.idtypes.map(String).join(', '))
   }, {
-    name: 'Type',
-    value: {type: 'string'},
+    label: 'Type',
+    type: 'string',
     accessor: (d) => d.desc.type
   }, {
-    name: '# Groups',
-    value: {type: 'number'},
+    label: '# Groups',
+    type: 'string',
+    domain: [0, 20],
     accessor: (d) => d.ngroups || (d.valuetype.categories ? d.valuetype.categories.length : 0),
     alignment: 'right'
   }
@@ -74,7 +75,7 @@ class StratomeXLineUp extends AView {
   constructor(parent: Element, private readonly showGroups: boolean, private onAdd: (s: IDataType) => void) {
     super();
 
-    this.provider = new LocalDataProvider([], columns);
+    this.provider = new LocalDataProvider([], columns.slice());
     StratomeXLineUp.createDefaultRanking(this.provider, showGroups);
     this.lineup = new LineUp(parent, this.provider, {
       body: {
@@ -83,7 +84,7 @@ class StratomeXLineUp extends AView {
           {
             name: 'add',
             icon: '\uf067',
-            action: (row) => this.onAdd(row._)
+            action: (row) => this.onAdd(row)
           }
         ]
       },
@@ -93,6 +94,7 @@ class StratomeXLineUp extends AView {
 
   static createDefaultRanking(provider: LocalDataProvider, showGroups: boolean) {
     const r = provider.pushRanking();
+    r.clear();
     provider.push(r, createActionDesc(' ')).setWidth(20);
     provider.push(r, createRankDesc()).setWidth(40);
     provider.push(r, columns[0]).setWidth(150); //package
