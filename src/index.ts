@@ -115,12 +115,8 @@ elems.graph.then((graph) => {
   }
   stratomex.setInteractive(cmode.getMode().exploration >= 0.8);
   function updateLineUp() {
-    if (lineup.lineup) {
-      lineup.lineup.update();
-    }
-    if (lineupData.lineup) {
-      lineupData.lineup.update();
-    }
+    lineup.update();
+    lineupData.update();
   }
 
   $('a[data-toggle="tab"]').on('shown.bs.tab', function () {
