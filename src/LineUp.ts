@@ -58,6 +58,12 @@ const columns = [
   }
 ];
 
+export interface IDataRow {
+  // the dataset id for the lookup
+  readonly datasetId;
+  readonly score: number;
+}
+
 class StratomeXLineUp extends AView {
   private readonly lineup: LineUp;
   private readonly provider: LocalDataProvider;
@@ -102,6 +108,10 @@ class StratomeXLineUp extends AView {
 
   setBounds(x: number, y: number, w: number, h: number) {
     this.bounds = new Rect(x, y, w, h);
+    this.update();
+  }
+
+  update() {
     if (this.lineup) {
       this.lineup.update();
     }
@@ -110,6 +120,10 @@ class StratomeXLineUp extends AView {
   setData(datasets: IDataType[]) {
     this.provider.setData(datasets);
     this.lineup.update();
+  }
+
+  addNumberColumn(label: string, domain: [number, number], data: Promise<IDataRow>) {
+
   }
 }
 
