@@ -320,6 +320,9 @@ main {
     left: 2px;
     top: 2px;
 
+    height: 100%;
+    overflow-y: auto;
+
   }
 
   .tab-content {
@@ -327,6 +330,11 @@ main {
     flex: 1 1 auto;
 
     position: relative;
+  }
+
+  .tab-pane {
+    position: relative;
+    height: 100%;
   }
 
   > div:first-of-type {

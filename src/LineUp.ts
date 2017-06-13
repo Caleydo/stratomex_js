@@ -11,6 +11,7 @@ import {INumericalVector, ICategoricalVector} from 'phovea_core/src/vector';
 import {INumericalMatrix} from 'phovea_core/src/matrix';
 import LocalDataProvider from 'lineupjs/src/provider/LocalDataProvider';
 import LineUp from 'lineupjs/src/lineup';
+import 'lineupjs/src/style.scss';
 import {createActionDesc, createRankDesc} from 'lineupjs/src/model';
 import NumberColumn from 'lineupjs/src/model/NumberColumn';
 
@@ -116,7 +117,7 @@ class StratomeXLineUp extends AView {
 
   setData(datasets: IDataType[]) {
     this.provider.setData(datasets);
-    this.lineup.update();
+    this.update();
   }
 
   /**
@@ -125,28 +126,27 @@ class StratomeXLineUp extends AView {
    * @param domain
    * @param data a map of datasetId->scores
    */
-  addNumberColumn(label: string, domain: [number, number], data: Promise<Map<string, number>>) {
-    let lookup: Map<string, number> = null;
+  addNumberColumn(label: string, domain: [number, number], data: Promise<{ [datasetId: string]: number }>) {
+    let lookup: { [datasetId: string]: number } = null;
     const desc = {
       type: 'number',
       label,
       domain,
       lazyLoaded: true,
       accessor: (d: IDataType) => {
-        if (lookup === null || !lookup.has(d.desc.id)) {
+        if (lookup === null || !lookup.hasOwnProperty(d.desc.id)) {
           return NaN;
         }
-        return lookup.get(d.desc.id);
+        return lookup[d.desc.id];
       }
     };
-
     this.provider.pushDesc(desc);
     const column = <NumberColumn>this.provider.push(this.provider.getLastRanking(), desc);
 
-    data.then((scores) =>  {
+    data.then((scores) => {
       lookup = scores;
       column.setLoaded(true);
-      this.lineup.update();
+      column.sortByMe();
     });
   }
 }
