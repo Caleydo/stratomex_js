@@ -12,6 +12,7 @@ import {INumericalMatrix} from 'phovea_core/src/matrix';
 import LocalDataProvider from 'lineupjs/src/provider/LocalDataProvider';
 import LineUp from 'lineupjs/src/lineup';
 import {createActionDesc, createRankDesc} from 'lineupjs/src/model';
+import NumberColumn from 'lineupjs/src/model/NumberColumn';
 
 const columns = [
   {
@@ -59,7 +60,7 @@ const columns = [
 ];
 
 export interface IDataRow {
-  // the dataset id for the lookup
+  // the dataset id for the lookup of the dataset
   readonly datasetId;
   readonly score: number;
 }
@@ -122,8 +123,37 @@ class StratomeXLineUp extends AView {
     this.lineup.update();
   }
 
-  addNumberColumn(label: string, domain: [number, number], data: Promise<IDataRow>) {
+  /**
+   * adds a lazy column to LineUp
+   * @param label
+   * @param domain
+   * @param data
+   */
+  addNumberColumn(label: string, domain: [number, number], data: Promise<IDataRow[]>) {
+    const lookup = new Map<string, number>();
+    const desc = {
+      type: 'number',
+      label,
+      domain,
+      lazyLoaded: true,
+      accessor: (d: IDataType) => {
+        if (!lookup.has(d.desc.id)) {
+          return NaN;
+        }
+        return lookup.get(d.desc.id);
+      }
+    };
 
+    this.provider.pushDesc(desc);
+    const column = <NumberColumn>this.provider.push(this.provider.getLastRanking(), desc);
+
+    data.then((scores) =>  {
+      scores.forEach((score) => {
+        lookup.set(score.datasetId, score.score);
+      });
+      column.setLoaded(true);
+      this.lineup.update();
+    });
   }
 }
 
