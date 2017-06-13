@@ -79,7 +79,7 @@ class StratomeXLineUp extends AView {
     StratomeXLineUp.createDefaultRanking(this.provider, showGroups);
     this.lineup = new LineUp(parent, this.provider, {
       body: {
-        renderer: 'svg',
+        renderer: 'canvas',
         actions: [
           {
             name: 'add',
