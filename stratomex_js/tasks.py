@@ -1,10 +1,10 @@
 from __future__ import absolute_import
+
 from phovea_processing_queue.task_definition import task, getLogger
 
 from phovea_server.dataset import get as get_dataset
 from phovea_server.dataset import list_datasets
-
-from phovea_server.dataset_def import AStratification
+from phovea_server.dataset_def import AStratification, AMatrix
 
 _log = getLogger(__name__)
 
@@ -21,38 +21,66 @@ def similarity(datasetId, groupName):
   result = {}
 
   try:
-    # get column data of group to be compared
+    # get data of group to be compared
     cmpDataSet = get_dataset(datasetId)
 
-    # find group in that column
-    for aGroup in cmpDataSet.groups():
-      if (aGroup.name == groupName):
-        group = aGroup
+    if not cmpDataSet:
+      _log.error('Dataset %s cannot be found.', datasetId)
+      raise Exception('Dataset '+datasetId+' cannot be found.')
+
+    cmpPatients = set()
+
+    # find group
+    for group in cmpDataSet.groups():
+      if group.name == groupName:
+        #get the patients of that group
+        cmpPatients = set(cmpDataSet.rowids(group.range))
         break
 
-
-    if ('group' in vars()): # found it?
-      #get the patients of that group
-      patList = cmpDataSet.rowids(group.range)
-
-      #compare that group's list of patients to all others
+    #compare that group's list of patients to all others
+    if cmpPatients: # found it?
       datasets = list_datasets()
-
       for dataset in datasets:
-        if (isinstance(dataset, AStratification) and dataset.id != datasetId):
-          _log.debug('Get groups of dataset '+dataset.id)
-          secondDatset = get_dataset(dataset.id)
-          for aGroup in secondDatset.groups():
+        # check data type, e.g. HDFTable, HDFStratification, HDFMatrix
+        if isinstance(dataset, AStratification) and dataset.id != datasetId:
+          for group in dataset.groups():
             #now we have got two list that should get compared
-            patList2 = secondDatset.rowids(aGroup.range)
-            setA = set(patList)
-            setB = set(patList2)
+            patSet2 = set(dataset.rowids(group.range))
+
             #jaccard = intersection / union
-            jaccard = len(setA.intersection(setB))/float(len(setA.union(setB)))
-            _log.debug('jaccard for {} index is {}'.format(dataset.id+'/'+aGroup.name, str(jaccard)))
+            jaccard = len(cmpPatients.intersection(patSet2))/float(len(cmpPatients.union(patSet2)))
+            #_log.debug('jaccard for {} index is {}'.format(dataset.id+'/'+group.name, str(jaccard)))
 
             if dataset.id not in result or result[dataset.id] < jaccard:
               result[dataset.id] = jaccard
+
+
+        if isinstance(dataset, AMatrix):
+          if hasattr(dataset, 'categories'): #some data has no categories (e.g. mRNA, RPPA)
+            _log.info('Start processing matrix '+dataset.id)
+            matData = dataset.asnumpy()
+            # for each column (e.g. gene (e.g. A1CF))
+            # datatset.cols() are the stuff that can be in added to stratomex
+            for col in range(matData.shape[1]):
+              if col % 500 == 0:
+                _log.info('Processing col ' + str(col) + "/" + str(matData.shape[1]))
+
+              matColumn = matData[:, col]
+              # check in which categories the patients are
+              if hasattr(dataset, 'categories'):
+                for cat in dataset.categories:
+                  catRowIndicies = [i for i, v in enumerate(matColumn) if v == cat['name']]
+                  patSet2 = set(dataset.rowids()[catRowIndicies])
+
+                  jaccard = len(cmpPatients.intersection(patSet2)) / float(len(cmpPatients.union(patSet2)))
+                  # _log.debug('jaccard index for {} is {}'.format(dataset.id + '/' + dataset.cols()[col], str(jaccard)))
+
+                  if dataset.id not in result or result[dataset.id] < jaccard:
+                    result[dataset.id + '-c' + str(col)] = jaccard
+                    # e.g. result['tcgaGbmSampledMutations-c9408'] = 1
+          else:
+            # Nothing to do
+            _log.info('Dataset '+dataset.id+' has no categories and is ignored.')
     else:
       _log.error('Group %s not part of column %s.', groupName, datasetId)
       raise Exception('Group '+groupName+' not part of column '+  datasetId+'.')
@@ -63,3 +91,4 @@ def similarity(datasetId, groupName):
     raise #rejects promise
 
   return result #to JSON automatically
+
