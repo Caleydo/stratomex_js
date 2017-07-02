@@ -72,8 +72,9 @@ def similarity(datasetId, groupName):
               jaccard = len(cmpPatients.intersection(patSet2)) / float(len(cmpPatients.union(patSet2)))
               # _log.debug('jaccard index for {} is {}'.format(dataset.id + '/' + dataset.cols()[col], str(jaccard)))
 
-              if dataset.id not in result or result[dataset.id] < jaccard:
-                result[dataset.id + '-c' + str(col)] = jaccard
+              columnId = dataset.id + '-c' + str(col)
+              if columnId not in result or result[columnId] < jaccard:
+                result[columnId] = jaccard
                 # e.g. result['tcgaGbmSampledMutations-c9408'] = 1
     else:
       _log.error('Group %s not part of column %s.', groupName, datasetId)
