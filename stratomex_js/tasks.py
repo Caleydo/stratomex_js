@@ -1,9 +1,10 @@
-from __future__ import absolute_import
+from __future__ import absolute_import, division
 
 from phovea_processing_queue.task_definition import task, getLogger
 
 from phovea_server.dataset import get as get_dataset
 from phovea_server.dataset import list_datasets
+import numpy as np
 
 _log = getLogger(__name__)
 
@@ -27,27 +28,28 @@ def similarity(datasetId, groupName):
       _log.error('Dataset %s cannot be found.', datasetId)
       raise Exception('Dataset '+datasetId+' cannot be found.')
 
-    cmpPatients = set()
+    cmpPatients = np.array([])
 
     # find group
     for group in cmpDataSet.groups():
       if group.name == groupName:
         #get the patients of that group
-        cmpPatients = set(cmpDataSet.rowids(group.range))
+        cmpPatients = cmpDataSet.rowids(group.range)
         break
 
+
     #compare that group's list of patients to all others
-    if cmpPatients: # found it?
+    if cmpPatients.size > 0: # found it?
       datasets = list_datasets()
       for dataset in datasets:
         # check data type, e.g. HDFTable, HDFStratification, HDFMatrix
         if dataset.type == 'stratification':
           for group in dataset.groups():
             #now we have got two list that should get compared
-            patSet2 = set(dataset.rowids(group.range))
+            patSet2 = dataset.rowids(group.range)
 
             #jaccard = intersection / union
-            jaccard = len(cmpPatients.intersection(patSet2))/float(len(cmpPatients.union(patSet2)))
+            jaccard = np.intersect1d(cmpPatients, patSet2).size / np.union1d(cmpPatients, patSet2).size
             #_log.debug('jaccard for {} index is {}'.format(dataset.id+'/'+group.name, str(jaccard)))
 
             if dataset.id not in result or result[dataset.id] < jaccard:
@@ -57,6 +59,7 @@ def similarity(datasetId, groupName):
         elif dataset.type == 'matrix' and dataset.value == 'categorical': #some matrix data has no categories (e.g. mRNA, RPPA)
           _log.info('Start processing matrix '+dataset.id)
           matData = dataset.asnumpy()
+
           # for each column (e.g. gene (e.g. A1CF))
           # datatset.cols() are the stuff that can be in added to stratomex
           for col in range(matData.shape[1]):
@@ -66,10 +69,9 @@ def similarity(datasetId, groupName):
             matColumn = matData[:, col]
             # check in which categories the patients are
             for cat in dataset.categories:
-              catRowIndicies = [i for i, v in enumerate(matColumn) if v == cat['name']]
-              patSet2 = set(dataset.rowids()[catRowIndicies])
-
-              jaccard = len(cmpPatients.intersection(patSet2)) / float(len(cmpPatients.union(patSet2)))
+              catRowIndicies = np.argwhere(matColumn == cat['name'])[:,0] #get indicies as 1column matrix and convert to 1d array
+              patientsInCat = dataset.rowids()[catRowIndicies] #indicies to patient ids
+              jaccard = np.intersect1d(cmpPatients, patientsInCat).size / np.union1d(cmpPatients, patientsInCat).size
               # _log.debug('jaccard index for {} is {}'.format(dataset.id + '/' + dataset.cols()[col], str(jaccard)))
 
               columnId = dataset.id + '-c' + str(col)
