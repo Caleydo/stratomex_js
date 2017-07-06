@@ -11,10 +11,12 @@ def add(x, y):
   res = tasks.add.delay(x, y)
   return res.id
 
-@app.route('/similarity/<datasetId>/<groupName>', methods=['GET'])
-def calcJaccardSim2Grp(datasetId, groupName):
+@app.route('/similarity/<method>/', methods=['GET'])
+def calcJaccardSim2Grp(method):
   from . import tasks #import from current package
-  res = tasks.similarity.delay(datasetId, groupName)
+  from flask import request
+
+  res = tasks.similarity.delay(method, request.args['range'])
   return res.id
 
 def create():

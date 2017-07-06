@@ -25,7 +25,6 @@ import {
 import {INumericalVector, ICategoricalVector, IVectorDataDescription} from 'phovea_core/src/vector';
 import {IStratification, IStratificationDataDescription} from 'phovea_core/src/stratification';
 
-import {manager, Column} from './Column';
 import {getAPIJSON} from 'phovea_processing_queue/src';
 import {extent} from 'd3';
 
@@ -80,32 +79,16 @@ elems.graph.then((graph) => {
     jaccardButton.innerText = 'Calc Jaccard';
     jaccardButton.id = 'jaccardButton';
     jaccardButton.onclick = (ev) => {
-      console.log('Jaccard Buton onclick');
+      const data = getAPIJSON('/stratomex_js/similarity/jaccard/', {
+        range: stratomex.idtypes[0].selections().toString()
+      }).then((res: any) => {
+         return res;
+        })
+        .catch((err) => {
+          console.log('error on promise', err);
+        });
 
-      const selected = manager.selectedObjects();
-
-      for (const selectedObj of selected) {
-        if (selectedObj instanceof Column) {
-          const selGroup = selectedObj.selectedGroup;
-          if (selGroup !== null) {
-            console.log('Send group '+selGroup.name+' of column '+selectedObj.name+' to processing queue', selGroup, selectedObj);
-            console.log('call http://localhost:9000/api/stratomex_js/similarity/'+selectedObj.data.desc.id+'/'+encodeURIComponent(selGroup.name));
-
-
-
-            const data = getAPIJSON('/stratomex_js/similarity/'+selectedObj.data.desc.id+'/'+selGroup.name)
-              .then((res: any) => {
-                console.log('success for '+selectedObj.data.desc.id+'/'+selGroup.name+':', res);
-               return res;
-              })
-              .catch((err) => {
-                console.log('error', err);
-              });
-
-            lineup.addNumberColumn('Jaccard Index',[0, 1], data);
-          }
-        }
-      }
+      lineup.addNumberColumn('Jaccard Index',[0, 1], data);
     };
     stratoHeaders[0].appendChild(jaccardButton);
   } else {

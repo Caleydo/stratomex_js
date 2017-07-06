@@ -15,28 +15,15 @@ def add(x, y):
 
 
 @task
-def similarity(datasetId, groupName):
-  _log.debug('Start to calculate Jaccard similarity between group %s of dataset %s and all others.', groupName, datasetId)
+def similarity(method, ids):
+  _log.debug('Start to calculate %s similarity.', method)
 
   result = {}
 
   try:
-    # get data of group to be compared
-    cmpDataSet = get_dataset(datasetId)
-
-    if not cmpDataSet:
-      _log.error('Dataset %s cannot be found.', datasetId)
-      raise Exception('Dataset '+datasetId+' cannot be found.')
-
-    cmpPatients = np.array([])
-
-    # find group
-    for group in cmpDataSet.groups():
-      if group.name == groupName:
-        #get the patients of that group
-        cmpPatients = cmpDataSet.rowids(group.range)
-        break
-
+    from phovea_server.range import parse
+    parsedRange = parse(ids)
+    cmpPatients = np.array(parsedRange[0])  # [0] since ranges are multidimensional but you just want the first one
 
     #compare that group's list of patients to all others
     if cmpPatients.size > 0: # found it?
