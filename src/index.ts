@@ -79,17 +79,23 @@ elems.graph.then((graph) => {
     jaccardButton.innerText = 'Calc Jaccard';
     jaccardButton.id = 'jaccardButton';
     jaccardButton.onclick = (ev) => {
-      const data = getAPIJSON('/stratomex_js/similarity/jaccard/', {
-        range: stratomex.idtypes[0].selections().toString()
-      }).then((res: any) => {
-         return res;
+      const selection = stratomex.idtypes[0].selections();
+      if (!selection.isNone) {
+        const data = getAPIJSON('/stratomex_js/similarity/jaccard/', {
+          range: selection.toString()
+        }).then((res: any) => {
+          return res;
         })
         .catch((err) => {
           console.log('error on promise', err);
           //TODO rem column
         });
 
-      lineup.addNumberColumn('Jaccard Index',[0, 1], data);
+        const colName = selection.dims ? selection.dims[0].name : '';
+        lineup.addNumberColumn('Jaccard: ' + colName, [0, 1], data);
+      } else {
+        console.log('Nothing selected, cannot calc jaccard index');
+      }
     };
     stratoHeaders[0].appendChild(jaccardButton);
   } else {
