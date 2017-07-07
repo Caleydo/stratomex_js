@@ -64,7 +64,21 @@ def similarity(method, ids):
               result[columnId] = jaccard
               # e.g. result['tcgaGbmSampledMutations-c9408'] = 1
 
-    _log.debug('Done with Jaccard calculation.')
+      elif dataset.type == 'table':
+        for col in dataset.columns:
+          if col.type == 'categorical':
+            colData = col.asnumpy() #table doesnt have asnumpy()
+            for cat in col.categories:
+              catName = cat if isinstance(cat, str) else cat['name'] #TCGA table had just the strings, calumma table has a dict like matrix above
+              catRowIndicies = np.argwhere(colData == catName)[:,0]
+              if catRowIndicies.size > 0:
+                patientsInCat = dataset.rowids()[catRowIndicies]  # indicies to patient ids
+                jaccard = np.intersect1d(cmpPatients, patientsInCat).size / np.union1d(cmpPatients, patientsInCat).size
+
+                columnId = dataset.id + '_' + col.name #id in stratomex has trailing '-s' which is not needed here (e.g. tcgaGbmSampledClinical_patient.ethnicity-s)
+                if columnId not in result or result[columnId] < jaccard:
+                  result[columnId] = jaccard
+
   except Exception as e:
     _log.exception('Can not fulfill task. Error: %s.', e)
     raise #rejects promise
