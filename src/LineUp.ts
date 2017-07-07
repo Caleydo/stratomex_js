@@ -131,6 +131,8 @@ class StratomeXLineUp extends AView {
     const desc = {
       type: 'number',
       label,
+      color: ['#586BA4', '#987284', '#DF2935', '#4B88A2', '#157145', '#DFA06F', '#412722','#60AA85'][this.provider.getColumns().length%8],
+      //['#DDEFFF', '#000035', '#7B4F4B', '#A1C299', '#300018', '#0AA6D8', '#013349', '#00846F'][this.provider.getColumns().length%8],
       domain,
       lazyLoaded: true,
       accessor: (d: IDataType) => {

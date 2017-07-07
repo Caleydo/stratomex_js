@@ -86,6 +86,7 @@ elems.graph.then((graph) => {
         })
         .catch((err) => {
           console.log('error on promise', err);
+          //TODO rem column
         });
 
       lineup.addNumberColumn('Jaccard Index',[0, 1], data);
