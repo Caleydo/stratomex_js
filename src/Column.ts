@@ -396,7 +396,7 @@ export class Column extends EventHandler implements IHasUniqueId, IDataVis {
       'border-color': data.desc.color || 'gray',
       'background-color': data.desc.bgColor || 'lightgray'
     });
-    this.$summary.append('div').attr('class', 'title').style('max-width', (this.options.width - this.options.padding * 2) + 'px').text(this.name).style('background-color', data.desc.bgColor || 'lightgray');
+    this.$summary.append('div').attr('class', 'title').attr('title', this.name).style('max-width', (this.options.width - this.options.padding * 2) + 'px').text(this.name).style('background-color', data.desc.bgColor || 'lightgray');
     this.$clusters = this.$parent.append('div').attr('class', 'clusters');
     this.range = partitioning;
     //create the vis
@@ -435,7 +435,7 @@ export class Column extends EventHandler implements IHasUniqueId, IDataVis {
         $elem.classed('phovea-select-selected', !isSelected);
       };
       const group = <Range1DGroup>cluster.dim(0);
-      $elem.append('div').attr('class', 'title').style('max-width', (this.options.width - this.options.padding * 2) + 'px').text(group.name).on('click', toggleSelection);
+      $elem.append('div').attr('class', 'title').attr('title', group.name).style('max-width', (this.options.width - this.options.padding * 2) + 'px').text(group.name).on('click', toggleSelection);
       $elem.append('div').attr('class', 'body').on('click', toggleSelection);
 
       const ratio = cluster.dim(0).length / partitioning.dim(0).length;
