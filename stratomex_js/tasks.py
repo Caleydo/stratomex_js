@@ -17,7 +17,7 @@ def add(x, y):
 def similarity(method, ids):
   _log.debug('Start to calculate %s similarity.', method)
 
-  result = {}
+  result = {'values': {}, 'groups': {}}
 
   try:
     from phovea_server.range import parse
@@ -37,8 +37,9 @@ def similarity(method, ids):
           jaccard = np.intersect1d(cmp_patients, pat_set2).size / np.union1d(cmp_patients, pat_set2).size
           # _log.debug('jaccard for {} index is {}'.format(dataset.id+'/'+group.name, str(jaccard)))
 
-          if dataset.id not in result or result[dataset.id] < jaccard:
-            result[dataset.id] = jaccard
+          if dataset.id not in result['values'] or result['values'][dataset.id] < jaccard:
+            result['values'][dataset.id] = jaccard
+            result['groups'][dataset.id] = group.name
 
       elif dataset.type == 'matrix' and dataset.value == 'categorical':  # some matrix data has no categories (e.g. mRNA, RPPA)
         _log.debug('Start processing matrix ' + dataset.id)
@@ -59,8 +60,9 @@ def similarity(method, ids):
             # _log.debug('jaccard index for {} is {}'.format(dataset.id + '/' + dataset.cols()[col], str(jaccard)))
 
             column_id = dataset.id + '-c' + str(col)
-            if column_id not in result or result[column_id] < jaccard:
-              result[column_id] = jaccard
+            if column_id not in result['values'] or result['values'][column_id] < jaccard:
+              result['values'][column_id] = jaccard
+              result['groups'][column_id] = cat if isinstance(cat, str) else cat['label']
               # e.g. result['tcgaGbmSampledMutations-c9408'] = 1
 
       elif dataset.type == 'table':
@@ -75,8 +77,9 @@ def similarity(method, ids):
                 jaccard = np.intersect1d(cmp_patients, patients_in_cat).size / np.union1d(cmp_patients, patients_in_cat).size
 
                 column_id = dataset.id + '_' + col.name  # id in stratomex has trailing '-s' which is not needed here (e.g. tcgaGbmSampledClinical_patient.ethnicity-s)
-                if column_id not in result or result[column_id] < jaccard:
-                  result[column_id] = jaccard
+                if column_id not in result['values'] or result['values'][column_id] < jaccard:
+                  result['values'][column_id] = jaccard
+                  result['groups'][column_id] = cat if isinstance(cat, str) else cat['label']
 
   except Exception as e:
     _log.exception('Can not fulfill task. Error: %s.', e)

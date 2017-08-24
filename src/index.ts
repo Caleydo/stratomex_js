@@ -73,6 +73,8 @@ elems.graph.then((graph) => {
 
 
   // MY AWESOME STUFF -----------------------------------------------------
+  const simColumnColors = ['#586BA4', '#987284', '#DF2935', '#4B88A2', '#157145', '#DFA06F', '#412722','#60AA85'];
+
   const stratoHeaders = document.getElementsByTagName('header');
   if (stratoHeaders.length > 0) {
     const jaccardButton = document.createElement('button');
@@ -81,18 +83,21 @@ elems.graph.then((graph) => {
     jaccardButton.onclick = (ev) => {
       const selection = stratomex.idtypes[0].selections();
       if (!selection.isNone) {
+        const colName = selection.dims ? selection.dims[0].name : '';
         const data = getAPIJSON('/stratomex_js/similarity/jaccard/', {
           range: selection.toString()
-        }).then((res: any) => {
-          return res;
-        })
-        .catch((err) => {
-          console.log('error on promise', err);
-          //TODO rem column
+        }).catch((err) => {
+            //TODO rem columns
+            console.log('Error getting jaccard indicies for '+colName, err);
         });
 
-        const colName = selection.dims ? selection.dims[0].name : '';
-        lineup.addNumberColumn('Jaccard: ' + colName, [0, 1], data);
+        //split data group names & values for 2 columns
+        const values = data.then((res : any)  => { return res.values; });
+        lineup.addNumberColumn('Jaccard: ' + colName, [0, 1], values, simColumnColors[0]);
+        const groups = data.then((res : any)  => { return res.groups; });
+        lineup.addStringColumn('Jaccard: ' + colName, groups, simColumnColors[0]);
+
+        simColumnColors.unshift(simColumnColors.pop()); //rotate array
       } else {
         console.log('Nothing selected, cannot calc jaccard index');
       }

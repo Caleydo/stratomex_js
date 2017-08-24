@@ -14,6 +14,7 @@ import LineUp from 'lineupjs/src/lineup';
 import 'lineupjs/src/style.scss';
 import {createActionDesc, createRankDesc} from 'lineupjs/src/model';
 import NumberColumn from 'lineupjs/src/model/NumberColumn';
+import StringColumn from 'lineupjs/src/model/StringColumn';
 
 const columns = [
   {
@@ -121,18 +122,17 @@ class StratomeXLineUp extends AView {
   }
 
   /**
-   * adds a lazy column to LineUp
+   * adds a lazy number column to LineUp
    * @param label
    * @param domain
    * @param data a map of datasetId->scores
    */
-  addNumberColumn(label: string, domain: [number, number], data: Promise<{[datasetId: string]: number}>) {
+  addNumberColumn(label: string, domain: [number, number], data: Promise<{[datasetId: string]: number}>, color?: string) {
     let lookup: {[datasetId: string]: number} = null;
     const desc = {
       type: 'number',
       label,
-      color: ['#586BA4', '#987284', '#DF2935', '#4B88A2', '#157145', '#DFA06F', '#412722','#60AA85'][this.provider.getColumns().length%8],
-      //['#DDEFFF', '#000035', '#7B4F4B', '#A1C299', '#300018', '#0AA6D8', '#013349', '#00846F'][this.provider.getColumns().length%8],
+      color,
       domain,
       lazyLoaded: true,
       accessor: (d: IDataType) => {
@@ -150,6 +150,31 @@ class StratomeXLineUp extends AView {
       lookup = scores;
       column.setLoaded(true);
       column.sortByMe();
+    });
+  }
+
+  addStringColumn(label: string, data: Promise<{[datasetId: string]: string}>, color?: string) {
+    let lookup: {[datasetId: string]: string} = null;
+    const desc = {
+      type: 'string',
+      label,
+      color,
+      lazyLoaded: true,
+      accessor: (d: IDataType) => {
+        if (lookup === null || !lookup.hasOwnProperty(d.desc.id)) {
+          return '---';
+        }
+        return lookup[d.desc.id];
+      }
+    };
+
+    this.provider.pushDesc(desc);
+    const column = <StringColumn>this.provider.push(this.provider.getLastRanking(), desc);
+
+    data.then((scores) =>  {
+      lookup = scores;
+      column.setLoaded(true);
+     // column.sortByMe();
     });
   }
 }
