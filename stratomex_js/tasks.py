@@ -1,8 +1,8 @@
-from __future__ import absolute_import, division
+from __future__ import absolute_import
 
 from phovea_processing_queue.task_definition import task, getLogger
-
 from phovea_server.dataset import list_datasets
+from .similarity import similarity_by_name
 import numpy as np
 
 _log = getLogger(__name__)
@@ -16,6 +16,10 @@ def add(x, y):
 @task
 def similarity(method, ids):
   _log.debug('Start to calculate %s similarity.', method)
+
+  similarity_measure = similarity_by_name(method)
+  if similarity_measure is None:
+    raise ValueError("No similarity measure for given method: " + method)
 
   result = {'values': {}, 'groups': {}}
 
@@ -32,13 +36,10 @@ def similarity(method, ids):
         for group in dataset.groups():
           # now we have got two list that should get compared
           pat_set2 = dataset.rowids(group.range)
+          sim_score = similarity_measure.calc(cmp_patients, pat_set2)
 
-          # jaccard = intersection / union
-          jaccard = np.intersect1d(cmp_patients, pat_set2).size / np.union1d(cmp_patients, pat_set2).size
-          # _log.debug('jaccard for {} index is {}'.format(dataset.id+'/'+group.name, str(jaccard)))
-
-          if dataset.id not in result['values'] or result['values'][dataset.id] < jaccard:
-            result['values'][dataset.id] = jaccard
+          if dataset.id not in result['values'] or similarity_measure.is_more_similar(sim_score, result['values'][dataset.id]):
+            result['values'][dataset.id] = sim_score
             result['groups'][dataset.id] = group.name
 
       elif dataset.type == 'matrix' and dataset.value == 'categorical':  # some matrix data has no categories (e.g. mRNA, RPPA)
@@ -56,12 +57,11 @@ def similarity(method, ids):
           for cat in dataset.categories:
             cat_row_indicies = np.argwhere(mat_column == cat['name'])[:, 0]  # get indicies as 1column matrix and convert to 1d array
             patients_in_cat = dataset.rowids()[cat_row_indicies]  # indicies to patient ids
-            jaccard = np.intersect1d(cmp_patients, patients_in_cat).size / np.union1d(cmp_patients, patients_in_cat).size
-            # _log.debug('jaccard index for {} is {}'.format(dataset.id + '/' + dataset.cols()[col], str(jaccard)))
+            sim_score = similarity_measure.calc(cmp_patients, patients_in_cat)
 
             column_id = dataset.id + '-c' + str(col)
-            if column_id not in result['values'] or result['values'][column_id] < jaccard:
-              result['values'][column_id] = jaccard
+            if column_id not in result['values'] or similarity_measure.is_more_similar(sim_score, result['values'][column_id]):
+              result['values'][column_id] = sim_score
               result['groups'][column_id] = cat if isinstance(cat, str) else cat['label']
               # e.g. result['tcgaGbmSampledMutations-c9408'] = 1
 
@@ -74,11 +74,11 @@ def similarity(method, ids):
               cat_row_indicies = np.argwhere(col_data == cat_name)[:, 0]
               if cat_row_indicies.size > 0:
                 patients_in_cat = dataset.rowids()[cat_row_indicies]  # indicies to patient ids
-                jaccard = np.intersect1d(cmp_patients, patients_in_cat).size / np.union1d(cmp_patients, patients_in_cat).size
+                sim_score = similarity_measure.calc(cmp_patients, patients_in_cat)
 
                 column_id = dataset.id + '_' + col.name  # id in stratomex has trailing '-s' which is not needed here (e.g. tcgaGbmSampledClinical_patient.ethnicity-s)
-                if column_id not in result['values'] or result['values'][column_id] < jaccard:
-                  result['values'][column_id] = jaccard
+                if column_id not in result['values'] or similarity_measure.is_more_similar(sim_score, result['values'][column_id]):
+                  result['values'][column_id] = sim_score
                   result['groups'][column_id] = cat if isinstance(cat, str) else cat['label']
 
   except Exception as e:
