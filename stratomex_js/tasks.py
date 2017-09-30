@@ -36,7 +36,7 @@ def similarity(method, ids):
         for group in dataset.groups():
           # now we have got two list that should get compared
           pat_set2 = dataset.rowids(group.range)
-          sim_score = similarity_measure.calc(cmp_patients, pat_set2)
+          sim_score = similarity_measure(cmp_patients, pat_set2)
 
           if dataset.id not in result['values'] or similarity_measure.is_more_similar(sim_score, result['values'][dataset.id]):
             result['values'][dataset.id] = sim_score
@@ -57,7 +57,7 @@ def similarity(method, ids):
           for cat in dataset.categories:
             cat_row_indicies = np.argwhere(mat_column == cat['name'])[:, 0]  # get indicies as 1column matrix and convert to 1d array
             patients_in_cat = dataset.rowids()[cat_row_indicies]  # indicies to patient ids
-            sim_score = similarity_measure.calc(cmp_patients, patients_in_cat)
+            sim_score = similarity_measure(cmp_patients, patients_in_cat)
 
             column_id = dataset.id + '-c' + str(col)
             if column_id not in result['values'] or similarity_measure.is_more_similar(sim_score, result['values'][column_id]):
@@ -74,7 +74,7 @@ def similarity(method, ids):
               cat_row_indicies = np.argwhere(col_data == cat_name)[:, 0]
               if cat_row_indicies.size > 0:
                 patients_in_cat = dataset.rowids()[cat_row_indicies]  # indicies to patient ids
-                sim_score = similarity_measure.calc(cmp_patients, patients_in_cat)
+                sim_score = similarity_measure(cmp_patients, patients_in_cat)
 
                 column_id = dataset.id + '_' + col.name  # id in stratomex has trailing '-s' which is not needed here (e.g. tcgaGbmSampledClinical_patient.ethnicity-s)
                 if column_id not in result['values'] or similarity_measure.is_more_similar(sim_score, result['values'][column_id]):
