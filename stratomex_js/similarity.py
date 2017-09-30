@@ -37,3 +37,21 @@ class JaccardSimilarity(ASimilarityMeasure):
   @staticmethod
   def matches(name):
     return "jaccard" == name
+
+
+class PercentAinB(ASimilarityMeasure):
+  def __call__(self, set_a, set_b):
+    return np.intersect1d(set_a, set_b).size / set_a.size  # independent of parameter order
+
+  @staticmethod
+  def matches(name):
+    return "ainb" == name
+
+
+class PercentBinA(ASimilarityMeasure):
+  def __call__(self, set_a, set_b):
+    return np.intersect1d(set_a, set_b).size / set_b.size  # independent of parameter order
+
+  @staticmethod
+  def matches(name):
+    return "bina" == name
