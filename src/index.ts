@@ -4,6 +4,7 @@
 
 import 'file-loader?name=index.html!extract-loader!html-loader!./index.html';
 import 'file-loader?name=404.html!./404.html';
+import 'file-loader?name=similarity.comp!./similarity.comp';
 import 'file-loader?name=robots.txt!./robots.txt';
 
 import 'phovea_ui/src/_bootstrap';
@@ -77,6 +78,10 @@ elems.graph.then((graph) => {
 
   const stratoHeaders = document.getElementsByTagName('header');
   if (stratoHeaders.length > 0) {
+    const importTag = document.createElement('span');
+    importTag.innerHTML = require('./similarity.comp'); //required html is not a noede, hence the <span>
+    stratoHeaders[0].appendChild(importTag);
+
     const jaccardButton = document.createElement('button');
     jaccardButton.innerText = 'Calc Jaccard';
     jaccardButton.id = 'jaccardButton';
