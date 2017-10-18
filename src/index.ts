@@ -84,7 +84,7 @@ elems.graph.then((graph) => {
       const selection = stratomex.idtypes[0].selections();
       if (!selection.isNone) {
         const colName = selection.dims ? selection.dims[0].name : '';
-        const data = getAPIJSON('/stratomex_js/similarity/jaccard/', {
+        const data = getAPIJSON('/similarity/group/jaccard/', {
           range: selection.toString()
         }).catch((err) => {
             //TODO rem columns
