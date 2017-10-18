@@ -72,19 +72,18 @@ elems.graph.then((graph) => {
   });
 
 
-  // MY AWESOME STUFF -----------------------------------------------------
   const simColumnColors = ['#586BA4', '#987284', '#DF2935', '#4B88A2', '#157145', '#DFA06F', '#412722','#60AA85'];
 
-  const stratoHeaders = document.getElementsByTagName('header');
-  if (stratoHeaders.length > 0) {
-    const jaccardButton = document.createElement('button');
-    jaccardButton.innerText = 'Calc Jaccard';
-    jaccardButton.id = 'jaccardButton';
-    jaccardButton.onclick = (ev) => {
-      const selection = stratomex.idtypes[0].selections();
-      if (!selection.isNone) {
-        const colName = selection.dims ? selection.dims[0].name : '';
-        const data = getAPIJSON('/similarity/group/jaccard/', {
+  $('#similarity a').click(function(eventObject) {
+    const selection = stratomex.idtypes[0].selections();
+
+    if (!selection.isNone) {
+      const scope = $(eventObject.currentTarget).data('scope');
+      const method = $(eventObject.currentTarget).data('method');
+      const methodLabel = $(eventObject.currentTarget).text();
+      const colName = selection.dims ? selection.dims[0].name : '';
+
+      const data = getAPIJSON('/similarity/'+scope+'/'+method+'/', {
           range: selection.toString()
         }).catch((err) => {
             //TODO rem columns
@@ -93,21 +92,16 @@ elems.graph.then((graph) => {
 
         //split data group names & values for 2 columns
         const values = data.then((res : any)  => { return res.values; });
-        lineup.addNumberColumn('Jaccard: ' + colName, [0, 1], values, simColumnColors[0]);
+        lineup.addNumberColumn(methodLabel+': ' + colName, [0, 1], values, simColumnColors[0]);
         const groups = data.then((res : any)  => { return res.groups; });
-        lineup.addStringColumn('Jaccard: ' + colName, groups, simColumnColors[0]);
+        lineup.addStringColumn(methodLabel+': ' + colName, groups, simColumnColors[0]);
 
         simColumnColors.unshift(simColumnColors.pop()); //rotate array
       } else {
         console.log('Nothing selected, cannot calc jaccard index');
       }
-    };
-    stratoHeaders[0].appendChild(jaccardButton);
-  } else {
-    console.log('no header for addin');
-  }
+  });
 
-  // -----------------------------------------------------------------------------
   const $leftData = $('#databrowser');
   if (cmode.getMode().exploration < 0.8) {
     $leftData.hide();

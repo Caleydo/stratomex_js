@@ -21,6 +21,18 @@
                                                       data-toggle="tab">Stratifications</a></li>
             <li role="presentation"><a href="#" data-target="#tab_data" role="tab" data-toggle="tab">Data</a></li>
         </ul>
+        <div id="similarity" class="dropup">
+          <button class="btn btn-default dropdown-toggle" type="button" id="similarityBtn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Calc similarity...
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="similarityBtn">
+            <li class="dropdown-header">Compare Groups</li>
+            <li><a data-scope="group" data-method="jaccard" href="#">Jaccard Index</a></li>
+            <li><a data-scope="group" data-method="ainb" href="#">Percentage: A in B</a></li>
+            <li><a data-scope="group" data-method="bina" href="#">Percentage: B in A</a></li>
+          </ul>
+        </div>
       </div>
         <!-- Nav tabs -->
       <!-- Tab panes -->

@@ -374,6 +374,25 @@ main {
       }
     }
   }
+
+  .dropup {
+     position:absolute;
+     bottom:0;
+     left:0;
+
+    button {
+        background-color: $header-menu-bg-color;
+        color: $header-menu-color;
+    }
+
+    // reset margins from above
+    li {
+      margin-left: -1px;
+      a {
+        margin-left: 5px;
+      }
+    }
+  }
 }
 
 .multiform .phovea-select-selected {
